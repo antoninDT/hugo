@@ -1,0 +1,11 @@
+{
+  "name": "hugohulp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "hugo.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Antonin Dujardin-Terry",
+  "license": "ISC"
+}
