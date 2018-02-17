@@ -88,5 +88,8 @@ const promptForUserCommand = () => {
     processInput('Please enter a command:', handleCommand);
 };
 
-game.welcomeMessage();
-promptForUserCommand();
+const startGame = () => {
+    game.welcomeMessage();
+    promptForUserCommand();
+};
+startGame();
