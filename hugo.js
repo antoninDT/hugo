@@ -14,8 +14,83 @@ const defaultRoomId = roomsLookup.hall.id;
 
 const player = {
     currentRoomId: defaultRoomId,
-    inventory: [1,2,3],
+    inventory: [],
 };
+
+const goodbye = () => {
+    console.log(`
+    
+    
+    @@@@@@@@@@@@@@@@@@@@@
+        DOE DOEI!!!!!!
+    @@@@@@@@@@@@@@@@@@@@@
+    
+    
+    `);
+    process.exit();
+};
+
+const didPlayerWin = () => {
+    return (player.inventory.includes(itemIdToWin));
+};
+
+const showWinScreen = () => {
+    console.log(`
+
+        Congratulations! You have found the hidden Item!
+
+    `);
+    goodbye();
+};
+
+const moveItem = (itemIdToMove, source, destination) => {
+    const newSourceItems = source.inventory.filter((itemId) => itemId !== itemIdToMove);
+    source.inventory = newSourceItems;
+    destination.inventory.push(itemIdToMove);
+};
+
+const moveItemFromCurrentRoomToPlayer = (itemName) => {
+    if (!itemName) {
+        console.log(`
+        
+                                    😂😂😂
+        You forgot to put the name of the item to pick up stupid... try again! 
+                                    😂😂😂
+        
+        `);
+        return;
+    }
+    const room = rooms.find((room) => room.id === player.currentRoomId);
+    if (!room.inventory || !room.inventory.length) {
+        console.log(`
+        
+        🕸️🕸️🕸️🕸️🕸️🕸️🕸️🕸️️
+        room is empty... 
+        🕸️🕸️🕸️🕸️🕸️🕸️🕸️🕸️
+        
+        `);
+        return;
+    }
+    const item = items.find((item) => item.name.toLowerCase() === itemName.toLowerCase());
+    if (!item || !room.inventory.includes(item.id)) {
+        console.log(`
+        
+            The current room does not have "${itemName}"
+        
+        `);
+        return;
+    }
+    moveItem(item.id, room, player);
+    console.log(`
+    
+        You have put "${item.name}" into your inventory
+    
+    `);
+    if (didPlayerWin()) {
+        showWinScreen();
+    }
+};
+
 
 const commandLookup = { // TODO: Refactor this to its own file
     exit: {
@@ -50,6 +125,11 @@ const commandLookup = { // TODO: Refactor this to its own file
         command: 'show inventory',
         description: 'Shows the items in your inventory',
     },
+    transferItemToPlayerInventory: {
+        command: 'pick up',
+        description: 'Picks up an item',
+    },
+    tranferItemToRoomInventory: {}, // TODO: Add this command
 };
 
 const commands = Object.values(commandLookup);
@@ -80,7 +160,7 @@ const showItem = (item) => {
 
 const showCurrentRoomContents = () => {
     const currentRoom = getCurrentRoom();
-    if (!(currentRoom.itemIds && currentRoom.itemIds.length)) {
+    if (!(currentRoom.inventory && currentRoom.inventory.length)) {
         console.log(`
     
             You look around and notice that the room is empty...
@@ -94,7 +174,7 @@ const showCurrentRoomContents = () => {
         You look around and notice the following items: 
     
     `);
-    currentRoom.itemIds
+    currentRoom.inventory
         .map(getItemById)
         .forEach(showItem);
 };
@@ -154,19 +234,6 @@ const showHelp = () => {
     });
 };
 
-const goodbye = () => {
-    console.log(`
-    
-    
-    @@@@@@@@@@@@@@@@@@@@@
-        DOE DOEI!!!!!!
-    @@@@@@@@@@@@@@@@@@@@@
-    
-    
-    `);
-    process.exit();
-};
-
 const movePlayerToRoom = (roomId = defaultRoomId) => {
     player.currentRoomId = roomId;
     showCurrentRoom();
@@ -186,9 +253,9 @@ const promptForUserCommand = () => {
                 goodbye();
                 return;
             case (sanitizedInput.startsWith(commandLookup.goTo.command)):
-                const parts = sanitizedInput
+                const roomParts = sanitizedInput
                     .split(commandLookup.goTo.command);
-                const roomName = parts[1]
+                const roomName = roomParts[1]
                     .toLowerCase()
                     .replace('the', '')
                     .trim();
@@ -224,6 +291,15 @@ const promptForUserCommand = () => {
                 break;
             case (sanitizedInput.startsWith(commandLookup.showInventory.command)):
                 showInventory();
+                break;
+            case (sanitizedInput.startsWith(commandLookup.transferItemToPlayerInventory.command)):
+                const itemParts = sanitizedInput
+                    .split(commandLookup.transferItemToPlayerInventory.command);
+                const itemName = itemParts[1]
+                    .toLowerCase()
+                    .replace('the', '')
+                    .trim();
+                moveItemFromCurrentRoomToPlayer(itemName);
                 break;
             default:
                 console.log(`
