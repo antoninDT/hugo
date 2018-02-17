@@ -12,6 +12,8 @@ const items = Object.values(itemsLookup);
 const rooms = Object.values(roomsLookup);
 const defaultRoomId = roomsLookup.hall.id;
 
+const itemIdToWin = items[Math.floor(Math.random() * items.length)].id;
+
 const player = {
     currentRoomId: defaultRoomId,
     inventory: [],
@@ -133,8 +135,6 @@ const commandLookup = { // TODO: Refactor this to its own file
 };
 
 const commands = Object.values(commandLookup);
-
-const itemIdToWin = itemsLookup.djKhaled.id; // TODO: make this random
 
 const showRooms = () => {
     console.log('Here are the rooms:');
