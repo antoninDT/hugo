@@ -2,6 +2,7 @@ const readline = require('readline');
 
 const itemsLookup = require('./items.js');
 const roomsLookup = require('./rooms.js');
+const commandLookup = require('./commands.js');
 
 const lineReader = readline.createInterface({
     input: process.stdin,
@@ -10,6 +11,7 @@ const lineReader = readline.createInterface({
 
 const items = Object.values(itemsLookup);
 const rooms = Object.values(roomsLookup);
+const commands = Object.values(commandLookup);
 const defaultRoomId = roomsLookup.hall.id;
 
 const itemIdToWin = items[Math.floor(Math.random() * items.length)].id;
@@ -92,49 +94,6 @@ const moveItemFromCurrentRoomToPlayer = (itemName) => {
         showWinScreen();
     }
 };
-
-
-const commandLookup = { // TODO: Refactor this to its own file
-    exit: {
-        command: 'exit',
-        description: 'Type this in to exit the game',
-    },
-    goTo: {
-        command: 'go to',
-        description: 'Type this in to go to another room',
-    },
-    help: {
-        command: 'help',
-        description: 'Type this in to give a list of all possible commands (duh)',
-    },
-    showRooms: {
-        command: 'show rooms',
-        description: 'Type this in to give a list of all the rooms',
-    },
-    lookAround: {
-        command: 'look around',
-        description: 'Describes the contents of a room',
-    },
-    whereAmI: {
-        command: 'where am i',
-        description: 'Tells you which room you are in',
-    },
-    clear: {
-        command: 'clear',
-        description: 'Clears the screen (duh)',
-    },
-    showInventory: {
-        command: 'show inventory',
-        description: 'Shows the items in your inventory',
-    },
-    transferItemToPlayerInventory: {
-        command: 'pick up',
-        description: 'Picks up an item',
-    },
-    tranferItemToRoomInventory: {}, // TODO: Add this command
-};
-
-const commands = Object.values(commandLookup);
 
 const showRooms = () => {
     console.log('Here are the rooms:');
