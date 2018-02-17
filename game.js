@@ -1,3 +1,7 @@
+const chalk = require('chalk');
+
+// TODO: Continue adding color with chalk: https://github.com/chalk/chalk
+
 const itemsLookup = require('./items.js');
 const roomsLookup = require('./rooms.js');
 const commandLookup = require('./commands.js');
@@ -161,7 +165,7 @@ const game = {
     },
     welcomeMessage() {
         console.log();
-        console.log(' ######### Welkom bij Hugo Hulp ######### ');
+        console.log(chalk.blue(' ######### Welkom bij Hugo Hulp ######### '));
         console.log();
         console.log('Can you find the hidden item??');
         this.showRooms();
@@ -171,7 +175,7 @@ const game = {
         const currentRoomName = this.getCurrentRoom().name;
         console.log(`
      
-            You are in the ${currentRoomName}.
+            You are in the ${chalk.bold.red(currentRoomName)}.
      
         `);
     },
