@@ -35,7 +35,10 @@ const commandLookup = {
         command: 'pick up',
         description: 'Picks up an item',
     },
-    tranferItemToRoomInventory: {}, // TODO: Add this command
+    transferItemToRoomInventory: {
+        command: 'drop',
+        description: 'Drops an item (Obviously)'
+    }, // TODO: Add this command
 };
 
 

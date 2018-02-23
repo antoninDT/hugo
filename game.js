@@ -75,6 +75,43 @@ const game = {
                 game.showWinScreen();
             }
         },
+        moveItemFromPlayerToCurrentRoom(itemName) {
+            if (!itemName) {
+                console.log(`
+        
+                                    😂😂😂
+                    You forgot to put the name of the item to drop up hoor... try again! 
+                                    😂😂😂
+        
+                `);
+                return;
+            }
+            if (!game.state.player.inventory || !game.state.player.inventory.length) {
+                console.log(`
+        
+                    🕸️🕸️🕸️🕸️🕸️🕸️🕸️🕸️️
+                    Inventory is empty... 
+                    🕸️🕸️🕸️🕸️🕸️🕸️🕸️🕸️
+        
+                `);
+                return;
+            }
+            const item = items.find((item) => item.name.toLowerCase() === itemName.toLowerCase());
+            if (!item || !game.state.player.inventory.includes(item.id)) {
+                console.log(`
+        
+                         "${itemName}" is not in your inventory...
+        
+                `);
+                return;
+            }
+            this.moveItem(item.id, game.state.player, game.getCurrentRoom());
+            console.log(`
+    
+                    You have dropped "${item.name}" 
+    
+            `);
+        },
     },
     didPlayerWin() {
         return (this.state.player.inventory.includes(this.state.itemIdToWin));
@@ -193,6 +230,7 @@ const getNewGame = () => {
     };
     return result;
 };
+
 
 const api = {
     getNewGame,

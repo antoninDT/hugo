@@ -23,6 +23,8 @@ const promptForUserCommand = () => {
         const sanitizedInput = result
             .toLowerCase()
             .trim();
+        let itemParts;
+        let itemName;
         switch (true) {
             case (sanitizedInput.startsWith(commandLookup.exit.command)):
                 game.goodbye();
@@ -42,7 +44,7 @@ const promptForUserCommand = () => {
                     
                     `);
                     break;
-                };
+                }
                 const roomId = foundRoom.id;
                 game.actions.movePlayerToRoom(roomId);
                 break;
@@ -68,13 +70,22 @@ const promptForUserCommand = () => {
                 game.showInventory();
                 break;
             case (sanitizedInput.startsWith(commandLookup.transferItemToPlayerInventory.command)):
-                const itemParts = sanitizedInput
+                itemParts = sanitizedInput
                     .split(commandLookup.transferItemToPlayerInventory.command);
-                const itemName = itemParts[1]
+                itemName = itemParts[1]
                     .toLowerCase()
                     .replace('the', '')
                     .trim();
                 game.actions.moveItemFromCurrentRoomToPlayer(itemName);
+                break;
+            case (sanitizedInput.startsWith(commandLookup.transferItemToRoomInventory.command)):
+                itemParts = sanitizedInput
+                    .split(commandLookup.transferItemToRoomInventory.command);
+                itemName = itemParts[1]
+                    .toLowerCase()
+                    .replace('the', '')
+                    .trim();
+                game.actions.moveItemFromPlayerToCurrentRoom(itemName);
                 break;
             default:
                 console.log(`
