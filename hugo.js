@@ -26,6 +26,9 @@ const promptForUserCommand = () => {
         let itemParts;
         let itemName;
         switch (true) {
+            case (sanitizedInput === 'esteban'):
+                game.showWinScreen({esteban: true});
+                break;
             case (sanitizedInput.startsWith(commandLookup.exit.command)):
                 game.goodbye();
                 return;
@@ -76,7 +79,7 @@ const promptForUserCommand = () => {
                     .toLowerCase()
                     .replace('the', '')
                     .trim();
-                game.actions.moveItemFromCurrentRoomToPlayer(itemName);
+                game.actions.moveItemFromCurrentRoomToPlayer(itemName, sanitizedInput);
                 break;
             case (sanitizedInput.startsWith(commandLookup.transferItemToRoomInventory.command)):
                 itemParts = sanitizedInput
@@ -86,6 +89,9 @@ const promptForUserCommand = () => {
                     .replace('the', '')
                     .trim();
                 game.actions.moveItemFromPlayerToCurrentRoom(itemName);
+                break;
+            case (sanitizedInput.startsWith(commandLookup.showClueForItem.command)):
+                game.giveItemClue();
                 break;
             default:
                 console.log(`

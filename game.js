@@ -22,6 +22,7 @@ const game = {
     state: {
         player,
         rooms,
+        items,
         itemIdToWin: items[Math.floor(Math.random() * items.length)].id,
     },
     actions: {
@@ -128,14 +129,6 @@ const game = {
         `);
         process.exit();
     },
-    showWinScreen() {
-        console.log(`
-
-            Congratulations! You have found the hidden Item!
-
-        `);
-        this.goodbye();
-    },
     showRooms() {
         console.log('Here are the rooms:');
         const getRoomName = (room) => room.name;
@@ -205,8 +198,22 @@ const game = {
         console.log(chalk.blue(' ######### Welkom bij Hugo Hulp ######### '));
         console.log();
         console.log('Can you find the hidden item??');
+        this.giveItemClue();
         this.showRooms();
         this.showCurrentRoom();
+    },
+    getCurrentItemClue() {
+        const itemToWin = items.find((item) => item.id === this.state.itemIdToWin);
+        const randomClue = itemToWin.clues[Math.floor(Math.random() * itemToWin.clues.length)];
+        return randomClue;
+    },
+
+    giveItemClue() {
+        console.log(`
+                
+            Here is your clue: ${chalk.bold.red(this.getCurrentItemClue())}.
+            
+        `);
     },
     showCurrentRoom() {
         const currentRoomName = this.getCurrentRoom().name;

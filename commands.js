@@ -38,7 +38,11 @@ const commandLookup = {
     transferItemToRoomInventory: {
         command: 'drop',
         description: 'Drops an item (Obviously)'
-    }, // TODO: Add this command
+    },
+    showClueForItem: {
+        command: 'give me a clue',
+        description: 'gives a clue about the item you are looking for',
+    },
 };
 
 

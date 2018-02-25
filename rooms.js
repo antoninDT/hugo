@@ -19,17 +19,17 @@ const roomsLookup = {
         id: 2,
         name: 'Lounge',
         inventory: [
-            itemsLookup.bonebreakingmup.id,
+            itemsLookup.boneBreakingMup.id,
             itemsLookup.car.id,
-            itemsLookup.cdoflatesteurvisionsingles.id,
+            itemsLookup.cdOfLatestEurovisionSingles.id,
         ],
     },
     office: {
         id: 3,
         name: 'Office',
         inventory: [
-            itemsLookup.cigerettejuice.id,
-            itemsLookup.cincoPhone.id,
+            itemsLookup.aka.id,
+            itemsLookup.rum.id,
             itemsLookup.computer.id,
         ],
     },
@@ -37,8 +37,8 @@ const roomsLookup = {
         id: 4,
         name: 'Garage',
         inventory: [
-            itemsLookup.ducklorange.id,
-            itemsLookup.meyerscannedhorseinacan.id,
+            itemsLookup.canOfOnoHehe.id,
+            itemsLookup.munsterCheese.id,
             itemsLookup.pen.id,
         ],
     },
