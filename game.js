@@ -198,10 +198,7 @@ const game = {
     },
     // TODO: Add a "show status" function and then use it.
     clearScreen() {
-        const numberOfLines = 100;
-        for (let i = 0; i < numberOfLines; i++) {
-            console.log();
-        }
+            console.log('\x1Bc');
     },
     welcomeMessage() {
         console.log();
