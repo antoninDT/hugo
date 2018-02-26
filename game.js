@@ -18,6 +18,10 @@ const player = {
 
 const getItemById = (itemId) => items.find((item) => item.id === itemId);
 
+const getRandomArrayItem = (array) => {
+    return array[Math.floor(Math.random() * array.length)];
+};
+
 const game = {
     state: {
         player,
@@ -129,6 +133,12 @@ const game = {
         `);
         process.exit();
     },
+    showWinScreen() {
+        console.log(`
+            Congratulations! You have found the hidden Item!
+        `);
+        this.goodbye();
+    },
     showRooms() {
         console.log('Here are the rooms:');
         const getRoomName = (room) => room.name;
@@ -198,20 +208,28 @@ const game = {
         console.log(chalk.blue(' ######### Welkom bij Hugo Hulp ######### '));
         console.log();
         console.log('Can you find the hidden item??');
-        this.giveItemClue();
         this.showRooms();
         this.showCurrentRoom();
+        this.giveItemClue();
     },
     getCurrentItemClue() {
         const itemToWin = items.find((item) => item.id === this.state.itemIdToWin);
-        const randomClue = itemToWin.clues[Math.floor(Math.random() * itemToWin.clues.length)];
-        return randomClue;
+        const randomItemClue = getRandomArrayItem(itemToWin.clues);
+        return randomItemClue;
+    },
+
+    getCurrentRoomClue() {
+        const roomContainingTheItem = rooms.find((room) => room.inventory.includes(this.state.itemIdToWin));
+        const randomClueForRoom = getRandomArrayItem(roomContainingTheItem.clues);
+        return randomClueForRoom;
     },
 
     giveItemClue() {
         console.log(`
                 
-            Here is your clue: ${chalk.bold.red(this.getCurrentItemClue())}.
+        Here is your clue: 
+            
+            ${chalk.bold.red(this.getCurrentItemClue())} and ${chalk.bold.red(this.getCurrentRoomClue())}
             
         `);
     },

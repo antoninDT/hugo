@@ -104,7 +104,7 @@ const itemsLookup = {
         id: 11,
         name: 'CD of latest Eurovision singles',
         clues: [
-            'Has all the greatist songs known to man (At least according to Europe)',
+            'This item has all the greatist songs known to man (At least according to Europe)',
             'After listening to this item you have decided to never listen to music again...',
             'On the back of this item you see that its about "Love, Unity, and Terrible English Lyrics"',
         ],
