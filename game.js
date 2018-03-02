@@ -11,7 +11,7 @@ const commands = Object.values(commandLookup);
 const items = Object.values(itemsLookup);
 const rooms = Object.values(roomsLookup);
 
-const defaultRoomId = roomsLookup.hall.id;
+const defaultRoomId = roomsLookup.hall.id; //TODO: Make spawn point random
 const player = {
     currentRoomId: defaultRoomId,
     inventory: [],
@@ -43,10 +43,13 @@ const game = {
         itemIdToWin: items[Math.floor(Math.random() * items.length)].id,
     },
     actions: {
+        movePlayerToRandomRoom() {
+            const randomRoom = getRandomArrayItem(game.state.rooms);
+            this.movePlayerToRoom(randomRoom.id);
+        },
         randomlyDistributeItemsToRooms() {
             let availableItems = [...game.state.items];
             const maxCountOfItemsPerRoom = Math.ceil(availableItems.length / game.state.rooms.length);
-            console.log(`DEBUG: maxCountOfItemsPerRoom: ${maxCountOfItemsPerRoom}`); // TODO: Kill this debug line
             const moveRandomItemToRoom = (room) => {
                 const randomAvailableItem = getRandomArrayItem(availableItems);
                 room.inventory.push(randomAvailableItem.id);
