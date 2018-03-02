@@ -1,9 +1,8 @@
 const chalk = require('chalk');
 const boxen = require('boxen');
+const CFonts = require('cfonts');
 
 //TODO: Find out to change the font/increase the size of the font
-// TODO: Continue adding color with chalk: https://github.com/chalk/chalk
-
 const itemsLookup = require('./items.js');
 const roomsLookup = require('./rooms.js');
 const commandLookup = require('./commands.js');
@@ -12,7 +11,7 @@ const commands = Object.values(commandLookup);
 const items = Object.values(itemsLookup);
 const rooms = Object.values(roomsLookup);
 
-const defaultRoomId = roomsLookup.hall.id; //TODO: Make spawn point random
+const defaultRoomId = roomsLookup.hall.id;
 const player = {
     currentRoomId: defaultRoomId,
     inventory: [],
@@ -22,6 +21,10 @@ const getItemById = (itemId) => items.find((item) => item.id === itemId);
 
 const getRandomArrayItem = (array) => {
     return array[Math.floor(Math.random() * array.length)];
+};
+
+const basicCFontOptions = {
+    font: 'simple3d',
 };
 
 const basicBoxOptions = {
@@ -156,11 +159,12 @@ const game = {
         return (this.state.player.inventory.includes(this.state.itemIdToWin));
     },
     goodbye() {
-        const goodbyeBoxOptions = {
-            ...basicBoxOptions,
-            padding: 2,
+        const goodbyeMessageOptions = {
+            ...basicCFontOptions,
+            font: '3d',
+            colors: ['blue', 'white'],
         };
-        console.log(boxen(chalk.bold.blueBright('DOE DOEI!!!!'), goodbyeBoxOptions));
+        CFonts.say('DOE DOEI!!', goodbyeMessageOptions);
         process.exit();
     },
     showWinScreen() {
@@ -231,16 +235,16 @@ const game = {
         console.log('\x1Bc');
     },
     welcomeMessage() {
-        const welcomeBoxOptions = {
-            ...basicBoxOptions,
-            borderColor: 'white',
-            backgroundColor: 'white',
-            padding: 4,
+        const welcomeMessageOptions = {
+            ...basicCFontOptions,
+            font: 'block',
+            colors: ['candy', 'candy'],
         };
         this.clearScreen();
-        console.log(boxen(chalk.blue('Welkom bij Hugo Hulp'), welcomeBoxOptions));
+        CFonts.say('Welkom|bij|Hugo|Hulp', welcomeMessageOptions);
         console.log();
         console.log(`${chalk.bold.magenta('Can you find the hidden item??')}`);
+        console.log();
         this.showRooms();
         this.showCurrentRoom();
         this.giveItemClue();
