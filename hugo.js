@@ -106,6 +106,7 @@ const promptForUserCommand = () => {
 };
 
 const startGame = () => {
+    game.actions.randomlyDistributeItemsToRooms();
     game.welcomeMessage();
     promptForUserCommand();
 };

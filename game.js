@@ -1,4 +1,5 @@
 const chalk = require('chalk');
+const boxen = require('boxen');
 
 // TODO: Continue adding color with chalk: https://github.com/chalk/chalk
 
@@ -22,6 +23,18 @@ const getRandomArrayItem = (array) => {
     return array[Math.floor(Math.random() * array.length)];
 };
 
+const basicBoxOptions = {
+    padding: 1,
+    borderStyle: {
+        topLeft: '@',
+        topRight: '@',
+        bottomLeft: '@',
+        bottomRight: '@',
+        horizontal: '\\',
+        vertical: '/'
+    }
+};
+
 const game = {
     state: {
         player,
@@ -30,6 +43,23 @@ const game = {
         itemIdToWin: items[Math.floor(Math.random() * items.length)].id,
     },
     actions: {
+        randomlyDistributeItemsToRooms() {
+            let availableItems = [...game.state.items];
+            const maxCountOfItemsPerRoom = Math.ceil(availableItems.length / game.state.rooms.length);
+            console.log(`DEBUG: maxCountOfItemsPerRoom: ${maxCountOfItemsPerRoom}`); // TODO: Kill this debug line
+            const moveRandomItemToRoom = (room) => {
+                const randomAvailableItem = getRandomArrayItem(availableItems);
+                room.inventory.push(randomAvailableItem.id);
+                availableItems = availableItems.filter((item) => item.id !== randomAvailableItem.id);
+            };
+            const distributeItemsToRoom = (room) => {
+                for (let i = 0; (i < maxCountOfItemsPerRoom) && availableItems.length; i++) {
+                    moveRandomItemToRoom(room);
+                }
+            };
+            game.state.rooms
+                .forEach(distributeItemsToRoom);
+        },
         moveItem(itemIdToMove, source, destination) {
             const newSourceItems = source.inventory.filter((itemId) => itemId !== itemIdToMove);
             source.inventory = newSourceItems;
@@ -122,15 +152,11 @@ const game = {
         return (this.state.player.inventory.includes(this.state.itemIdToWin));
     },
     goodbye() {
-        console.log(`
-    
-    
-            @@@@@@@@@@@@@@@@@@@@@
-                DOE DOEI!!!!!!
-            @@@@@@@@@@@@@@@@@@@@@
-    
-    
-        `);
+        const goodbyeBoxOptions = {
+            ...basicBoxOptions,
+            padding: 2,
+        };
+        console.log(boxen(chalk.bold.blueBright('DOE DOEI!!!!'), goodbyeBoxOptions));
         process.exit();
     },
     showWinScreen() {
@@ -140,7 +166,7 @@ const game = {
         this.goodbye();
     },
     showRooms() {
-        console.log('Here are the rooms:');
+        console.log(`${chalk.italic.yellow('Here are the rooms:')}`);
         const getRoomName = (room) => room.name;
         const showRoomName = (roomName) => console.log(`    * ${roomName}`);
         this.state.rooms
@@ -198,13 +224,20 @@ const game = {
     },
     // TODO: Add a "show status" function and then use it.
     clearScreen() {
-            console.log('\x1Bc');
+        console.log('\x1Bc');
     },
     welcomeMessage() {
+        const welcomeBoxOptions = {
+            ...basicBoxOptions,
+            borderColor: 'white',
+            backgroundColor: 'white',
+            padding: 4,
+
+        };
+        this.clearScreen();
+        console.log(boxen(chalk.blue('Welkom bij Hugo Hulp'), welcomeBoxOptions));
         console.log();
-        console.log(chalk.blue(' ######### Welkom bij Hugo Hulp ######### '));
-        console.log();
-        console.log('Can you find the hidden item??');
+        console.log(`${chalk.bold.magenta('Can you find the hidden item??')}`);
         this.showRooms();
         this.showCurrentRoom();
         this.giveItemClue();

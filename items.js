@@ -28,31 +28,31 @@ const itemsLookup = {
              '"Say my name..."',
         ],
     },
-    aka: {
+    footBall: {
         id: 3,
-        name: 'Aka',
+        name: 'Football',
         clues: [
-            '"BRAAAAAAANH!"',
-            'It likes ono hehe',
-            'Moon Shadow...',
+            '"GOOOAAALLL!!!"',
+            'Americans call it soccer...',
+            '"PANNA"',
         ],
     },
-    bitconnectpamphlet: {
+    recordingOfTramMan: {
         id: 4,
-        name: 'Bitconnect Pamphlet',
+        name: 'Recording of tram man',
         clues: [
-            '"WHAT AM I GONNA DO!?"',
-            'On the front of this item you see a man named Carlos who appears to be advertising something...',
-            'Hold on to your Bitcoins!',
+            '"Vergeet Uw straks niet uit te checken..."',
+            '"Centraal Station, overstoppen op de lijnen..."',
+            '"This door is not an entrance!!"',
         ],
     },
-    canOfOnoHehe: {
+    laserPointer: {
         id: 5,
-        name: 'Can of Ono He He',
+        name: 'Laser Pointer',
         clues: [
-            'Holding this will attract a certain black cat that shall not be named...',
-            'The worst fate for a chicken',
-            'In english it means "Delicious chicken"',
+            '"PEW PEW!!"',
+            'WARNING: We are not responsible for the cats this will attract',
+            'It shoots a beam of light',
         ],
     },
     munsterCheese: {
@@ -82,22 +82,22 @@ const itemsLookup = {
             'Like a horse drawn carriage but without the horse',
         ],
     },
-    boneBreakingMup: {
+    surpriseTest: {
         id: 9,
-        name: 'Bone breaking mup',
+        name: 'Surprise Test',
         clues: [
-            'If combined with a couch will snore a lot',
-            'It is blamed for all injuries',
-            'Is always in the way',
+            'No one studies for this',
+            'Every high school students worst nightmare',
+            'One of the worst type of suprises',
         ],
     },
-    bambu: {
+    cat: {
         id: 10,
-        name: 'bambu',
+        name: 'Cat',
         clues: [
-            '"Meow Burg!"',
+            '"Meow"',
             '"WARNING: We are not responsible for any scratches caused by this item"',
-            'You hear a faint noise of bees...',
+            'This item has fur, claws, and loves laser pointers',
         ],
     },
     cdOfLatestEurovisionSingles: {
@@ -107,6 +107,33 @@ const itemsLookup = {
             'This item has all the greatist songs known to man (At least according to Europe)',
             'After listening to this item you have decided to never listen to music again...',
             'On the back of this item you see that its about "Love, Unity, and Terrible English Lyrics"',
+        ],
+    },
+    yearBook: {
+        id: 12,
+        name: 'Year Book',
+        clues: [
+            'This item has all the most embarrassing pictures of the whole school',
+            'Its always a big competition to see who gets the most people to sign the back of this item in some schools',
+            'You go to this item when your kids asked what you looked like when you where a kid',
+        ],
+    },
+    faxMachine: {
+        id: 13,
+        name: 'Fax Machine',
+        clues: [
+            '"EERT! EEEIII! KRXNXX!"',
+            'This ancient item was once used to send documents and messages to people long before they had e-mails and other modern technologies',
+            'Very few people use this to send messages anymore as its very loud, old, and inconvenient to use',
+        ],
+    },
+    clock: {
+        id: 14,
+        name: 'Clock',
+        clues: [
+            '"TICK TOCK"',
+            'It has a face and two hands but no arms or legs',
+            'It usually hangs on the wall',
         ],
     },
 };

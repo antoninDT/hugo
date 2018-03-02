@@ -6,19 +6,15 @@ const roomsLookup = {
         name: 'Hall',
         inventory: [],
         clues: [
-            'You might wanna look where you first started...',
-            'It was empty when you first looked but you have a feeling that it is no longer empty...',
+            'Its in a long passage way',
+            'This place is a bridge to the other rooms',
             'The corridor never seems to end...',
         ],
     },
     cafeteria: {
         id: 1,
         name: 'Cafeteria',
-        inventory: [
-            itemsLookup.djKhaled.id,
-            itemsLookup.bambu.id,
-            itemsLookup.bitconnectpamphlet.id,
-        ],
+        inventory: [],
         clues: [
             'You smell the faint scent of food and have a feeling that what you are looking for may be in that very room...',
             '"FOOD FIGHT!!!"',
@@ -28,11 +24,7 @@ const roomsLookup = {
     lounge: {
         id: 2,
         name: 'Lounge',
-        inventory: [
-            itemsLookup.boneBreakingMup.id,
-            itemsLookup.car.id,
-            itemsLookup.cdOfLatestEurovisionSingles.id,
-        ],
+        inventory: [],
         clues: [
             'A place that you go to when you need to relax after a long day',
             '*Elevator Music*',
@@ -42,11 +34,7 @@ const roomsLookup = {
     office: {
         id: 3,
         name: 'Office',
-        inventory: [
-            itemsLookup.aka.id,
-            itemsLookup.rum.id,
-            itemsLookup.computer.id,
-        ],
+        inventory: [],
         clues: [
             'You hear the noise of someone typing on a keyboard',
             'The whirring and humming of machines lures you to a certain room...',
@@ -56,15 +44,21 @@ const roomsLookup = {
     garage: {
         id: 4,
         name: 'Garage',
-        inventory: [
-            itemsLookup.canOfOnoHehe.id,
-            itemsLookup.munsterCheese.id,
-            itemsLookup.pen.id,
-        ],
+        inventory: [],
         clues: [
             'You smell the fumes of gasoline coming from this room',
             'You almost never go to this room, as it usually has a spider waiting for you somewhere...',
             'You remember that there was a room that was usually used to park cars...',
+        ],
+    },
+    library: {
+        id: 5,
+        name: 'Library',
+        inventory: [],
+        clues: [
+            '"SSHHHH! quiet!"',
+            'This room smells like the pages of old books',
+            'This place is all about reading',
         ],
     },
 };
