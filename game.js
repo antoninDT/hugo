@@ -1,6 +1,7 @@
 const chalk = require('chalk');
 const boxen = require('boxen');
 
+//TODO: Find out to change the font/increase the size of the font
 // TODO: Continue adding color with chalk: https://github.com/chalk/chalk
 
 const itemsLookup = require('./items.js');
@@ -74,81 +75,81 @@ const game = {
         },
         moveItemFromCurrentRoomToPlayer(itemName) {
             if (!itemName) {
-                console.log(`
+                console.log(chalk.white(`
         
                                     😂😂😂
                     You forgot to put the name of the item to pick up hoor... try again! 
                                     😂😂😂
         
-                `);
+                `));
                 return;
             }
             const room = game.state.rooms.find((room) => room.id === game.state.player.currentRoomId);
             if (!room.inventory || !room.inventory.length) {
-                console.log(`
+                console.log(chalk.white(`
         
                     🕸️🕸️🕸️🕸️🕸️🕸️🕸️🕸️️
                     room is empty... 
                     🕸️🕸️🕸️🕸️🕸️🕸️🕸️🕸️
         
-                `);
+                `));
                 return;
             }
             const item = items.find((item) => item.name.toLowerCase() === itemName.toLowerCase());
             if (!item || !room.inventory.includes(item.id)) {
-                console.log(`
+                console.log(chalk.white(`
         
-                        The current room does not have "${itemName}"
+                        The current room does not have "${chalk.bold.red(itemName)}"
         
-                `);
+                `));
                 return;
             }
             this.moveItem(item.id, room, player);
-            console.log(`
+            console.log(chalk.white(`
     
-                    You have put "${item.name}" into your inventory
+                    You have put "${chalk.bold.red(item.name)}" into your inventory
     
-            `);
+            `));
             if (game.didPlayerWin()) {
                 game.showWinScreen();
             }
         },
         moveItemFromPlayerToCurrentRoom(itemName) {
             if (!itemName) {
-                console.log(`
+                console.log(chalk.white(`
         
                                     😂😂😂
                     You forgot to put the name of the item to drop up hoor... try again! 
                                     😂😂😂
         
-                `);
+                `));
                 return;
             }
             if (!game.state.player.inventory || !game.state.player.inventory.length) {
-                console.log(`
+                console.log(chalk.white(`
         
                     🕸️🕸️🕸️🕸️🕸️🕸️🕸️🕸️️
                     Inventory is empty... 
                     🕸️🕸️🕸️🕸️🕸️🕸️🕸️🕸️
         
-                `);
+                `));
                 return;
             }
             const item = items.find((item) => item.name.toLowerCase() === itemName.toLowerCase());
             if (!item || !game.state.player.inventory.includes(item.id)) {
-                console.log(`
+                console.log(chalk.white(`
         
-                         "${itemName}" is not in your inventory...
+                         "${chalk.bold.red(itemName)}" is not in your inventory...
         
-                `);
+                `));
                 return;
             }
             this.moveItem(item.id, game.state.player, game.getCurrentRoom());
-            console.log(`
+            console.log(chalk.white(`
     
-                    You have dropped "${item.name}" 
+                    You have dropped "${chalk.bold.red(item.name)}" 
     
-            `);
+            `));
         },
     },
     didPlayerWin() {
@@ -163,15 +164,15 @@ const game = {
         process.exit();
     },
     showWinScreen() {
-        console.log(`
+        console.log(chalk.white(`
             Congratulations! You have found the hidden Item!
-        `);
+        `));
         this.goodbye();
     },
     showRooms() {
         console.log(`${chalk.italic.yellow('Here are the rooms:')}`);
         const getRoomName = (room) => room.name;
-        const showRoomName = (roomName) => console.log(`    * ${roomName}`);
+        const showRoomName = (roomName) => console.log(`    * ${chalk.bold.red(roomName)}`);
         this.state.rooms
             .map(getRoomName)
             .forEach(showRoomName);
@@ -181,46 +182,46 @@ const game = {
         return result;
     },
     showItem(item) {
-        console.log(`
-                * (${item.name}) ${item.description || ''}
-        `);
+        console.log(chalk.white(`
+                * (${chalk.bold.red(item.name)}) 
+        `));
     },
     showCurrentRoomContents() {
         const currentRoom = this.getCurrentRoom();
         if (!(currentRoom.inventory && currentRoom.inventory.length)) {
-            console.log(`
+            console.log(chalk.white(`
     
             You look around and notice that the room is empty...
             💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩 
     
-        `);
+        `));
             return;
         }
-        console.log(`
+        console.log(chalk.yellow(`
     
             You look around and notice the following items: 
     
-        `);
+        `));
         currentRoom.inventory
             .map(getItemById)
             .forEach(this.showItem);
     },
     showInventory() {
         if (!this.state.player.inventory.length) {
-            console.log(`
+            console.log(chalk.white(`
     
                 There is nothing in your Inventory... 
             
                           😐😐😐
     
-            `);
+            `));
             return;
         }
-        console.log(`
+        console.log(chalk.yellow(`
     
             You have the following items: 
     
-        `);
+        `));
         this.state.player.inventory
             .map(getItemById)
             .forEach(this.showItem);
@@ -235,7 +236,6 @@ const game = {
             borderColor: 'white',
             backgroundColor: 'white',
             padding: 4,
-
         };
         this.clearScreen();
         console.log(boxen(chalk.blue('Welkom bij Hugo Hulp'), welcomeBoxOptions));
@@ -258,26 +258,38 @@ const game = {
     },
 
     giveItemClue() {
-        console.log(`
-                
-        Here is your clue: 
-            
+        console.log(chalk.yellow('Here is your clue:'));
+        console.log(chalk.white(`
+                                 
             ${chalk.bold.red(this.getCurrentItemClue())} and ${chalk.bold.red(this.getCurrentRoomClue())}
             
-        `);
+        `));
     },
     showCurrentRoom() {
         const currentRoomName = this.getCurrentRoom().name;
-        console.log(`
+        console.log(chalk.white(`
      
             You are in the ${chalk.bold.red(currentRoomName)}.
      
-        `);
+        `));
     },
     showHelp() {
-        console.log(' ===== List of commands =====');
+        const commandBoxOptions = {
+            ...basicBoxOptions,
+            borderColor: 'green',
+            backgroundColor: 'blue',
+            borderStyle: {
+                topLeft: 'ᒥ',
+                topRight: 'ᒣ',
+                bottomLeft: 'ᒪ',
+                bottomRight: 'ᒧ',
+                horizontal: '-',
+                vertical: '|'
+            }
+        };
+        console.log(boxen(chalk.yellow('List of commands'), commandBoxOptions));
         commands.forEach((command) => {
-            console.log(`  * ${command.command}: ${command.description}`);
+            console.log(`  * ${chalk.bold.red(command.command)}: ${chalk.white(command.description)}`);
         });
     },
 };

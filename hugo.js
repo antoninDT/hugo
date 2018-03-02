@@ -1,4 +1,6 @@
 require('babel-register');
+const chalk = require('chalk');
+
 
 const readline = require('readline');
 
@@ -26,9 +28,6 @@ const promptForUserCommand = () => {
         let itemParts;
         let itemName;
         switch (true) {
-            case (sanitizedInput === 'esteban'):
-                game.showWinScreen({esteban: true});
-                break;
             case (sanitizedInput.startsWith(commandLookup.exit.command)):
                 game.goodbye();
                 return;
@@ -41,11 +40,11 @@ const promptForUserCommand = () => {
                     .trim();
                 const foundRoom = rooms.find((room) => room.name.toLowerCase() === roomName);
                 if (!foundRoom) {
-                    console.log(`
+                    console.log(chalk.yellow(`
                     
-                        Oops this room does not exist: ${roomName}
+                        Oops this room does not exist: ${chalk.bold.red(roomName)}
                     
-                    `);
+                    `));
                     break;
                 }
                 const roomId = foundRoom.id;
@@ -90,19 +89,19 @@ const promptForUserCommand = () => {
                     .trim();
                 game.actions.moveItemFromPlayerToCurrentRoom(itemName);
                 break;
-            case (sanitizedInput.startsWith(commandLookup.showClueForItem.command)):
+            case (sanitizedInput.startsWith(commandLookup.showClue.command)):
                 game.giveItemClue();
                 break;
             default:
-                console.log(`
+                console.log(chalk.white(`
                 
                     Oops please enter another command hoor. Type in "help" for a list of commands
                     
-                `);
+                `));
         }
         promptForUserCommand();
     };
-    processInput('Please enter a command:', handleCommand);
+    processInput('Please enter a command:', handleCommand); //TODO: Add color to the prompt
 };
 
 const startGame = () => {

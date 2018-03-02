@@ -39,8 +39,8 @@ const commandLookup = {
         command: 'drop',
         description: 'Drops an item (Obviously)'
     },
-    showClueForItem: {
-        command: 'give me a clue about the item',
+    showClue: {
+        command: 'give me a clue',
         description: 'gives a clue about the item you are looking for',
     },
 };
