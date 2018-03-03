@@ -53,19 +53,15 @@ const game = {
         },
         randomlyDistributeItemsToRooms() {
             let availableItems = [...game.state.items];
-            const maxCountOfItemsPerRoom = Math.ceil(availableItems.length / game.state.rooms.length);
-            const moveRandomItemToRoom = (room) => {
-                const randomAvailableItem = getRandomArrayItem(availableItems);
-                room.inventory.push(randomAvailableItem.id);
-                availableItems = availableItems.filter((item) => item.id !== randomAvailableItem.id);
+            const dealRandomItemToRoom = (room) => {
+                if (!availableItems.length) { return; }
+                const itemToDealOut = getRandomArrayItem(availableItems);
+                room.inventory.push(itemToDealOut.id);
+                availableItems = availableItems.filter((item) => item.id !== itemToDealOut.id);
             };
-            const distributeItemsToRoom = (room) => {
-                for (let i = 0; (i < maxCountOfItemsPerRoom) && availableItems.length; i++) {
-                    moveRandomItemToRoom(room);
-                }
-            };
-            game.state.rooms
-                .forEach(distributeItemsToRoom);
+            while (availableItems.length) {
+                rooms.forEach(dealRandomItemToRoom);
+            }
         },
         moveItem(itemIdToMove, source, destination) {
             const newSourceItems = source.inventory.filter((itemId) => itemId !== itemIdToMove);
@@ -162,6 +158,7 @@ const game = {
         const goodbyeMessageOptions = {
             ...basicCFontOptions,
             font: '3d',
+            letterSpacing: 8,
             colors: ['blue', 'white'],
         };
         CFonts.say('DOE DOEI!!', goodbyeMessageOptions);
