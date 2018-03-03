@@ -13,6 +13,8 @@ const rooms = Object.values(roomsLookup);
 
 const defaultRoomId = roomsLookup.hall.id;
 const player = {
+    health: 100,
+    maxHealth: 100,
     currentRoomId: defaultRoomId,
     inventory: [],
 };
@@ -47,6 +49,22 @@ const game = {
         itemIdToWin: items[Math.floor(Math.random() * items.length)].id,
     },
     actions: {
+        hurtPlayer(amount) {
+            if (!amount) { return; }
+            game.state.player.health -= amount;
+            game.showPlayerStatus();
+            // TODO: Check if the player died and show the "lose" screen for it
+            // TODO: If the player is not dead, then show the current health of the player
+            // TODO: Use this function later
+        },
+        healPlayer(amount) { // TODO: Use this function later
+            if (!amount) { return; }
+            game.state.player.health += amount;
+            if (game.state.player.health > game.state.player.maxHealth) {
+                game.state.player.health = game.state.player.maxHealth;
+            }
+            game.showPlayerStatus();
+        },
         movePlayerToRandomRoom() {
             const randomRoom = getRandomArrayItem(game.state.rooms);
             this.movePlayerToRoom(randomRoom.id);
@@ -190,6 +208,11 @@ const game = {
                 * (${chalk.bold.blue(item.name)}) 
         `)));
     },
+    showPlayerStatus() {
+        console.log(`
+               You have ${this.state.player.health} health out of ${this.state.player.maxHealth}
+        `);
+    },
     showCurrentRoomContents() {
         const currentRoom = this.getCurrentRoom();
         if (!(currentRoom.inventory && currentRoom.inventory.length)) {
@@ -246,6 +269,7 @@ const game = {
         console.log(`${chalk.bold.magenta('Can you find the hidden item??')}`);
         console.log();
         this.showRooms();
+        this.showPlayerStatus();
         this.showCurrentRoom();
         this.giveItemClue();
     },
