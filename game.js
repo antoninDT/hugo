@@ -1,6 +1,7 @@
 const chalk = require('chalk');
 const boxen = require('boxen');
 const CFonts = require('cfonts');
+const say = require('say');
 
 //TODO: Find out to change the font/increase the size of the font
 const itemsLookup = require('./items.js');
@@ -180,6 +181,7 @@ const game = {
             letterSpacing: 8,
             colors: ['blue', 'white'],
         };
+        say.speak('DOE DOEI', 'ellen', 0.5);
         CFonts.say('DOE', goodbyeMessageOptions);
         CFonts.say('DOEI', goodbyeMessageOptions);
         CFonts.say('!!', goodbyeMessageOptions);
@@ -257,7 +259,72 @@ const game = {
     clearScreen() {
         console.log('\x1Bc');
     },
-    welcomeMessage() {
+    sampleVoices() {
+        const voices = [
+            'Alex',
+            'Alice',
+            'Alva',
+            'Amelie',
+            'Anna',
+            'Carmit',
+            'Damayanti',
+            'Daniel',
+            'Diego',
+            'Ellen',
+            'Fiona',
+            'Fred',
+            'Ioana',
+            'Joana',
+            'Jorge',
+            'Juan',
+            'Kanya',
+            'Karen',
+            'Kyoko',
+            'Laura',
+            'Lekha',
+            'Luca',
+            'Luciana',
+            'Maged',
+            'Mariska',
+            'Mei-Jia',
+            'Melina',
+            'Milena',
+            'Moira',
+            'Monica',
+            'Nora',
+            'Paulina',
+            'Samantha',
+            'Sara',
+            'Satu',
+            'Sin-ji',
+            'Tessa',
+            'Thomas',
+            'Ting-Ting',
+            'Veena',
+            'Victoria',
+            'Xander',
+            'Yelda',
+            'Yuna',
+            'Yuri',
+            'Zosia',
+            'Zuzana',
+        ];
+
+        const sampleVoice = (index = 0) => {
+            const voice = voices[index];
+            if (!voice) { return; }
+            console.log(`DEBUG: sampleVoice() voice: ${voice}`); // TODO Kill this line
+            const speakSampleSentence = (voice) => {
+                const sampleSentence = 'This is a sample sentence for the game. La la la la!';
+                say.speak(sampleSentence, voice, 1, () => sampleVoice(index + 1));
+            };
+            const speakSampleSentenceForVoice = () => { speakSampleSentence(voice); };
+            const speakAnnouncement = () => { say.speak(`Sample voice for: ${voice}`, 'Samantha', 1, speakSampleSentenceForVoice); };
+            speakAnnouncement();
+        };
+        sampleVoice();
+    },
+    welcomeMessage() { // TODO: Add promises so that voice can work
         const welcomeMessageOptions = {
             ...basicCFontOptions,
             font: 'block',
@@ -265,6 +332,7 @@ const game = {
         };
         this.clearScreen();
         CFonts.say('Welkom|bij|Hugo|Hulp', welcomeMessageOptions);
+        say.speak('Welkom bij Hugo Hulp', 'ellen', 0.5);
         console.log();
         console.log(`${chalk.bold.magenta('Can you find the hidden item??')}`);
         console.log();

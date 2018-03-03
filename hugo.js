@@ -88,15 +88,18 @@ const promptForUserCommand = () => {
                 itemName = getSanitizedText(itemParts[1]);
                 game.actions.moveItemFromCurrentRoomToPlayer(itemName, sanitizedInput);
                 break;
-            case (commandLookup.transferItemToRoomInventory.commands.some(doesSanitizedInputStartWithCommand)): // TODO: Refactor all complex commands to use this style of case
+            case (commandLookup.transferItemToRoomInventory.commands.some(doesSanitizedInputStartWithCommand)):
                 specificCommandUsed = commandLookup.transferItemToRoomInventory.commands.find(doesSanitizedInputStartWithCommand);
                 itemParts = sanitizedInput
                     .split(specificCommandUsed);
                 itemName = getSanitizedText(itemParts[1]);
                 game.actions.moveItemFromPlayerToCurrentRoom(itemName);
                 break;
-            case (commandLookup.showClue.commands.includes(sanitizedInput)): // TODO: Refactor all simple commands to use this style of case
+            case (commandLookup.showClue.commands.includes(sanitizedInput)):
                 game.giveItemClue();
+                break;
+            case (commandLookup.testVoices.commands.includes(sanitizedInput)):
+                game.sampleVoices();
                 break;
             default:
                 console.log(chalk.white(`

@@ -80,6 +80,13 @@ const commandLookup = {
         ],
         description: 'gives a clue about the item you are looking for',
     },
+    testVoices: {
+        commands: [
+            'test voices',
+            'say something',
+        ],
+        description: 'Plays all the different voices',
+    },
 };
 
 
