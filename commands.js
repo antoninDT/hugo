@@ -1,46 +1,83 @@
 const commandLookup = {
     exit: {
-        command: 'exit',
+        commands: [
+            'exit',
+            'bye',
+            'doei',
+            'doe doei',
+        ],
         description: 'Type this in to exit the game',
     },
     goTo: {
-        command: 'go to',
+        commands: [
+            'go to',
+            'ga naar',
+        ],
         description: 'Type this in to go to another room',
     },
     help: {
-        command: 'help',
+        commands: [
+            'help',
+            'list of commands',
+        ],
         description: 'Type this in to give a list of all possible commands (duh)',
     },
     showRooms: {
-        command: 'show rooms',
+        commands: [
+            'show rooms',
+        ],
         description: 'Type this in to give a list of all the rooms',
     },
     lookAround: {
-        command: 'look around',
+        commands: [
+            'look around',
+            'kijk',
+            'ls',
+        ],
         description: 'Describes the contents of a room',
     },
     whereAmI: {
-        command: 'where am i',
+        commands: [
+            'where am i',
+            'pwd',
+        ],
         description: 'Tells you which room you are in',
     },
     clear: {
-        command: 'clear',
+        commands: [
+            'clear',
+        ],
         description: 'Clears the screen (duh)',
     },
     showInventory: {
-        command: 'show inventory',
+        commands: [
+            'show inventory',
+            'inventory',
+            'what do i have',
+        ],
         description: 'Shows the items in your inventory',
     },
     transferItemToPlayerInventory: {
-        command: 'pick up',
+        commands: [
+            'pick up',
+            'grab',
+            'get',
+        ],
         description: 'Picks up an item',
     },
     transferItemToRoomInventory: {
-        command: 'drop',
+        commands: [
+            'drop',
+            'ditch',
+        ],
         description: 'Drops an item (Obviously)'
     },
     showClue: {
-        command: 'give me a clue',
+        commands: [
+            'give me a clue',
+            'show me a clue',
+            'clue'
+        ],
         description: 'gives a clue about the item you are looking for',
     },
 };

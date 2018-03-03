@@ -35,13 +35,16 @@ const promptForUserCommand = () => {
         const sanitizedInput = getSanitizedText(result);
         let itemParts;
         let itemName;
-        switch (true) {
-            case (sanitizedInput.startsWith(commandLookup.exit.command)):
+        let specificCommandUsed;
+        const doesSanitizedInputStartWithCommand = (command) => sanitizedInput.startsWith(command);
+         switch (true) {
+            case (commandLookup.exit.commands.includes(sanitizedInput)):
                 game.goodbye();
                 return;
-            case (sanitizedInput.startsWith(commandLookup.goTo.command)):
+            case (commandLookup.goTo.commands.some(doesSanitizedInputStartWithCommand)):
+                specificCommandUsed = commandLookup.goTo.commands.find(doesSanitizedInputStartWithCommand);
                 const roomParts = sanitizedInput
-                    .split(commandLookup.goTo.command);
+                    .split(specificCommandUsed);
                 const roomNameAsInput = roomParts[1];
                 const roomName = getSanitizedText(roomNameAsInput);
                 const foundRoom = rooms
@@ -57,40 +60,42 @@ const promptForUserCommand = () => {
                 const roomId = foundRoom.id;
                 game.actions.movePlayerToRoom(roomId);
                 break;
-            case (sanitizedInput.startsWith(commandLookup.help.command)):
+            case (commandLookup.help.commands.includes(sanitizedInput)):
                 game.showHelp();
                 break;
-            case (sanitizedInput.startsWith(commandLookup.showRooms.command)):
+            case (commandLookup.showRooms.commands.includes(sanitizedInput)):
                 game.showRooms();
                 break;
-            case (sanitizedInput.startsWith(commandLookup.whereAmI.command)):
+            case (commandLookup.whereAmI.commands.includes(sanitizedInput)):
                 game.showCurrentRoom();
                 break;
             case (!sanitizedInput): {
                 break;
             }
-            case (sanitizedInput.startsWith(commandLookup.clear.command)):
+            case (commandLookup.clear.commands.includes(sanitizedInput)):
                 game.clearScreen();
                 break;
-            case (sanitizedInput.startsWith(commandLookup.lookAround.command)):
+            case (commandLookup.lookAround.commands.includes(sanitizedInput)):
                 game.showCurrentRoomContents();
                 break;
-            case (sanitizedInput.startsWith(commandLookup.showInventory.command)):
+             case (commandLookup.showInventory.commands.includes(sanitizedInput)):
                 game.showInventory();
                 break;
-            case (sanitizedInput.startsWith(commandLookup.transferItemToPlayerInventory.command)):
+            case (commandLookup.transferItemToPlayerInventory.commands.some(doesSanitizedInputStartWithCommand)):
+                specificCommandUsed = commandLookup.transferItemToPlayerInventory.commands.find(doesSanitizedInputStartWithCommand);
                 itemParts = sanitizedInput
-                    .split(commandLookup.transferItemToPlayerInventory.command);
+                    .split(specificCommandUsed);
                 itemName = getSanitizedText(itemParts[1]);
                 game.actions.moveItemFromCurrentRoomToPlayer(itemName, sanitizedInput);
                 break;
-            case (sanitizedInput.startsWith(commandLookup.transferItemToRoomInventory.command)):
+            case (commandLookup.transferItemToRoomInventory.commands.some(doesSanitizedInputStartWithCommand)): // TODO: Refactor all complex commands to use this style of case
+                specificCommandUsed = commandLookup.transferItemToRoomInventory.commands.find(doesSanitizedInputStartWithCommand);
                 itemParts = sanitizedInput
-                    .split(commandLookup.transferItemToRoomInventory.command);
+                    .split(specificCommandUsed);
                 itemName = getSanitizedText(itemParts[1]);
                 game.actions.moveItemFromPlayerToCurrentRoom(itemName);
                 break;
-            case (sanitizedInput.startsWith(commandLookup.showClue.command)):
+            case (commandLookup.showClue.commands.includes(sanitizedInput)): // TODO: Refactor all simple commands to use this style of case
                 game.giveItemClue();
                 break;
             default:

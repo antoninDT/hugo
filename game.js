@@ -158,14 +158,17 @@ const game = {
         const goodbyeMessageOptions = {
             ...basicCFontOptions,
             font: '3d',
+            space: false,
             letterSpacing: 8,
             colors: ['blue', 'white'],
         };
-        CFonts.say('DOE DOEI!!', goodbyeMessageOptions);
+        CFonts.say('DOE', goodbyeMessageOptions);
+        CFonts.say('DOEI', goodbyeMessageOptions);
+        CFonts.say('!!', goodbyeMessageOptions);
         process.exit();
     },
     showWinScreen() {
-        console.log(chalk.white(`
+        console.log(chalk.magentaBright(`
             Congratulations! You have found the hidden Item!
         `));
         this.goodbye();
@@ -173,7 +176,7 @@ const game = {
     showRooms() {
         console.log(`${chalk.italic.yellow('Here are the rooms:')}`);
         const getRoomName = (room) => room.name;
-        const showRoomName = (roomName) => console.log(`    * ${chalk.bold.red(roomName)}`);
+        const showRoomName = (roomName) => console.log(chalk.white(`    * ${chalk.bold.greenBright(roomName)}`));
         this.state.rooms
             .map(getRoomName)
             .forEach(showRoomName);
@@ -183,9 +186,9 @@ const game = {
         return result;
     },
     showItem(item) {
-        console.log(chalk.white(`
-                * (${chalk.bold.red(item.name)}) 
-        `));
+        console.log(chalk.white(chalk.white(`
+                * (${chalk.bold.blue(item.name)}) 
+        `)));
     },
     showCurrentRoomContents() {
         const currentRoom = this.getCurrentRoom();
@@ -270,7 +273,7 @@ const game = {
         const currentRoomName = this.getCurrentRoom().name;
         console.log(chalk.white(`
      
-            You are in the ${chalk.bold.red(currentRoomName)}.
+            You are in the ${chalk.bold.greenBright(currentRoomName)}.
      
         `));
     },
@@ -290,7 +293,7 @@ const game = {
         };
         console.log(boxen(chalk.yellow('List of commands'), commandBoxOptions));
         commands.forEach((command) => {
-            console.log(`  * ${chalk.bold.red(command.command)}: ${chalk.white(command.description)}`);
+            console.log(chalk.white(`  * ${chalk.bold.red(command.commands[0])}: ${chalk.white(command.description)}`));
         });
     },
 };
