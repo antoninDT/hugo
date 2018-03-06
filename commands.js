@@ -87,6 +87,15 @@ const commandLookup = {
         ],
         description: 'Plays all the different voices',
     },
+    showPlayerStatus: {
+        commands: [
+            'show player status',
+            'show health',
+            'show player health',
+            'how much health do i have',
+        ],
+        description: 'Shows your player status (Health)',
+    },
 };
 
 

@@ -50,9 +50,15 @@ const game = {
         itemIdToWin: items[Math.floor(Math.random() * items.length)].id,
     },
     actions: {
-        hurtPlayer(amount) {
+        hurtPlayer(amount = 100) {
+        // hurtPlayer(amount) { // TODO: Restore this line and remove the line above
             if (!amount) { return; }
             game.state.player.health -= amount;
+            if (game.state.player.health <= 0) {
+                game.showLoseScreen();
+                return;
+            }
+            game.flashScreenRed();
             game.showPlayerStatus();
             // TODO: Check if the player died and show the "lose" screen for it
             // TODO: If the player is not dead, then show the current health of the player
@@ -128,6 +134,11 @@ const game = {
                     You have put "${chalk.bold.red(item.name)}" into your inventory
     
             `));
+            game.dealDamageIfNeeded(item);
+            if (game.state.player.health <= 0) {
+                game.showLoseScreen();
+            }
+
             if (game.didPlayerWin()) {
                 game.showWinScreen();
             }
@@ -173,7 +184,7 @@ const game = {
     didPlayerWin() {
         return (this.state.player.inventory.includes(this.state.itemIdToWin));
     },
-    goodbye() {
+    goodbye(shouldSpeakClue = true) {
         const goodbyeMessageOptions = {
             ...basicCFontOptions,
             font: '3d',
@@ -181,7 +192,7 @@ const game = {
             letterSpacing: 8,
             colors: ['blue', 'white'],
         };
-        say.speak('DOE DOEI', 'ellen', 0.5);
+        if (shouldSpeakClue) { say.speak('DOE DOEI', 'ellen', 0.5); }
         CFonts.say('DOE', goodbyeMessageOptions);
         CFonts.say('DOEI', goodbyeMessageOptions);
         CFonts.say('!!', goodbyeMessageOptions);
@@ -192,6 +203,13 @@ const game = {
             Congratulations! You have found the hidden Item!
         `));
         this.goodbye();
+    },
+    showLoseScreen() {
+        console.log(chalk.redBright(`
+            Uh Oh... It appears you died, try again next time!
+        `, ));
+        this.showPlayerStatus();
+        this.goodbye(false);
     },
     showRooms() {
         console.log(`${chalk.italic.yellow('Here are the rooms:')}`);
@@ -209,6 +227,14 @@ const game = {
         console.log(chalk.white(chalk.white(`
                 * (${chalk.bold.blue(item.name)}) 
         `)));
+    },
+    dealDamageIfNeeded(item) {
+        if (!item.damage) { return; }
+        if (item.id === this.state.itemIdToWin) { return; }
+        game.actions.hurtPlayer(item.damage);
+    },
+    flashScreenRed() { // TODO: Finish implementing this
+        // console.log('\x1Bc'); // TODO: Find out how to clear the screen red and then add a timer to clear it back to black again
     },
     showPlayerStatus() {
         console.log(`
@@ -236,7 +262,9 @@ const game = {
             .forEach(this.showItem);
     },
     showInventory() {
+        const inventoryVoice = 'princess';
         if (!this.state.player.inventory.length) {
+            say.speak('There is nothing in your Inventory', inventoryVoice);
             console.log(chalk.white(`
     
                 There is nothing in your Inventory... 
@@ -254,6 +282,25 @@ const game = {
         this.state.player.inventory
             .map(getItemById)
             .forEach(this.showItem);
+        const continueSpeakingItems = () => {
+            const speakItem = (index = 0) => {
+                const itemId = this.state.player.inventory[index];
+                if (!itemId) { return; }
+                const item = getItemById(itemId);
+                if (!item) { return; }
+                const isLastItemInInventory = (index >= (this.state.player.inventory.length - 1));
+                const conditionalAnd = (index) ? `, and , `: '';
+                const conditionalThatsAll = (isLastItemInInventory) ? `.
+                  
+                  That's all! Nothing else? no more!
+                
+                ` : '';
+                const itemSentence = `${conditionalAnd} ${item.name}${conditionalThatsAll}`; // TODO: Add an item description here and in the items.js file
+                say.speak(itemSentence, inventoryVoice, null, () => speakItem(index + 1));
+            };
+            speakItem();
+        };
+        say.speak('You have the following items in your inventory: ', inventoryVoice, null, continueSpeakingItems);
     },
     // TODO: Add a "show status" function and then use it.
     clearScreen() {
@@ -261,26 +308,41 @@ const game = {
     },
     sampleVoices() {
         const voices = [
+            'Agnes',
+            'Albert',
             'Alex',
             'Alice',
             'Alva',
             'Amelie',
             'Anna',
+            'Bad News',
+            'Bahh',
+            'Bells',
+            'Boing',
+            'Bruce',
+            'Bubbles',
             'Carmit',
+            'Cellos',
             'Damayanti',
             'Daniel',
+            'Deranged',
             'Diego',
             'Ellen',
             'Fiona',
             'Fred',
+            'Good news',
+            'Hysterical',
             'Ioana',
             'Joana',
             'Jorge',
             'Juan',
             'Kanya',
             'Karen',
+            'Kate',
+            'Kathy',
             'Kyoko',
             'Laura',
+            'Lee',
             'Lekha',
             'Luca',
             'Luciana',
@@ -292,20 +354,29 @@ const game = {
             'Moira',
             'Monica',
             'Nora',
+            'Oliver',
             'Paulina',
+            'Pipe Organ',
+            'Princess',
+            'Ralph',
             'Samantha',
             'Sara',
             'Satu',
+            'Serena',
             'Sin-ji',
             'Tessa',
             'Thomas',
             'Ting-Ting',
+            'Trinoids',
             'Veena',
+            'Vicki',
             'Victoria',
+            'Whisper',
             'Xander',
             'Yelda',
             'Yuna',
             'Yuri',
+            'Zarvox',
             'Zosia',
             'Zuzana',
         ];
@@ -314,15 +385,24 @@ const game = {
             const voice = voices[index];
             if (!voice) { return; }
             console.log(`DEBUG: sampleVoice() voice: ${voice}`); // TODO Kill this line
-            const speakSampleSentence = (voice) => {
-                const sampleSentence = 'This is a sample sentence for the game. La la la la!';
+            const speakSampleSentence2 = (voice) => {
+                const sampleSentence2 = 'Hi there I sound like this, FAFAPAPA';
+                say.speak(sampleSentence2,voice, 1, () => sampleVoice(index +1));
+            };
+            const speakSampleSentence1 = (voice) => {
+                const sampleSentence = `This is a sample sentence for the game. La la la la! Ma ma ma ma! Ra ra Ba ba pa pa, fa fa fa fa fa 
+                
+                These three skis through the trees to my knees but without all those tricky tricky stinky slinky bees. Who? Why? What! OK! whatever                             
+                    
+                `;
                 say.speak(sampleSentence, voice, 1, () => sampleVoice(index + 1));
             };
-            const speakSampleSentenceForVoice = () => { speakSampleSentence(voice); };
+            const speakSampleSentenceForVoice = () => { speakSampleSentence2(voice); };
             const speakAnnouncement = () => { say.speak(`Sample voice for: ${voice}`, 'Samantha', 1, speakSampleSentenceForVoice); };
             speakAnnouncement();
         };
-        sampleVoice();
+        const speakGreeting = () => { say.speak(`OK, now I'm going to list all of the possible voices for you: `, 'Samantha', 1, () => sampleVoice()); };
+        speakGreeting();
     },
     welcomeMessage() { // TODO: Add promises so that voice can work
         const welcomeMessageOptions = {
@@ -339,7 +419,7 @@ const game = {
         this.showRooms();
         this.showPlayerStatus();
         this.showCurrentRoom();
-        this.giveItemClue();
+        this.giveItemClue(false);
     },
     getCurrentItemClue() {
         const itemToWin = items.find((item) => item.id === this.state.itemIdToWin);
@@ -353,11 +433,20 @@ const game = {
         return randomClueForRoom;
     },
 
-    giveItemClue() {
+    giveItemClue(shouldSpeakClue = true) {
+        const roomClue = this.getCurrentRoomClue();
+        const itemClue = this.getCurrentItemClue();
+        if (shouldSpeakClue) { say.speak(`
+        
+        Here is you clue: ${itemClue} 
+        
+        and. ${roomClue} 
+        
+        `, 'Princess',); }
         console.log(chalk.yellow('Here is your clue:'));
         console.log(chalk.white(`
                                  
-            ${chalk.bold.red(this.getCurrentItemClue())} and ${chalk.bold.red(this.getCurrentRoomClue())}
+            ${chalk.bold.red(itemClue)} and ${chalk.bold.red(roomClue)}
             
         `));
     },

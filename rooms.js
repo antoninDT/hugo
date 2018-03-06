@@ -6,9 +6,9 @@ const roomsLookup = {
         name: 'Hall',
         inventory: [],
         clues: [
-            'Its in a long passage way',
-            'This place is a bridge to the other rooms',
-            'The corridor never seems to end...',
+            'it is in a long passage way',
+            'it is in a place that is a bridge to the other rooms',
+            'it is in that corridor never seems to end...',
         ],
     },
     cafeteria: {
@@ -16,9 +16,9 @@ const roomsLookup = {
         name: 'Cafeteria',
         inventory: [],
         clues: [
-            'You smell the faint scent of food and have a feeling that what you are looking for may be in that very room...',
-            '"FOOD FIGHT!!!"',
-            'The daily specials today are mystery meat with a side of hard tack and something that looks like it was a desert at some point...',
+            'you smell the faint scent of food and have a feeling that what you are looking for may be in that very room...',
+            'it might be in the room where you hear "FOOD FIGHT!!!"',
+            'it is in a room where the daily specials shown today are mystery meat with a side of hard tack and something that looks like it was a desert at some point...',
         ],
     },
     lounge: {
@@ -26,9 +26,9 @@ const roomsLookup = {
         name: 'Lounge',
         inventory: [],
         clues: [
-            'A place that you go to when you need to relax after a long day',
-            '*Elevator Music*',
-            'This place is known for having the most outdated magazines...',
+            'it is in a place that you go to when you need to relax after a long day',
+            'you hear *Elevator Music* coming from this room',
+            'it is in a place is known for having the most outdated magazines...',
         ],
     },
     office: {
@@ -36,9 +36,9 @@ const roomsLookup = {
         name: 'Office',
         inventory: [],
         clues: [
-            'You hear the noise of someone typing on a keyboard',
-            'The whirring and humming of machines lures you to a certain room...',
-            'You have a feeling that the item might be used with computers',
+            'you hear the noise of someone typing on a keyboard',
+            'the whirring and humming of machines lures you to a certain room...',
+            'you have a feeling that the item might be used with computers',
         ],
     },
     garage: {
@@ -46,9 +46,9 @@ const roomsLookup = {
         name: 'Garage',
         inventory: [],
         clues: [
-            'You smell the fumes of gasoline coming from this room',
-            'You almost never go to this room, as it usually has a spider waiting for you somewhere...',
-            'You remember that there was a room that was usually used to park cars...',
+            'you smell the fumes of gasoline coming from this room',
+            'you almost never go to this room, as it usually has a spider waiting for you somewhere...',
+            'you remember that there was a room that was usually used to park cars...',
         ],
     },
     library: {
@@ -56,9 +56,9 @@ const roomsLookup = {
         name: 'Library',
         inventory: [],
         clues: [
-            '"SSHHHH! quiet!"',
-            'This room smells like the pages of old books',
-            'This place is all about reading',
+            'it is in a room were"SSHHHH! quiet!" is said a lot',
+            'it is in a room smells like the pages of old books',
+            'it is in a place that is all about reading',
         ],
     },
 };

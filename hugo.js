@@ -101,6 +101,17 @@ const promptForUserCommand = () => {
             case (commandLookup.testVoices.commands.includes(sanitizedInput)):
                 game.sampleVoices();
                 break;
+            case (commandLookup.showPlayerStatus.commands.includes(sanitizedInput)):
+                game.showPlayerStatus();
+                break;
+             case (sanitizedInput === 'barf'): // TODO: This is "secret" it won't appear in help. Should disable this in the future
+                 console.log(`
+                 
+                 DEBUG:: BARFING 
+                 
+                 `);
+                 console.dir(game.state);
+                 break;
             default:
                 console.log(chalk.white(`
                 
