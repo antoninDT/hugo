@@ -24,7 +24,7 @@ const itemsLookup = {
     },
     djKhaled: {
         id: 2,
-        name: 'DJ KHALED!', // TODO: Fix not being able to pick this muthafucka up
+        name: 'DJ KHALED',
         damage: 20,
         clues: [
              '"WE THE BEST MUSIC!!!!..."',

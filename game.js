@@ -192,6 +192,7 @@ const game = {
             letterSpacing: 8,
             colors: ['blue', 'white'],
         };
+        // TODO: Make a high score screen
         if (shouldSpeakClue) { say.speak('DOE DOEI', 'ellen', 0.5); }
         CFonts.say('DOE', goodbyeMessageOptions);
         CFonts.say('DOEI', goodbyeMessageOptions);
@@ -199,12 +200,17 @@ const game = {
         process.exit();
     },
     showWinScreen() {
+        say.speak(`Congratulations!
+         
+            You have found the hidden item!`, 'daniel',);
         console.log(chalk.magentaBright(`
             Congratulations! You have found the hidden Item!
         `));
-        this.goodbye();
+        this.goodbye(false);
     },
     showLoseScreen() {
+        say.speak(`Uh Oh it looks like you have die ie ied!
+        `,'Bad News',);
         console.log(chalk.redBright(`
             Uh Oh... It appears you died, try again next time!
         `, ));
@@ -212,8 +218,8 @@ const game = {
         this.goodbye(false);
     },
     showRooms() {
-        console.log(`${chalk.italic.yellow('Here are the rooms:')}`);
         const getRoomName = (room) => room.name;
+        console.log(`${chalk.italic.yellow('Here are the rooms:')}`);
         const showRoomName = (roomName) => console.log(chalk.white(`    * ${chalk.bold.greenBright(roomName)}`));
         this.state.rooms
             .map(getRoomName)
@@ -450,7 +456,7 @@ const game = {
             
         `));
     },
-    showCurrentRoom() {
+    showCurrentRoom() {     //TODO: Make the computer tell you you current room except for the welcome message
         const currentRoomName = this.getCurrentRoom().name;
         console.log(chalk.white(`
      
