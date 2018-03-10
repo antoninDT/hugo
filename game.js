@@ -50,8 +50,7 @@ const game = {
         itemIdToWin: items[Math.floor(Math.random() * items.length)].id,
     },
     actions: {
-        hurtPlayer(amount = 100) {
-        // hurtPlayer(amount) { // TODO: Restore this line and remove the line above
+          hurtPlayer(amount) {
             if (!amount) { return; }
             game.state.player.health -= amount;
             if (game.state.player.health <= 0) {
@@ -60,9 +59,6 @@ const game = {
             }
             game.flashScreenRed();
             game.showPlayerStatus();
-            // TODO: Check if the player died and show the "lose" screen for it
-            // TODO: If the player is not dead, then show the current health of the player
-            // TODO: Use this function later
         },
         healPlayer(amount) { // TODO: Use this function later
             if (!amount) { return; }
@@ -74,7 +70,7 @@ const game = {
         },
         movePlayerToRandomRoom() {
             const randomRoom = getRandomArrayItem(game.state.rooms);
-            this.movePlayerToRoom(randomRoom.id);
+            this.movePlayerToRoom(randomRoom.id,false);
         },
         randomlyDistributeItemsToRooms() {
             let availableItems = [...game.state.items];
@@ -93,46 +89,47 @@ const game = {
             source.inventory = newSourceItems;
             destination.inventory.push(itemIdToMove);
         },
-        movePlayerToRoom(roomId = defaultRoomId) {
+        movePlayerToRoom(roomId = defaultRoomId, shouldSpeakCurrentRoom = true) {
             game.state.player.currentRoomId =  roomId;
-            game.showCurrentRoom();
+            if (shouldSpeakCurrentRoom) { game.showCurrentRoom(); return;}
+            game.showCurrentRoom(false);
         },
-        moveItemFromCurrentRoomToPlayer(itemName) {
+        moveItemFromCurrentRoomToPlayer(itemName) { // TODO: Add voices to this
             if (!itemName) {
                 console.log(chalk.white(`
-        
+
                                     😂😂😂
-                    You forgot to put the name of the item to pick up hoor... try again! 
+                    You forgot to put the name of the item to pick up hoor... try again!
                                     😂😂😂
-        
+
                 `));
                 return;
             }
             const room = game.state.rooms.find((room) => room.id === game.state.player.currentRoomId);
             if (!room.inventory || !room.inventory.length) {
                 console.log(chalk.white(`
-        
+
                     🕸️🕸️🕸️🕸️🕸️🕸️🕸️🕸️️
-                    room is empty... 
+                    room is empty...
                     🕸️🕸️🕸️🕸️🕸️🕸️🕸️🕸️
-        
+
                 `));
                 return;
             }
             const item = items.find((item) => item.name.toLowerCase() === itemName.toLowerCase());
             if (!item || !room.inventory.includes(item.id)) {
                 console.log(chalk.white(`
-        
+
                         The current room does not have "${chalk.bold.red(itemName)}"
-        
+
                 `));
                 return;
             }
             this.moveItem(item.id, room, player);
             console.log(chalk.white(`
-    
+
                     You have put "${chalk.bold.red(item.name)}" into your inventory
-    
+
             `));
             game.dealDamageIfNeeded(item);
             if (game.state.player.health <= 0) {
@@ -143,41 +140,41 @@ const game = {
                 game.showWinScreen();
             }
         },
-        moveItemFromPlayerToCurrentRoom(itemName) {
+        moveItemFromPlayerToCurrentRoom(itemName) { // TODO: Add voices to this
             if (!itemName) {
                 console.log(chalk.white(`
-        
+
                                     😂😂😂
-                    You forgot to put the name of the item to drop up hoor... try again! 
+                    You forgot to put the name of the item to drop up hoor... try again!
                                     😂😂😂
-        
+
                 `));
                 return;
             }
             if (!game.state.player.inventory || !game.state.player.inventory.length) {
                 console.log(chalk.white(`
-        
+
                     🕸️🕸️🕸️🕸️🕸️🕸️🕸️🕸️️
-                    Inventory is empty... 
+                    Inventory is empty...
                     🕸️🕸️🕸️🕸️🕸️🕸️🕸️🕸️
-        
+
                 `));
                 return;
             }
             const item = items.find((item) => item.name.toLowerCase() === itemName.toLowerCase());
             if (!item || !game.state.player.inventory.includes(item.id)) {
                 console.log(chalk.white(`
-        
+
                          "${chalk.bold.red(itemName)}" is not in your inventory...
-        
+
                 `));
                 return;
             }
             this.moveItem(item.id, game.state.player, game.getCurrentRoom());
             console.log(chalk.white(`
-    
-                    You have dropped "${chalk.bold.red(item.name)}" 
-    
+
+                    You have dropped "${chalk.bold.red(item.name)}"
+
             `));
         },
     },
@@ -201,7 +198,7 @@ const game = {
     },
     showWinScreen() {
         say.speak(`Congratulations!
-         
+
             You have found the hidden item!`, 'daniel',);
         console.log(chalk.magentaBright(`
             Congratulations! You have found the hidden Item!
@@ -217,7 +214,7 @@ const game = {
         this.showPlayerStatus();
         this.goodbye(false);
     },
-    showRooms() {
+    showRooms() { // TODO: Add voices to this
         const getRoomName = (room) => room.name;
         console.log(`${chalk.italic.yellow('Here are the rooms:')}`);
         const showRoomName = (roomName) => console.log(chalk.white(`    * ${chalk.bold.greenBright(roomName)}`));
@@ -231,7 +228,7 @@ const game = {
     },
     showItem(item) {
         console.log(chalk.white(chalk.white(`
-                * (${chalk.bold.blue(item.name)}) 
+                * (${chalk.bold.blue(item.name)})
         `)));
     },
     dealDamageIfNeeded(item) {
@@ -242,26 +239,26 @@ const game = {
     flashScreenRed() { // TODO: Finish implementing this
         // console.log('\x1Bc'); // TODO: Find out how to clear the screen red and then add a timer to clear it back to black again
     },
-    showPlayerStatus() {
+    showPlayerStatus() { // TODO: Add voices to this
         console.log(`
                You have ${this.state.player.health} health out of ${this.state.player.maxHealth}
         `);
     },
-    showCurrentRoomContents() {
+    showCurrentRoomContents() { // TODO: Add a voice to this
         const currentRoom = this.getCurrentRoom();
         if (!(currentRoom.inventory && currentRoom.inventory.length)) {
             console.log(chalk.white(`
-    
+
             You look around and notice that the room is empty...
-            💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩 
-    
+            💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩
+
         `));
             return;
         }
         console.log(chalk.yellow(`
-    
-            You look around and notice the following items: 
-    
+
+            You look around and notice the following items:
+
         `));
         currentRoom.inventory
             .map(getItemById)
@@ -272,18 +269,18 @@ const game = {
         if (!this.state.player.inventory.length) {
             say.speak('There is nothing in your Inventory', inventoryVoice);
             console.log(chalk.white(`
-    
-                There is nothing in your Inventory... 
-            
+
+                There is nothing in your Inventory...
+
                           😐😐😐
-    
+
             `));
             return;
         }
         console.log(chalk.yellow(`
-    
-            You have the following items: 
-    
+
+            You have the following items:
+
         `));
         this.state.player.inventory
             .map(getItemById)
@@ -297,9 +294,9 @@ const game = {
                 const isLastItemInInventory = (index >= (this.state.player.inventory.length - 1));
                 const conditionalAnd = (index) ? `, and , `: '';
                 const conditionalThatsAll = (isLastItemInInventory) ? `.
-                  
+
                   That's all! Nothing else? no more!
-                
+
                 ` : '';
                 const itemSentence = `${conditionalAnd} ${item.name}${conditionalThatsAll}`; // TODO: Add an item description here and in the items.js file
                 say.speak(itemSentence, inventoryVoice, null, () => speakItem(index + 1));
@@ -396,10 +393,10 @@ const game = {
                 say.speak(sampleSentence2,voice, 1, () => sampleVoice(index +1));
             };
             const speakSampleSentence1 = (voice) => {
-                const sampleSentence = `This is a sample sentence for the game. La la la la! Ma ma ma ma! Ra ra Ba ba pa pa, fa fa fa fa fa 
-                
-                These three skis through the trees to my knees but without all those tricky tricky stinky slinky bees. Who? Why? What! OK! whatever                             
-                    
+                const sampleSentence = `This is a sample sentence for the game. La la la la! Ma ma ma ma! Ra ra Ba ba pa pa, fa fa fa fa fa
+
+                These three skis through the trees to my knees but without all those tricky tricky stinky slinky bees. Who? Why? What! OK! whatever
+
                 `;
                 say.speak(sampleSentence, voice, 1, () => sampleVoice(index + 1));
             };
@@ -424,7 +421,7 @@ const game = {
         console.log();
         this.showRooms();
         this.showPlayerStatus();
-        this.showCurrentRoom();
+        this.showCurrentRoom(false);
         this.giveItemClue(false);
     },
     getCurrentItemClue() {
@@ -443,26 +440,27 @@ const game = {
         const roomClue = this.getCurrentRoomClue();
         const itemClue = this.getCurrentItemClue();
         if (shouldSpeakClue) { say.speak(`
-        
-        Here is you clue: ${itemClue} 
-        
-        and. ${roomClue} 
-        
+
+        Here is you clue: ${itemClue}
+
+        and. ${roomClue}
+
         `, 'Princess',); }
         console.log(chalk.yellow('Here is your clue:'));
         console.log(chalk.white(`
-                                 
+
             ${chalk.bold.red(itemClue)} and ${chalk.bold.red(roomClue)}
-            
+
         `));
     },
-    showCurrentRoom() {     //TODO: Make the computer tell you you current room except for the welcome message
+    showCurrentRoom(shouldSpeakCurrentRoom = true) {
         const currentRoomName = this.getCurrentRoom().name;
         console.log(chalk.white(`
-     
+
             You are in the ${chalk.bold.greenBright(currentRoomName)}.
-     
+
         `));
+        if (shouldSpeakCurrentRoom) { say.speak(`You are in the ${currentRoomName}`, 'princess'); }
     },
     showHelp() {
         const commandBoxOptions = {
