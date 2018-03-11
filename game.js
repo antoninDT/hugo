@@ -2,6 +2,7 @@ const chalk = require('chalk');
 const boxen = require('boxen');
 const CFonts = require('cfonts');
 const say = require('say');
+const chalkAnimation = require('chalk-animation');
 
 //TODO: Find out to change the font/increase the size of the font
 const itemsLookup = require('./items.js');
@@ -57,8 +58,7 @@ const game = {
                 game.showLoseScreen();
                 return;
             }
-            game.flashScreenRed();
-            if (shouldSpeak) { game.showPlayerStatus(); }
+            if (shouldSpeak) { game.showPlayerStatus(); return;}
             game.showPlayerStatus(false);
         },
         healPlayer(amount) { // TODO: Use this function later
@@ -67,7 +67,7 @@ const game = {
             if (game.state.player.health > game.state.player.maxHealth) {
                 game.state.player.health = game.state.player.maxHealth;
             }
-            game.showPlayerStatus();
+            game.showPlayerStatus(false,false);
         },
         movePlayerToRandomRoom() {
             const randomRoom = getRandomArrayItem(game.state.rooms);
@@ -217,7 +217,9 @@ const game = {
     showLoseScreen() {
         say.speak(`Uh Oh it looks like you have die ie ied!
         `,'Bad News',);
-        this.showPlayerStatus(false);
+        this.showPlayerStatus(false,false);
+        const string = 'Uh Oh... It appears you died, try again next time!';
+
         console.log(chalk.redBright(`
             Uh Oh... It appears you died, try again next time!
         `, ));
@@ -246,14 +248,29 @@ const game = {
         if (shouldSpeak) { game.actions.hurtPlayer(item.damage); }
         game.actions.hurtPlayer(item.damage, false);
     },
-    flashScreenRed() { // TODO: Finish implementing this
-        // console.log('\x1Bc'); // TODO: Find out how to clear the screen red and then add a timer to clear it back to black again
+    flashScreenRed(string) { // TODO: Finish implementing this
+      // TODO: Fix the fact that it's replacing the prompt
+        const pulse = chalkAnimation.pulse(`${string}`, 2);
+
+        setTimeout(() => {
+          pulse.stop();
+        }, 200);
+
+        setTimeout(() => {
+          pulse.start();
+        }, 200);
+
+        setTimeout(() => {
+          pulse.stop();
+        }, 1000);        
     },
-    showPlayerStatus(shouldSpeak = true) {
+    showPlayerStatus(shouldSpeak = true, shouldFlash = true) {
+        const string = `You have ${this.state.player.health} health out of ${this.state.player.maxHealth}`;
+        if (shouldFlash) { this.flashScreenRed(string); return; }
         if (shouldSpeak) { say.speak(`You have ${this.state.player.health} health out of ${this.state.player.maxHealth}`, 'princess'); }
         console.log(`
                You have ${this.state.player.health} health out of ${this.state.player.maxHealth}
-        `);
+        `)
     },
     showCurrentRoomContents(shouldSpeak = true) {
         const currentRoom = this.getCurrentRoom();
@@ -449,7 +466,7 @@ const game = {
         console.log(`${chalk.bold.magenta('Can you find the hidden item??')}`);
         console.log();
         this.showRooms();
-        this.showPlayerStatus(false);
+        this.showPlayerStatus(false,false);
         this.showCurrentRoom(false);
         this.giveItemClue(false);
     },

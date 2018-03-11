@@ -51,9 +51,9 @@ const promptForUserCommand = () => {
                     .find((room) => getSanitizedText(room.name) === roomName);
                 if (!foundRoom) {
                     console.log(chalk.yellow(`
-                    
+
                         Oops this room does not exist: ${chalk.bold.red(roomNameAsInput)}
-                    
+
                     `));
                     break;
                 }
@@ -102,12 +102,12 @@ const promptForUserCommand = () => {
                 game.sampleVoices();
                 break;
             case (commandLookup.showPlayerStatus.commands.includes(sanitizedInput)):
-                game.showPlayerStatus();
+                game.showPlayerStatus(true,false);
                 break;
              case (sanitizedInput === 'barf'): // TODO: This is "secret" it won't appear in help. Should disable this in the future
                  console.log(`
-                 
-                 DEBUG:: BARFING 
+
+                 DEBUG:: BARFING
                  
                  `);
                  console.dir(game.state);
@@ -116,9 +116,9 @@ const promptForUserCommand = () => {
                  game.actions.hurtPlayer(100);
             default:
                 console.log(chalk.white(`
-                
+
                     Oops please enter another command hoor. Type in "help" for a list of commands
-                    
+
                 `));
         }
         promptForUserCommand();
