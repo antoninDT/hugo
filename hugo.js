@@ -9,7 +9,7 @@ const readline = require('readline');
 const { getNewGame } = require('./game.js');
 const roomsLookup = require('./data/rooms.json');
 const itemsLookup = require('./data/items.json'); // TODO: Kill this line
-const commandLookup = require('./commands.js');
+const commandLookup = require('./data/commands.json');
 
 const lineReader = readline.createInterface({
     input: process.stdin,
@@ -120,6 +120,8 @@ const promptForUserCommand = () => {
 
 
                  roomsLookup: ${JSON.stringify(roomsLookup)}
+
+                 commandsLookup: ${JSON.stringify(commandLookup)}
 
                  `);
                  console.dir(game.state);

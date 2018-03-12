@@ -7,7 +7,7 @@ const chalkAnimation = require('chalk-animation');
 //TODO: Find out to change the font/increase the size of the font
 const itemsLookup = require('./data/items.json');
 const roomsLookup = require('./data/rooms.json');
-const commandLookup = require('./commands.js');
+const commandLookup = require('./data/commands.json');
 
 const commands = Object.values(commandLookup);
 const items = Object.values(itemsLookup);
