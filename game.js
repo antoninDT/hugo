@@ -5,8 +5,8 @@ const say = require('say');
 const chalkAnimation = require('chalk-animation');
 
 //TODO: Find out to change the font/increase the size of the font
-const itemsLookup = require('./items.js');
-const roomsLookup = require('./rooms.js');
+const itemsLookup = require('./data/items.json');
+const roomsLookup = require('./data/rooms.json');
 const commandLookup = require('./commands.js');
 
 const commands = Object.values(commandLookup);
@@ -198,13 +198,13 @@ const game = {
             letterSpacing: 8,
             colors: ['blue', 'white'],
         };
-        // TODO: Make a high score screen
         if (shouldSpeakClue) { say.speak('DOE DOEI', 'ellen', 0.5); }
         CFonts.say('DOE', goodbyeMessageOptions);
         CFonts.say('DOEI', goodbyeMessageOptions);
         CFonts.say('!!', goodbyeMessageOptions);
         process.exit();
     },
+      // TODO: Make a high score screen
     showWinScreen() {
         say.speak(`Congratulations!
 
@@ -218,7 +218,7 @@ const game = {
         say.speak(`Uh Oh it looks like you have die ie ied!
         `,'Bad News',);
         this.showPlayerStatus(false,false);
-        const string = 'Uh Oh... It appears you died, try again next time!';
+        const text = 'Uh Oh... It appears you died, try again next time!';
 
         console.log(chalk.redBright(`
             Uh Oh... It appears you died, try again next time!
@@ -248,25 +248,34 @@ const game = {
         if (shouldSpeak) { game.actions.hurtPlayer(item.damage); }
         game.actions.hurtPlayer(item.damage, false);
     },
-    flashScreenRed(string) { // TODO: Finish implementing this
+    flashScreenRed(text) { // TODO: Finish implementing this
       // TODO: Fix the fact that it's replacing the prompt
-        const pulse = chalkAnimation.pulse(`${string}`, 2);
-
-        setTimeout(() => {
-          pulse.stop();
-        }, 200);
-
-        setTimeout(() => {
-          pulse.start();
-        }, 200);
-
-        setTimeout(() => {
-          pulse.stop();
-        }, 1000);        
+        // const pulseDelayInMilliseconds = 200;
+        const animationDurationInMilliseconds = 800; // TODO: Figure out how to make the prompt come back right after this is done, instead of waiting
+        const pulse = chalkAnimation.pulse(text);
+        const stopAnimation = () => console.log('');
+        setTimeout(stopAnimation, animationDurationInMilliseconds);
+        // const stopPulsing = () => { pulse.stop(); };
+        // const startPulsing = () => { pulse.start(); };
+        //
+        // const performFlashing = (countOfFlashes) => {
+        //     const flash = (isStarted, currentFlashCount = 1) => setTimeout(() => {
+        //         if (currentFlashCount > countOfFlashes) { return; }
+        //         if (!isStarted) {
+        //             pulse.start();
+        //             flash(true, currentFlashCount);
+        //             return;
+        //         }
+        //         pulse.stop();
+        //         flash(false, currentFlashCount + 1);
+        //     }, pulseDelayInMilliseconds);
+        //     flash(false);
+        // };
+        // performFlashing(1);
     },
     showPlayerStatus(shouldSpeak = true, shouldFlash = true) {
-        const string = `You have ${this.state.player.health} health out of ${this.state.player.maxHealth}`;
-        if (shouldFlash) { this.flashScreenRed(string); return; }
+        const text = `You have ${this.state.player.health} health out of ${this.state.player.maxHealth}`;
+        if (shouldFlash) { this.flashScreenRed(text); return; }
         if (shouldSpeak) { say.speak(`You have ${this.state.player.health} health out of ${this.state.player.maxHealth}`, 'princess'); }
         console.log(`
                You have ${this.state.player.health} health out of ${this.state.player.maxHealth}

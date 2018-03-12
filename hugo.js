@@ -1,11 +1,14 @@
 require('babel-register');
 const chalk = require('chalk');
+const say = require('say');
 
+// TODO: Add enemies to the game or make a separate folder for items that hurt you
 
 const readline = require('readline');
 
 const { getNewGame } = require('./game.js');
-const roomsLookup = require('./rooms.js');
+const roomsLookup = require('./data/rooms.json');
+const itemsLookup = require('./data/items.json'); // TODO: Kill this line
 const commandLookup = require('./commands.js');
 
 const lineReader = readline.createInterface({
@@ -108,13 +111,23 @@ const promptForUserCommand = () => {
                  console.log(`
 
                  DEBUG:: BARFING
-                 
+
+
+                 game.state: ${JSON.stringify(game.state)}
+
+
+                 itemsLookup: ${JSON.stringify(itemsLookup)}
+
+
+                 roomsLookup: ${JSON.stringify(roomsLookup)}
+
                  `);
                  console.dir(game.state);
                  break;
              case (sanitizedInput === 'die'): // TODO: This is "secret" it won't appear in help. Should disable this in the future
                  game.actions.hurtPlayer(100);
             default:
+                say.speak(`Oops please enter another command hoor. Type in "help" for a list of commands`, 'princess');
                 console.log(chalk.white(`
 
                     Oops please enter another command hoor. Type in "help" for a list of commands
