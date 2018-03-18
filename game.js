@@ -8,10 +8,12 @@ const chalkAnimation = require('chalk-animation');
 const itemsLookup = require('./data/items.json');
 const roomsLookup = require('./data/rooms.json');
 const commandLookup = require('./data/commands.json');
+const enemiesLookup = require('./data/enemies.json');
 
 const commands = Object.values(commandLookup);
 const items = Object.values(itemsLookup);
 const rooms = Object.values(roomsLookup);
+const enemies = Object.values(enemiesLookup);
 
 const defaultRoomId = roomsLookup.hall.id;
 const player = {
@@ -22,6 +24,7 @@ const player = {
 };
 
 const getItemById = (itemId) => items.find((item) => item.id === itemId);
+const getEnemyById = (enemyId) => enemies.find((enemy) => enemy.id === enemyId);
 
 const getRandomArrayItem = (array) => {
     return array[Math.floor(Math.random() * array.length)];
@@ -48,6 +51,7 @@ const game = {
         player,
         rooms,
         items,
+        enemies,
         itemIdToWin: items[Math.floor(Math.random() * items.length)].id,
     },
     actions: {
@@ -59,7 +63,7 @@ const game = {
                 return;
             }
             if (shouldSpeak) { game.showPlayerStatus(); return;}
-            game.showPlayerStatus(false);
+            game.showPlayerStatus(false,true);
         },
         healPlayer(amount) { // TODO: Use this function later
             if (!amount) { return; }
@@ -73,7 +77,7 @@ const game = {
             const randomRoom = getRandomArrayItem(game.state.rooms);
             this.movePlayerToRoom(randomRoom.id,false);
         },
-        randomlyDistributeItemsToRooms() {
+        randomlyDistributeItemsToRooms() { // TODO: Need to randomly sort rooms
             let availableItems = [...game.state.items];
             const dealRandomItemToRoom = (room) => {
                 if (!availableItems.length) { return; }
@@ -83,6 +87,18 @@ const game = {
             };
             while (availableItems.length) {
                 rooms.forEach(dealRandomItemToRoom);
+            }
+        },
+        randomlyDistributeEnemiesToRooms() { // TODO: Need to randomly sort rooms
+            let availableEnemies = [...game.state.enemies];
+            const dealRandomEnemyToRoom = (room) => {
+                if (!availableEnemies.length) { return; }
+                const enemyToDealOut = getRandomArrayItem(availableEnemies);
+                room.enemies.push(enemyToDealOut.id);
+                availableEnemies = availableEnemies.filter((enemy) => enemy.id !== enemyToDealOut.id);
+            };
+            while (availableEnemies.length) {
+                rooms.forEach(dealRandomEnemyToRoom);
             }
         },
         moveItem(itemIdToMove, source, destination) {
@@ -237,16 +253,21 @@ const game = {
         const result = this.state.rooms.find((room) => room.id === this.state.player.currentRoomId);
         return result;
     },
-    showItem(item) {
+    showItemOrEnemy(itemOrEnemy) {
+      const chalkFormat = (itemOrEnemy.isEnemy) ? chalk.bold.red : chalk.bold.blue;
         console.log(chalk.white(chalk.white(`
-                * (${chalk.bold.blue(item.name)})
+                * (${chalkFormat(itemOrEnemy.name)})
         `)));
     },
-    dealDamageIfNeeded(item, shouldSpeak = true) {
-        if (!item.damage) { return; }
-        if (item.id === this.state.itemIdToWin) { return; }
-        if (shouldSpeak) { game.actions.hurtPlayer(item.damage); }
-        game.actions.hurtPlayer(item.damage, false);
+    showEnemy(enemy) {
+      console.log(chalk.white(`${enemy.attackMessage} and lost ${chalk.red(enemy.damage)} health "${chalk.bold.red(enemy.name)}" `));       
+    },
+    dealDamageIfNeeded(itemOrEnemy, shouldSpeak = true) {
+        if (itemOrEnemy.isEnemy) { game.actions.hurtPlayer(itemOrEnemy.damage, false); return; } // TODO: Fix the flashing of the text
+        if (!itemOrEnemy.damage) { return; }
+        if (itemOrEnemy.id === this.state.itemIdToWin) { return; }
+        if (shouldSpeak) { game.actions.hurtPlayer(itemOrEnemy.damage); }
+        game.actions.hurtPlayer(itemOrEnemy.damage, false);
     },
     flashScreenRed(text) { // TODO: Finish implementing this
       // TODO: Fix the fact that it's replacing the prompt
@@ -284,7 +305,14 @@ const game = {
     showCurrentRoomContents(shouldSpeak = true) {
         const currentRoom = this.getCurrentRoom();
         const currentRoomContentsVoice = 'princess';
-        if (!(currentRoom.inventory && currentRoom.inventory.length)) {
+        const roomContents = [
+          ...currentRoom.inventory.map(getItemById),
+          ...currentRoom.enemies.map(getEnemyById),
+        ];
+        const roomEnemies = [
+          ...currentRoom.enemies.map(getEnemyById)
+        ];
+        if (!(roomContents.length)) {
             if (shouldSpeak) { say.speak('You look around and notice that the room is empty', 'princess'); }
             console.log(chalk.white(`
 
@@ -294,29 +322,34 @@ const game = {
         `));
             return;
         }
-
+        if (currentRoom.enemies.length) { // TODO: Make the voice say that you have been harmed by an enemy, then say the list of items...
+          roomEnemies
+              .forEach(this.showEnemy);
+          roomEnemies
+              .forEach(this.dealDamageIfNeeded);
+          this.showPlayerStatus(false,true);
+          // return; // TODO: Make the health flash and then show the items in the room
+         }
         console.log(chalk.yellow(`
 
-            You look around and notice the following items:
+            You look around and notice the following things:
 
         `));
-        currentRoom.inventory
-            .map(getItemById)
-            .forEach(this.showItem);
-        if (shouldSpeak) { const continueSpeakingItems = () => {
-            const speakItem = (index = 0) => {
-                const itemId = currentRoom.inventory[index];
-                  if (!itemId) { return; }
-                  const item = getItemById(itemId);
+        roomContents
+            .forEach(this.showItemOrEnemy);
+        if (shouldSpeak) {
+          const continueSpeakingItems = () => {
+              const speakItem = (index = 0) => {
+                  const item = roomContents[index];
                   if (!item) { return; }
-                  const isLastItemInInventory = (index >= (currentRoom.inventory.length - 1));
+                  const isLastItemInInventory = (index >= (roomContents.length - 1));
                   const conditionalAnd = (index) ? `, and , `: '';
                   const itemSentence = `${conditionalAnd} ${item.name}`;
                   say.speak(itemSentence, currentRoomContentsVoice, null, () => speakItem(index + 1));
-                };
-                speakItem();
               };
-            say.speak('You look around and notice the following items: ', currentRoomContentsVoice, null, continueSpeakingItems);
+              speakItem();
+          };
+          say.speak('You look around and notice the following things: ', currentRoomContentsVoice, null, continueSpeakingItems);
         }
     },
     showInventory() {
@@ -339,7 +372,7 @@ const game = {
         `));
         this.state.player.inventory
             .map(getItemById)
-            .forEach(this.showItem);
+            .forEach(this.showItemOrEnemy);
         const continueSpeakingItems = () => {
             const speakItem = (index = 0) => {
                 const itemId = this.state.player.inventory[index];

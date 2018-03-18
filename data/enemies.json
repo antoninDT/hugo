@@ -1,0 +1,37 @@
+{
+  "slowWifi": {
+    "id": 0,
+    "isEnemy": true,
+    "name": "Slow Wifi",
+    "attackMessage": "You have lost health from the slow Wifi in this room...",
+    "damage": 10
+  },
+  "slime": {
+    "id": 1,
+    "isEnemy": true,
+    "name": "Slime",
+    "attackMessage": "You have attacked by a slime...",
+    "damage": 10
+  },
+  "zombie": {
+    "id": 2,
+    "isEnemy": true,
+    "name": "Zombie",
+    "attackMessage": "You have been bitten by a zombie...",
+    "damage": 10
+  },
+  "schoolBully": {
+    "id": 3,
+    "isEnemy": true,
+    "name": "School Bully",
+    "attackMessage": "You have been teased by the School Bully...",
+    "damage": 10
+  },
+  "explodingKitten": {
+    "id": 4,
+    "isEnemy": true,
+    "name": "Exploding Kitten",
+    "attackMessage": "You have been damaged from an exploding kitten...",
+    "damage": 10
+  }
+}
