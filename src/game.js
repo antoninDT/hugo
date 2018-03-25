@@ -1,3 +1,8 @@
+
+import React, {Component} from 'react';
+import blessed from 'blessed';
+import {render} from 'react-blessed';
+
 const chalk = require('chalk');
 const boxen = require('boxen');
 const CFonts = require('cfonts');
@@ -52,6 +57,7 @@ const game = {
         rooms,
         items,
         enemies,
+        isWelcomeScreenShowing: true,
         itemIdToWin: items[Math.floor(Math.random() * items.length)].id,
     },
     actions: {
@@ -260,7 +266,7 @@ const game = {
         `)));
     },
     showEnemy(enemy) {
-      console.log(chalk.white(`${enemy.attackMessage} and lost ${chalk.red(enemy.damage)} health "${chalk.bold.red(enemy.name)}" `));       
+      console.log(chalk.white(`${enemy.attackMessage} and lost ${chalk.red(enemy.damage)} health "${chalk.bold.red(enemy.name)}" `));
     },
     dealDamageIfNeeded(itemOrEnemy, shouldSpeak = true) {
         if (itemOrEnemy.isEnemy) { game.actions.hurtPlayer(itemOrEnemy.damage, false); return; } // TODO: Fix the flashing of the text

@@ -8,7 +8,10 @@
   },
   "main": "hugo.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "webpack --mode development --module-bind js=babel-loader",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "predev": "npm run build",
+    "dev": "node ./dist/main.js"
   },
   "author": "Antonin Dujardin-Terry",
   "license": "Apache-2.0",
@@ -19,6 +22,25 @@
     "cfonts": "^1.1.3",
     "chalk": "^2.3.1",
     "chalk-animation": "^1.4.0",
+    "react": "^16.2.0",
+    "react-blessed": "^0.2.1",
     "say": "^0.14.0"
+  },
+  "devDependencies": {
+    "ajv": "^6.3.0",
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.4",
+    "babel-preset-env": "^1.6.1",
+    "babel-preset-react": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "blessed": "^0.1.81",
+    "bufferutil": "^3.0.3",
+    "pty.js": "^0.3.1",
+    "term.js": "0.0.7",
+    "utf-8-validate": "^4.0.0",
+    "webpack": "^4.1.1",
+    "webpack-cli": "^2.0.12",
+    "webpack-node-externals": "^1.6.0"
   }
 }
