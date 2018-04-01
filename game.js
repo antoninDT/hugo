@@ -9,11 +9,13 @@ const itemsLookup = require('./data/items.json');
 const roomsLookup = require('./data/rooms.json');
 const commandLookup = require('./data/commands.json');
 const enemiesLookup = require('./data/enemies.json');
+const healersLookup = require('./data/healers.json');
 
 const commands = Object.values(commandLookup);
 const items = Object.values(itemsLookup);
 const rooms = Object.values(roomsLookup);
 const enemies = Object.values(enemiesLookup);
+const healers = Object.values(healersLookup);
 
 const defaultRoomId = roomsLookup.hall.id;
 const player = {
@@ -22,9 +24,13 @@ const player = {
     currentRoomId: defaultRoomId,
     inventory: [],
 };
+const emptySpace = { //TODO: Remove this, and replace it with something else
+    inventory: [],
+};
 
 const getItemById = (itemId) => items.find((item) => item.id === itemId);
 const getEnemyById = (enemyId) => enemies.find((enemy) => enemy.id === enemyId);
+const getHealerById = (healersId) => healers.find((healers) => healers.id === healersId);
 
 const getRandomArrayItem = (array) => {
     return array[Math.floor(Math.random() * array.length)];
@@ -49,9 +55,11 @@ const basicBoxOptions = {
 const game = {
     state: {
         player,
+        emptySpace,
         rooms,
         items,
         enemies,
+        healers,
         itemIdToWin: items[Math.floor(Math.random() * items.length)].id,
     },
     actions: {
@@ -101,6 +109,18 @@ const game = {
                 rooms.forEach(dealRandomEnemyToRoom);
             }
         },
+        randomlyDistributeHealersToRooms() {
+          let availableHealers = [...game.state.healers];
+          const dealRandomHealerToRoom = (room) => {
+            if (!availableHealers.length) { return; }
+            const healerToDealOut = getRandomArrayItem(availableHealers);
+            room.healers.push(healerToDealOut.id);
+            availableHealers = availableHealers.filter((healer) => healer.id !== healerToDealOut.id);
+          };
+          while (availableHealers.length) {
+            rooms.forEach(dealRandomHealerToRoom);
+          }
+        },
         moveItem(itemIdToMove, source, destination) {
             const newSourceItems = source.inventory.filter((itemId) => itemId !== itemIdToMove);
             source.inventory = newSourceItems;
@@ -138,6 +158,15 @@ const game = {
                 return;
             }
             const item = items.find((item) => item.name.toLowerCase() === itemName.toLowerCase());
+            const healer = healers.find((healer) => healer.name.toLowerCase() === itemName.toLowerCase()); //TODO: Make a use fuction to use the healers
+            if (healer) { this.moveItem(healer.id, room, player); this.moveItem(healer.id, player, emptySpace); console.log(chalk.white(`
+
+                      You used "${healer.name}"
+
+              `));
+              game.healPlayerIfNeeded(healer);
+              return;
+             }
             if (!item || !room.inventory.includes(item.id)) {
                  say.speak(`The current room does not have "${itemName}"`, 'princess');
                 console.log(chalk.white(`
@@ -253,21 +282,36 @@ const game = {
         const result = this.state.rooms.find((room) => room.id === this.state.player.currentRoomId);
         return result;
     },
-    showItemOrEnemy(itemOrEnemy) {
-      const chalkFormat = (itemOrEnemy.isEnemy) ? chalk.bold.red : chalk.bold.blue;
-        console.log(chalk.white(chalk.white(`
-                * (${chalkFormat(itemOrEnemy.name)})
+    showEnemyOrHealer(showEnemyOrHealer) { //TODO: Implement this
+      if (showEnemyOrHealer.isItem) {
+        const chalkFormat1 = chalk.bold.blue;
+          console.log(chalk.white(chalk.white(`
+                  * (${chalkFormat1(showEnemyOrHealer.name)})
         `)));
+       return;
+       }
+      const chalkFormat2 = (showEnemyOrHealer.isEnemy) ? chalk.bold.red : chalk.bold.greenBright
+        console.log(chalk.white(chalk.white(`
+                  * (${chalkFormat2(showEnemyOrHealer.name)})
+          `)));
     },
-    showEnemy(enemy) {
-      console.log(chalk.white(`${enemy.attackMessage} and lost ${chalk.red(enemy.damage)} health "${chalk.bold.red(enemy.name)}" `));       
+    showEnemyAttackMessage(enemy) {
+      console.log(chalk.white(`${enemy.attackMessage} and lost ${chalk.red(enemy.damage)} health "${chalk.bold.red(enemy.name)}" `));
     },
-    dealDamageIfNeeded(itemOrEnemy, shouldSpeak = true) {
-        if (itemOrEnemy.isEnemy) { game.actions.hurtPlayer(itemOrEnemy.damage, false); return; } // TODO: Fix the flashing of the text
-        if (!itemOrEnemy.damage) { return; }
-        if (itemOrEnemy.id === this.state.itemIdToWin) { return; }
-        if (shouldSpeak) { game.actions.hurtPlayer(itemOrEnemy.damage); }
-        game.actions.hurtPlayer(itemOrEnemy.damage, false);
+    dealDamageIfNeeded(showEnemyOrHealer, shouldSpeak = true) {
+        if (showEnemyOrHealer.isEnemy) { game.actions.hurtPlayer(showEnemyOrHealer.damage, false); return; } // TODO: Fix the flashing of the text
+        if (!showEnemyOrHealer.damage) { return; }
+        if (showEnemyOrHealer.isItem && showEnemyOrHealer === this.state.itemIdToWin) { return; }
+        if (shouldSpeak) { game.actions.hurtPlayer(showEnemyOrHealer.damage); }
+        game.actions.hurtPlayer(showEnemyOrHealer.damage, false);
+    },
+    healPlayerIfNeeded(showEnemyOrHealer) {
+        if (!showEnemyOrHealer.healingAmount) { return; }
+        if (showEnemyOrHealer.isItem && showEnemyOrHealer === this.state.itemIdToWin) { return; }
+        game.actions.healPlayer(showEnemyOrHealer.healingAmount);
+        //TODO: Make this work
+        // TODO: Add a voice when gained healh
+
     },
     flashScreenRed(text) { // TODO: Finish implementing this
       // TODO: Fix the fact that it's replacing the prompt
@@ -308,9 +352,13 @@ const game = {
         const roomContents = [
           ...currentRoom.inventory.map(getItemById),
           ...currentRoom.enemies.map(getEnemyById),
+          ...currentRoom.healers.map(getHealerById),
         ];
         const roomEnemies = [
           ...currentRoom.enemies.map(getEnemyById)
+        ];
+        const roomHealers = [
+          ...currentRoom.healers.map(getHealerById)
         ];
         if (!(roomContents.length)) {
             if (shouldSpeak) { say.speak('You look around and notice that the room is empty', 'princess'); }
@@ -324,10 +372,10 @@ const game = {
         }
         if (currentRoom.enemies.length) { // TODO: Make the voice say that you have been harmed by an enemy, then say the list of items...
           roomEnemies
-              .forEach(this.showEnemy);
+              .forEach(this.showEnemyAttackMessage);
           roomEnemies
               .forEach(this.dealDamageIfNeeded);
-          this.showPlayerStatus(false,true);
+          this.showPlayerStatus(false,false);
           // return; // TODO: Make the health flash and then show the items in the room
          }
         console.log(chalk.yellow(`
@@ -336,7 +384,7 @@ const game = {
 
         `));
         roomContents
-            .forEach(this.showItemOrEnemy);
+            .forEach(this.showEnemyOrHealer);
         if (shouldSpeak) {
           const continueSpeakingItems = () => {
               const speakItem = (index = 0) => {
@@ -372,7 +420,7 @@ const game = {
         `));
         this.state.player.inventory
             .map(getItemById)
-            .forEach(this.showItemOrEnemy);
+            .forEach(this.showEnemyOrHealer);
         const continueSpeakingItems = () => {
             const speakItem = (index = 0) => {
                 const itemId = this.state.player.inventory[index];
@@ -488,7 +536,7 @@ const game = {
                 `;
                 say.speak(sampleSentence, voice, 1, () => sampleVoice(index + 1));
             };
-            const speakSampleSentenceForVoice = () => { speakSampleSentence2(voice); };
+            const speakSampleSentenceForVoice = () => { speakSampleSentence1(voice); };
             const speakAnnouncement = () => { say.speak(`Sample voice for: ${voice}`, 'Samantha', 1, speakSampleSentenceForVoice); };
             speakAnnouncement();
         };

@@ -4,6 +4,7 @@
     "name": "Hall",
     "inventory": [],
     "enemies": [],
+    "healers": [],
     "clues": ["it is in a long passage way", "it is in a place that is a bridge to the other rooms", "it is in that corridor never seems to end..."]
   },
   "cafeteria": {
@@ -11,6 +12,7 @@
     "name": "Cafeteria",
     "inventory": [],
     "enemies": [],
+    "healers": [],
     "clues": ["you smell the faint scent of food and have a feeling that what you are looking for may be in that very room...", "it might be in the room where you hear \"FOOD FIGHT!!!\"", "it is in a room where the daily specials shown today are mystery meat with a side of hard tack and something that looks like it was a desert at some point..."]
   },
   "lounge": {
@@ -18,6 +20,7 @@
     "name": "Lounge",
     "inventory": [],
     "enemies": [],
+    "healers": [],
     "clues": ["it is in a place that you go to when you need to relax after a long day", "you hear *Elevator Music* coming from this room", "it is in a place is known for having the most outdated magazines..."]
   },
   "office": {
@@ -25,6 +28,7 @@
     "name": "Office",
     "inventory": [],
     "enemies": [],
+    "healers": [],
     "clues": ["you hear the noise of someone typing on a keyboard", "the whirring and humming of machines lures you to a certain room...", "you have a feeling that the item might be used with computers"]
   },
   "garage": {
@@ -32,6 +36,7 @@
     "name": "Garage",
     "inventory": [],
     "enemies": [],
+    "healers": [],
     "clues": ["you smell the fumes of gasoline coming from this room", "you almost never go to this room, as it usually has a spider waiting for you somewhere...", "you remember that there was a room that was usually used to park cars..."]
   },
   "library": {
@@ -39,6 +44,7 @@
     "name": "Library",
     "inventory": [],
     "enemies": [],
+    "healers": [],
     "clues": ["it is in a room were\"SSHHHH! quiet!\" is said a lot", "it is in a room smells like the pages of old books", "it is in a place that is all about reading"]
   }
 }

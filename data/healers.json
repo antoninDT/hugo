@@ -1,0 +1,14 @@
+{
+  "healthPotion": {
+    "id": 0,
+    "isHealer": true,
+    "name": "Health Potion",
+    "healingAmount": 20
+  },
+  "coffee": {
+    "id": 1,
+    "isHealer": true,
+    "name": "Coffee",
+    "healingAmount": 20
+  }
+}
