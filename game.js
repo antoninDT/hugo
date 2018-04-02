@@ -24,13 +24,14 @@ const player = {
     currentRoomId: defaultRoomId,
     inventory: [],
 };
-const emptySpace = { //TODO: Remove this, and replace it with something else
+const trashCan = { //TODO: Remove this, and replace it with something else
     inventory: [],
 };
 
 const getItemById = (itemId) => items.find((item) => item.id === itemId);
 const getEnemyById = (enemyId) => enemies.find((enemy) => enemy.id === enemyId);
 const getHealerById = (healersId) => healers.find((healers) => healers.id === healersId);
+const getRoomById = (roomId) => rooms.find((room) => room.id === roomId);
 
 const getRandomArrayItem = (array) => {
     return array[Math.floor(Math.random() * array.length)];
@@ -55,7 +56,7 @@ const basicBoxOptions = {
 const game = {
     state: {
         player,
-        emptySpace,
+        trashCan,
         rooms,
         items,
         enemies,
@@ -83,7 +84,7 @@ const game = {
         },
         movePlayerToRandomRoom() {
             const randomRoom = getRandomArrayItem(game.state.rooms);
-            this.movePlayerToRoom(randomRoom.id,false);
+            this.movePlayerToRoom(randomRoom.id,false,false);
         },
         randomlyDistributeItemsToRooms() { // TODO: Need to randomly sort rooms
             let availableItems = [...game.state.items];
@@ -126,8 +127,12 @@ const game = {
             source.inventory = newSourceItems;
             destination.inventory.push(itemIdToMove);
         },
-        movePlayerToRoom(roomId = defaultRoomId, shouldSpeakCurrentRoom = true) {
-            game.state.player.currentRoomId =  roomId;
+        movePlayerToRoom(roomId, shouldSpeakCurrentRoom = true, shouldCheckConnectedRooms = true) {
+            const room = getRoomById(roomId);
+            const currentRoom = game.getCurrentRoom();
+            const roomName = room.name;
+            if (!currentRoom.connectedRooms.includes(room.id) && shouldCheckConnectedRooms) { console.log(`${roomName} is not connected to the current room`); say.speak(`${roomName} is not connected to the current room`, 'princess'); return; } //TODO: Say which rooms are connected to the current room
+            game.state.player.currentRoomId = roomId;
             if (shouldSpeakCurrentRoom) { game.showCurrentRoom(); return;}
             game.showCurrentRoom(false);
         },
@@ -159,7 +164,7 @@ const game = {
             }
             const item = items.find((item) => item.name.toLowerCase() === itemName.toLowerCase());
             const healer = healers.find((healer) => healer.name.toLowerCase() === itemName.toLowerCase()); //TODO: Make a use fuction to use the healers
-            if (healer) { this.moveItem(healer.id, room, player); this.moveItem(healer.id, player, emptySpace); console.log(chalk.white(`
+            if (healer) { this.moveItem(healer.id, room, player); this.moveItem(healer.id, player, trashCan); console.log(chalk.white(`
 
                       You used "${healer.name}"
 
@@ -271,18 +276,29 @@ const game = {
         this.goodbye(false);
     },
     showRooms() { // TODO: Add voices to this
-        const getRoomName = (room) => room.name;
-        console.log(`${chalk.italic.yellow('Here are the rooms:')}`);
-        const showRoomName = (roomName) => console.log(chalk.white(`    * ${chalk.bold.greenBright(roomName)}`));
+      const getRoomName = (room) => room.name;
+      const getConnectedRooms = (room) => room.connectedRooms;
+      const currentRoom = this.getCurrentRoom();
+      const roomContents = [
+        ...currentRoom.connectedRooms.map(getRoomById)
+      ];
+      const nameOfRoomContents = [
+        ...roomContents.map(getRoomName)
+      ];
+      const showRoomName = (roomName) => console.log(chalk.white(`    * ${chalk.bold.greenBright(roomName)}`));
+        console.log(`${chalk.italic.yellow('Here are the all rooms:')}`);
         this.state.rooms
             .map(getRoomName)
+            .forEach(showRoomName);
+        console.log(`${chalk.italic.yellow(`Here are the rooms that are connected to your room: `)}`);  //Get this working          
+        nameOfRoomContents
             .forEach(showRoomName);
     },
     getCurrentRoom() {
         const result = this.state.rooms.find((room) => room.id === this.state.player.currentRoomId);
         return result;
     },
-    showEnemyOrHealer(showEnemyOrHealer) { //TODO: Implement this
+    showEnemyOrHealer(showEnemyOrHealer) {
       if (showEnemyOrHealer.isItem) {
         const chalkFormat1 = chalk.bold.blue;
           console.log(chalk.white(chalk.white(`
@@ -290,7 +306,7 @@ const game = {
         `)));
        return;
        }
-      const chalkFormat2 = (showEnemyOrHealer.isEnemy) ? chalk.bold.red : chalk.bold.greenBright
+      const chalkFormat2 = (showEnemyOrHealer.isEnemy) ? chalk.bold.red : chalk.bold.greenBright;
         console.log(chalk.white(chalk.white(`
                   * (${chalkFormat2(showEnemyOrHealer.name)})
           `)));
@@ -525,7 +541,7 @@ const game = {
             if (!voice) { return; }
             console.log(`DEBUG: sampleVoice() voice: ${voice}`); // TODO Kill this line
             const speakSampleSentence2 = (voice) => {
-                const sampleSentence2 = 'Hi there I sound like this, FAFAPAPA';
+                const sampleSentence2 = 'Airam and her boyfriends, including Isreal and Connor';
                 say.speak(sampleSentence2,voice, 1, () => sampleVoice(index +1));
             };
             const speakSampleSentence1 = (voice) => {
@@ -536,7 +552,7 @@ const game = {
                 `;
                 say.speak(sampleSentence, voice, 1, () => sampleVoice(index + 1));
             };
-            const speakSampleSentenceForVoice = () => { speakSampleSentence1(voice); };
+            const speakSampleSentenceForVoice = () => { speakSampleSentence2(voice); };
             const speakAnnouncement = () => { say.speak(`Sample voice for: ${voice}`, 'Samantha', 1, speakSampleSentenceForVoice); };
             speakAnnouncement();
         };
@@ -616,6 +632,21 @@ const game = {
         commands.forEach((command) => {
             console.log(chalk.white(`  * ${chalk.bold.red(command.commands[0])}: ${chalk.white(command.description)}`));
         });
+        console.log(chalk.bold.magenta(`The goal of this game is to find the hidden item. To do this you have to use the clues given to guess what it is.
+
+              Clues: ${chalk.white(`The first clue that is on the left side of the screen is the Item clue, and the clue on the right side is the Room clue.`)}
+
+              Rooms: ${chalk.white(`In order to move to another room you first need to check if it's connected to the current room your in.`)}
+
+              Health: ${chalk.white(`You may have noticed that you have health in this game you lose health everytime you pick up an item thats incorrect.`)}
+
+              Color of the text (${chalk.white(`for the look around command`)}): ${chalk.white(`The objects with the color ${chalk.bold.red(`red`)} are enemies,
+
+                                                                the color ${chalk.bold.blue(`blue`)} are items,
+
+                                                                and the color ${chalk.bold.green(`green`)} are healers [heals you].`)}
+
+          `));
     },
 };
 
