@@ -24,7 +24,6 @@ AKA: Tonysacs(TM)
 
 # TODO:
 
-  * Make some items heal the player when picked up
   * (DO THIS IN A SEPARATE BRANCH!)Add "connected room IDs" property to each room (will need to change show rooms command to show only the rooms connected and go to (is room connected))
 
   * Make win conditions more difficult (2 items?) or (bringing item to room).

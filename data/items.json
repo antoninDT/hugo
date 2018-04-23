@@ -35,14 +35,14 @@
     "id": 4,
     "isItem": true,
     "name": "Recording of tram man",
-    "damage": 0,
+    "damage": 20,
     "clues": ["\"Vergeet Uw straks niet uit te checken...\"", "\"Centraal Station, overstoppen op de lijnen...\"", "\"This door is not an entrance!!...\""]
   },
   "laserPointer": {
     "id": 5,
     "isItem": true,
     "name": "Laser Pointer",
-    "damage": 0,
+    "damage": 20,
     "clues": ["\"PEW PEW!!\"", "WARNING: We are not responsible for the cats this will attract...", "It shoots a beam of light..."]
   },
   "munsterCheese": {
@@ -96,7 +96,7 @@
   "yearBook": {
     "id": 12,
     "name": "Year Book",
-    "damage": 20,  
+    "damage": 20,
     "clues": ["This item has all the most embarrassing pictures of the whole school...", "Its always a big competition to see who gets the most people to sign the back of this item in some schools...", "You go to this item when your kids asked what you looked like when you where a kid..."]
   },
   "faxMachine": {
