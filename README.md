@@ -23,9 +23,6 @@ By Antonin Dujardin-Terry
 AKA: Tonysacs(TM)
 
 # TODO:
-
-  * (DO THIS IN A SEPARATE BRANCH!)Add "connected room IDs" property to each room (will need to change show rooms command to show only the rooms connected and go to (is room connected))
-
   * Make win conditions more difficult (2 items?) or (bringing item to room).
   * Have logic check the time of day and change the colors based on that info (Good evening? (based on time))
       ```js

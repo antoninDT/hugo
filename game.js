@@ -61,7 +61,10 @@ const game = {
         items,
         enemies,
         healers,
-        itemIdToWin: items[Math.floor(Math.random() * items.length)].id,
+        itemIdsToWin: [
+          items[Math.floor(Math.random() * items.length)].id,
+          items[Math.floor(Math.random() * items.length)].id,
+        ], // TODO: Add a check at the start of the game to make sure that each of these ids are different
     },
     actions: {
           hurtPlayer(amount, shouldSpeak = true) {
@@ -86,6 +89,7 @@ const game = {
             const randomRoom = getRandomArrayItem(game.state.rooms);
             this.movePlayerToRoom(randomRoom.id,false,false);
         },
+
         randomlyDistributeItemsToRooms() { // TODO: Need to randomly sort rooms
             let availableItems = [...game.state.items];
             const dealRandomItemToRoom = (room) => {
@@ -238,7 +242,7 @@ const game = {
         },
     },
     didPlayerWin() {
-        return (this.state.player.inventory.includes(this.state.itemIdToWin));
+        return this.state.itemIdsToWin.every((itemIdToWin) => this.state.player.inventory.includes(itemIdToWin))
     },
     goodbye(shouldSpeakClue = true) {
         const goodbyeMessageOptions = {
@@ -317,13 +321,13 @@ const game = {
     dealDamageIfNeeded(showEnemyOrHealer, shouldSpeak = true) {
         if (showEnemyOrHealer.isEnemy) { game.actions.hurtPlayer(showEnemyOrHealer.damage, false); return; } // TODO: Fix the flashing of the text
         if (!showEnemyOrHealer.damage) { return; }
-        if (showEnemyOrHealer.isItem && showEnemyOrHealer === this.state.itemIdToWin) { return; }
+        if (showEnemyOrHealer.isItem && (this.state.itemIdsToWin.includes(showEnemyOrHealer.id))) { return; }
         if (shouldSpeak) { game.actions.hurtPlayer(showEnemyOrHealer.damage); }
         game.actions.hurtPlayer(showEnemyOrHealer.damage, false);
     },
     healPlayerIfNeeded(showEnemyOrHealer) {
         if (!showEnemyOrHealer.healingAmount) { return; }
-        if (showEnemyOrHealer.isItem && showEnemyOrHealer === this.state.itemIdToWin) { return; }
+        if (showEnemyOrHealer.isItem && showEnemyOrHealer === this.state.itemIdsToWin) { return; }
         game.actions.healPlayer(showEnemyOrHealer.healingAmount);
         //TODO: Make this work
         // TODO: Add a voice when gained healh
@@ -576,21 +580,28 @@ const game = {
         this.showCurrentRoom(false);
         this.giveItemClue(false);
     },
-    getCurrentItemClue() {
-        const itemToWin = items.find((item) => item.id === this.state.itemIdToWin);
+    getRandomItemIdToWin() {
+      let itemId = getRandomArrayItem(this.state.itemIdsToWin);
+      while (this.state.player.inventory.includes(itemId)) {
+        itemId = getRandomArrayItem(this.state.itemIdsToWin)
+      }
+      return itemId;
+    },
+    getCurrentItemClue(randomItemIdToWin) {
+        const itemToWin = items.find((item) => item.id === randomItemIdToWin);
         const randomItemClue = getRandomArrayItem(itemToWin.clues);
         return randomItemClue;
     },
+    getCurrentRoomClue(randomItemIdToWin) {
 
-    getCurrentRoomClue() {
-        const roomContainingTheItem = rooms.find((room) => room.inventory.includes(this.state.itemIdToWin));
+        const roomContainingTheItem = rooms.find((room) => room.inventory.includes(randomItemIdToWin));
         const randomClueForRoom = getRandomArrayItem(roomContainingTheItem.clues);
         return randomClueForRoom;
     },
-
     giveItemClue(shouldSpeakClue = true) {
-        const roomClue = this.getCurrentRoomClue();
-        const itemClue = this.getCurrentItemClue();
+        const randomItemIdToWin = this.getRandomItemIdToWin();
+        const roomClue = this.getCurrentRoomClue(randomItemIdToWin);
+        const itemClue = this.getCurrentItemClue(randomItemIdToWin);
         if (shouldSpeakClue) { say.speak(`
 
         Here is you clue: ${itemClue}
