@@ -135,7 +135,7 @@ const game = {
             const room = getRoomById(roomId);
             const currentRoom = game.getCurrentRoom();
             const roomName = room.name;
-            // if (!currentRoom.connectedRooms.includes(room.id) && shouldCheckConnectedRooms) { console.log(`${roomName} is not connected to the current room`); say.speak(`${roomName} is not connected to the current room`, 'princess'); return; } //TODO: Say which rooms are connected to the current room
+            if (!currentRoom.connectedRooms.includes(room.id) && shouldCheckConnectedRooms) { console.log(`${roomName} is not connected to the current room`); say.speak(`${roomName} is not connected to the current room`, 'princess'); return; } //TODO: Say which rooms are connected to the current room
             game.state.player.currentRoomId = roomId;
             if (shouldSpeakCurrentRoom) { game.showCurrentRoom(); return;}
             game.showCurrentRoom(false);
@@ -281,22 +281,22 @@ const game = {
     },
     showRooms() { // TODO: Add voices to this
       const getRoomName = (room) => room.name;
-      // const getConnectedRooms = (room) => room.connectedRooms;
+      const getConnectedRooms = (room) => room.connectedRooms;
       const currentRoom = this.getCurrentRoom();
-      //const roomsConnected = [
-        //...currentRoom.connectedRooms.map(getRoomById)
-      //];
-      //const nameOfRoomContents = [
-        //...roomsConnected.map(getRoomName)
-      //];
+      const roomContents = [
+        ...currentRoom.connectedRooms.map(getRoomById)
+      ];
+      const nameOfRoomContents = [
+        ...roomContents.map(getRoomName)
+      ];
       const showRoomName = (roomName) => console.log(chalk.white(`    * ${chalk.bold.greenBright(roomName)}`));
         console.log(`${chalk.italic.yellow('Here are the all rooms:')}`);
         this.state.rooms
             .map(getRoomName)
             .forEach(showRoomName);
-        // console.log(`${chalk.italic.yellow(`Here are the rooms that are connected to your room: `)}`);  //Get this working
-        // nameOfRoomContents
-        //     .forEach(showRoomName);
+        console.log(`${chalk.italic.yellow(`Here are the rooms that are connected to your room: `)}`);  //Get this working          
+        nameOfRoomContents
+            .forEach(showRoomName);
     },
     getCurrentRoom() {
         const result = this.state.rooms.find((room) => room.id === this.state.player.currentRoomId);
