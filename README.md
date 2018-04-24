@@ -23,7 +23,7 @@ By Antonin Dujardin-Terry
 AKA: Tonysacs(TM)
 
 # TODO:
-  * Make win conditions more difficult (2 items?) or (bringing item to room).
+  * Make win conditions more difficult (bringing item to room).
   * Have logic check the time of day and change the colors based on that info (Good evening? (based on time))
       ```js
 

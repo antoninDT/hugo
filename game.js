@@ -64,7 +64,7 @@ const game = {
         itemIdsToWin: [
           items[Math.floor(Math.random() * items.length)].id,
           items[Math.floor(Math.random() * items.length)].id,
-        ], // TODO: Add a check at the start of the game to make sure that each of these ids are different
+        ],
     },
     actions: {
           hurtPlayer(amount, shouldSpeak = true) {
@@ -100,6 +100,17 @@ const game = {
             };
             while (availableItems.length) {
                 rooms.forEach(dealRandomItemToRoom);
+            }
+            const areThereDuplicates = () => {
+                const countOfDedupedItemIdsToWin = new Set(game.state.itemIdsToWin).size;
+                const result = (game.state.itemIdsToWin.length !== countOfDedupedItemIdsToWin);
+                return result;
+            };
+            while (areThereDuplicates()) {
+              game.state.itemIdsToWin = [
+                items[Math.floor(Math.random() * items.length)].id,
+                items[Math.floor(Math.random() * items.length)].id,
+              ];
             }
         },
         randomlyDistributeEnemiesToRooms() { // TODO: Need to randomly sort rooms
@@ -294,7 +305,7 @@ const game = {
         this.state.rooms
             .map(getRoomName)
             .forEach(showRoomName);
-        console.log(`${chalk.italic.yellow(`Here are the rooms that are connected to your room: `)}`);  //Get this working          
+        console.log(`${chalk.italic.yellow(`Here are the rooms that are connected to your room: `)}`);  //Get this working
         nameOfRoomContents
             .forEach(showRoomName);
     },
