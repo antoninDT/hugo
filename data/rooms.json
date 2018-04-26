@@ -47,7 +47,7 @@
   "library": {
     "id": 5,
     "name": "Library",
-    "connectedRooms": [0],
+    "connectedRooms": [0,3],
     "inventory": [],
     "enemies": [],
     "healers": [],

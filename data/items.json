@@ -95,6 +95,7 @@
   },
   "yearBook": {
     "id": 12,
+    "isItem": true, 
     "name": "Year Book",
     "damage": 20,
     "clues": ["This item has all the most embarrassing pictures of the whole school...", "Its always a big competition to see who gets the most people to sign the back of this item in some schools...", "You go to this item when your kids asked what you looked like when you where a kid..."]
