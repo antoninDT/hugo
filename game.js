@@ -164,7 +164,7 @@ const game = {
           text: `
             ${roomName} is not connected to the current room
           `,
-        });        
+        });
         say.speak(`${roomName} is not connected to the current room`, 'princess');
         return;
       } //TODO: Say which rooms are connected to the current room
@@ -349,9 +349,9 @@ const game = {
     const roomContents = [...currentRoom.connectedRooms.map(getRoomById)];
     const nameOfRoomContents = [...roomContents.map(getRoomName)];
     const showRoomName = (roomName) => game.consoleOutPut({ text: `    * ${chalk.bold.greenBright(roomName)}` });
-    game.consoleOutPut({ text: 'Here are the all rooms:', color: 'yellow', chalkSetting: 'italic' });
+    game.consoleOutPut({ text: 'Here are the all rooms:', color: 'yellowBright', chalkSetting: 'italic' });
     this.state.rooms.map(getRoomName).forEach(showRoomName);
-    game.consoleOutPut({ text: `Here are the rooms that are connected to your room: `, color: 'yellow', chalkSetting: 'italic' });
+    game.consoleOutPut({ text: `Here are the rooms that are connected to your room: `, color: 'yellowBright', chalkSetting: 'italic' });
     nameOfRoomContents.forEach(showRoomName);
   },
   getCurrentRoom() {
@@ -435,20 +435,40 @@ const game = {
   getTextColorBasedOnCurrentTime() {
     const now = new Date();
     const currentHour = now.getHours();
-    switch (true) {
-      case (currentHour < 12): return 'gray'; // Morning
-      case((currentHour >= 12) && (currentHour < 18)): return 'cyan'; // Afternoon
-      case((currentHour >= 18) && (currentHour <= 24)): return 'yellowBright'; // Nighttime
+    const currentMonth = now.getMonth();
+    const currentDay = now.getDate();
+    const result = {
+      color: 'green',
+      bgColor: 'bgBlack',
+      greeting: '',
+    };
+    switch (true) { //TODO: Add more holidays and think of color combos to go with them
+      case ((currentMonth === 3) && (currentDay === 27)):
+        result.color = 'yellow';
+        result.greeting = 'Fijne koningsdag!';
+        break;
+      case (currentHour < 12):
+        result.greeting = 'Good morning';
+        break;
+      case((currentHour >= 12) && (currentHour < 18)):
+        result.color = 'cyan';
+        result.greeting = 'Good Afternoon';
+        break;
+      case((currentHour >= 18) && (currentHour <= 24)):
+        result.color = 'white';
+        result.greeting = 'Good evening';
+        break;
     }
+    return result;
   },
-  consoleOutPut({text, color, chalkSetting = 'reset', boxenSettings}) { //TODO: Move to another file
-    const colorToUse = color || this.getTextColorBasedOnCurrentTime();
+  consoleOutPut({text, color, chalkSetting = 'reset', boxenSettings, bgColor}) { //TODO: Move to another file
+    const colorToUse = color || this.getTextColorBasedOnCurrentTime().color;
+    const bgColorToUse = bgColor || this.getTextColorBasedOnCurrentTime().bgColor;
     if (boxenSettings) {
-       console.log(boxen(chalk[chalkSetting][colorToUse](text), boxenSettings));
+       console.log(boxen(chalk[chalkSetting][colorToUse][bgColorToUse](text), boxenSettings)); ; //TODO: Fix the backgroundColor
        return;
     }
-    console.log(chalk[chalkSetting][colorToUse](text));
-    // TODO: Call chalk here and then replace all usages of chalk with this function
+    console.log(chalk[chalkSetting][colorToUse][bgColorToUse](text));
   },
   showPlayerStatus(shouldSpeak = true, shouldFlash = true) {
     const text = `You have ${this.state.player.health} health out of ${this.state.player.maxHealth}`;
@@ -494,7 +514,7 @@ const game = {
       // return;  TODO: Make the health flash and then show the items in the room
     }
     game.consoleOutPut({
-        color: 'yellow',
+        color: 'yellowBright',
         text: `
 
             You look around and notice the following things:
@@ -536,7 +556,7 @@ const game = {
       return;
     }
     game.consoleOutPut({
-        color: 'yellow',
+        color: 'yellowBright',
         text: `
 
             You have the following items:
@@ -691,7 +711,15 @@ const game = {
     CFonts.say('Welkom|bij|Hugo|Hulp', welcomeMessageOptions);
     say.speak('Welkom bij Hugo Hulp', 'ellen', 0.5);
     console.log();
-    console.log(`${chalk.bold.magenta('Can you find the hidden item??')}`);
+    game.consoleOutPut({
+      chalkSetting: 'bold',
+      color: 'magenta',
+      text: 'Can you find the hidden item??',
+    });
+    console.log();
+    game.consoleOutPut({
+      text: `${new Date} ${chalk[this.getTextColorBasedOnCurrentTime().color].bold(this.getTextColorBasedOnCurrentTime().greeting)}`
+    }); //TODO: Add a voice to say the greeting
     console.log();
     this.showRooms();
     this.showPlayerStatus(false, false);
@@ -729,7 +757,7 @@ const game = {
 
         `, 'Princess',);
     }
-    game.consoleOutPut({ text: 'Here is your clue:', color: 'yellow' });
+    game.consoleOutPut({ text: 'Here is your clue:', color: 'yellowBright' });
     game.consoleOutPut({
         text: `
 
@@ -754,7 +782,7 @@ const game = {
   showHelp() {
     const commandBoxOptions = {
       ...basicBoxOptions,
-      borderColor: 'green',
+      borderColor: this.getTextColorBasedOnCurrentTime().color,
       backgroundColor: 'blue',
       borderStyle: {
         topLeft: 'ᒥ',
@@ -762,31 +790,42 @@ const game = {
         bottomLeft: 'ᒪ',
         bottomRight: 'ᒧ',
         horizontal: '-',
-        vertical: '|'
-      }
+        vertical: '|',
+      },
     };
-    game.consoleOutPut({ text: 'List of commands', color: 'yellow', boxenSettings: commandBoxOptions, chalkSetting: 'italic' }); //TODO: Refactor consoleOutPut args to an object instead
-     //console.log(boxen(chalk.yellow('list of commmands'), commandBoxOptions));
-    commands.forEach((command) => {
-      game.consoleOutPut({ text: `  * ${chalk.bold.red(command.commands[0])}: ${chalk[this.getTextColorBasedOnCurrentTime()](command.description)}` });
+    const colorHelp = chalk[this.getTextColorBasedOnCurrentTime().color](`The objects with the color ${chalk.bold.italic.red('red')} are enemies,
+
+                                                      the color ${chalk.bold.italic.blue('blue')} are items,
+
+                                                      and the color ${chalk.bold.italic.greenBright('green')} are healers [heals you].
+    `);
+    game.consoleOutPut({
+      text: 'List of commands',
+      color: 'yellowBright',
+      boxenSettings: commandBoxOptions,
+      chalkSetting: 'italic',
+    });
+    commands.forEach((command) => game.consoleOutPut({
+      text: `  * ${chalk.bold.red(command.commands[0])}: ${command.description} `,
+    }));
+    console.log();
+    game.consoleOutPut({
+      text: `The goal of this game is to find the hidden item. To do this you have to use the clues given to guess what it is.`,
+      color: 'magenta',
+      chalkSetting: 'italic',
     });
     game.consoleOutPut({
-      text: `The goal of this game is to find the hidden item. To do this you have to use the clues given to guess what it is.
+      text: `
+                Clues: ${chalk[this.getTextColorBasedOnCurrentTime().color]('The first clue that is on the left side of the screen is the Item clue, and the clue on the right side is the Room clue.')}
 
-                Clues: ${chalk[this.getTextColorBasedOnCurrentTime()](`The first clue that is on the left side of the screen is the Item clue, and the clue on the right side is the Room clue.`)}
+                Rooms: ${chalk[this.getTextColorBasedOnCurrentTime().color]('In order to move to another room you first need to check if it\'s connected to the current room your in.')}
 
-                Rooms: ${chalk[this.getTextColorBasedOnCurrentTime()](`In order to move to another room you first need to check if it's connected to the current room your in.`)}
+                Health: ${chalk[this.getTextColorBasedOnCurrentTime().color]('You may have noticed that you have health in this game you lose health everytime you pick up an item thats incorrect.')}
 
-                Health: ${chalk[this.getTextColorBasedOnCurrentTime()](`You may have noticed that you have health in this game you lose health everytime you pick up an item thats incorrect.`)}
-
-                Color of the text (${chalk[this.getTextColorBasedOnCurrentTime()](`for the look around command`)}): ${chalk[this.getTextColorBasedOnCurrentTime()](`The objects with the color ${chalk.bold.red(`red`)} are enemies,
-
-                                                                  the color ${chalk.bold.blue(`blue`)} are items,
-
-                                                                  and the color ${chalk.bold.green(`green`)} are healers [heals you].`)}
+                Color of the text (${chalk[this.getTextColorBasedOnCurrentTime().color]('for the look around command')}): ${colorHelp}
 
             `,
-      color: 'magenta',
+      color: 'red',
       chalkSetting: 'bold',
     });
   }
