@@ -140,11 +140,13 @@ const promptForUserCommand = () => {
                      break;
             default:
                 say.speak(`Oops please enter another command hoor. Type in "help" for a list of commands`, 'princess');
-                console.log(chalk.white(`
+                game.consoleOutPut({
+                  text: `
 
-                    Oops please enter another command hoor. Type in "help" for a list of commands
+                      Oops please enter another command hoor. Type in "help" for a list of commands
 
-                `));
+                  `,
+                });                
         }
         promptForUserCommand();
     };
