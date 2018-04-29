@@ -4,6 +4,8 @@ const CFonts = require('cfonts');
 const say = require('say');
 const chalkAnimation = require('chalk-animation');
 
+const { basicBoxOptions, basicCFontOptions, getTextColorBasedOnCurrentTime, consoleOutPut } = require('./console.utility');
+
 //TODO: Find out to change the font/increase the size of the font
 const recipesLookup = require('./data/recipes.json');
 const itemsLookup = require('./data/items.json');
@@ -37,22 +39,6 @@ const getRoomById = (roomId) => rooms.find((room) => room.id === roomId);
 
 const getRandomArrayItem = (array) => {
   return array[Math.floor(Math.random() * array.length)];
-};
-
-const basicCFontOptions = {
-  font: 'simple3d'
-};
-
-const basicBoxOptions = {
-  padding: 1,
-  borderStyle: {
-    topLeft: '@',
-    topRight: '@',
-    bottomLeft: '@',
-    bottomRight: '@',
-    horizontal: '\\',
-    vertical: '/'
-  }
 };
 
 const game = {
@@ -131,7 +117,7 @@ const game = {
       while (availableEnemies.length) {
         rooms.forEach(dealRandomEnemyToRoom);
       }
-    },   
+    },
     randomlyDistributeHealersToRooms() {
       let availableHealers = [...game.state.healers];
       const dealRandomHealerToRoom = (room) => {
@@ -182,8 +168,8 @@ const game = {
         return;
       }
       if (!(game.state.player.inventory.includes(item1.id) && game.state.player.inventory.includes(item2.id))) {
-        console.log(`You do not have the items that you wish to craft with, make sure these items are in your inventory first...`); 
-        return; 
+        console.log(`You do not have the items that you wish to craft with, make sure these items are in your inventory first...`);
+        return;
       }
       this.spawnItem(recipe.result.id, game.state.player);
       this.moveItem(item1.id, game.state.player, game.state.trashCan);
@@ -231,7 +217,7 @@ const game = {
         this.moveItem(healer.id, player, trashCan);
         game.consoleOutPut({
           text: `
-                    
+
                       You used "${healer.name}"
 
             `,
@@ -441,44 +427,8 @@ const game = {
     // };
     // performFlashing(1);
   },
-  getTextColorBasedOnCurrentTime() {
-    const now = new Date();
-    const currentHour = now.getHours();
-    const currentMonth = now.getMonth();
-    const currentDay = now.getDate();
-    const result = {
-      color: 'green',
-      bgColor: 'bgBlack',
-      greeting: '',
-    };
-    switch (true) { //TODO: Add more holidays and think of color combos to go with them
-      case ((currentMonth === 3) && (currentDay === 27)):
-        result.color = 'yellow';
-        result.greeting = 'Fijne koningsdag!';
-        break;
-      case (currentHour < 12):
-        result.greeting = 'Good morning';
-        break;
-      case((currentHour >= 12) && (currentHour < 18)):
-        result.color = 'cyan';
-        result.greeting = 'Good Afternoon';
-        break;
-      case((currentHour >= 18) && (currentHour <= 24)):
-        result.color = 'white';
-        result.greeting = 'Good evening';
-        break;
-    }
-    return result;
-  },
-  consoleOutPut({text, color, chalkSetting = 'reset', boxenSettings, bgColor}) { //TODO: Move to another file
-    const colorToUse = color || this.getTextColorBasedOnCurrentTime().color;
-    const bgColorToUse = bgColor || this.getTextColorBasedOnCurrentTime().bgColor;
-    if (boxenSettings) {
-       console.log(boxen(chalk[chalkSetting][colorToUse][bgColorToUse](text), boxenSettings)); ; //TODO: Fix the backgroundColor
-       return;
-    }
-    console.log(chalk[chalkSetting][colorToUse][bgColorToUse](text));
-  },
+  getTextColorBasedOnCurrentTime,
+  consoleOutPut,
   showPlayerStatus(shouldSpeak = true, shouldFlash = true) {
     const text = `You have ${this.state.player.health} health out of ${this.state.player.maxHealth}`;
     if (shouldFlash) {
