@@ -5,6 +5,7 @@ const say = require('say');
 const chalkAnimation = require('chalk-animation');
 
 //TODO: Find out to change the font/increase the size of the font
+const recipesLookup = require('./data/recipes.json');
 const itemsLookup = require('./data/items.json');
 const roomsLookup = require('./data/rooms.json');
 const commandLookup = require('./data/commands.json');
@@ -12,6 +13,7 @@ const enemiesLookup = require('./data/enemies.json');
 const healersLookup = require('./data/healers.json');
 
 const commands = Object.values(commandLookup);
+const recipes = Object.values(recipesLookup);
 const items = Object.values(itemsLookup);
 const rooms = Object.values(roomsLookup);
 const enemies = Object.values(enemiesLookup);
@@ -28,7 +30,7 @@ const trashCan = { //TODO: Remove this, and replace it with something else
   inventory: []
 };
 
-const getItemById = (itemId) => items.find((item) => item.id === itemId);
+const getItemById = (itemId) => game.state.items.find((item) => item.id === itemId);
 const getEnemyById = (enemyId) => enemies.find((enemy) => enemy.id === enemyId);
 const getHealerById = (healersId) => healers.find((healers) => healers.id === healersId);
 const getRoomById = (roomId) => rooms.find((room) => room.id === roomId);
@@ -58,6 +60,7 @@ const game = {
     player,
     trashCan,
     rooms,
+    recipes,
     items,
     enemies,
     healers,
@@ -68,9 +71,7 @@ const game = {
   },
   actions: {
     hurtPlayer(amount, shouldSpeak = true) {
-      if (!amount) {
-        return;
-      }
+      if (!amount) { return; }
       game.state.player.health -= amount;
       if (game.state.player.health <= 0) {
         game.showLoseScreen();
@@ -83,9 +84,7 @@ const game = {
       game.showPlayerStatus(false, true);
     },
     healPlayer(amount) { // TODO: Use this function later
-      if (!amount) {
-        return;
-      }
+      if (!amount) { return; }
       game.state.player.health += amount;
       if (game.state.player.health > game.state.player.maxHealth) {
         game.state.player.health = game.state.player.maxHealth;
@@ -96,13 +95,10 @@ const game = {
       const randomRoom = getRandomArrayItem(game.state.rooms);
       this.movePlayerToRoom(randomRoom.id, false, false);
     },
-
     randomlyDistributeItemsToRooms() { // TODO: Need to randomly sort rooms
       let availableItems = [...game.state.items];
       const dealRandomItemToRoom = (room) => {
-        if (!availableItems.length) {
-          return;
-        }
+        if (!availableItems.length) { return; }
         const itemToDealOut = getRandomArrayItem(availableItems);
         room.inventory.push(itemToDealOut.id);
         availableItems = availableItems.filter((item) => item.id !== itemToDealOut.id);
@@ -119,15 +115,15 @@ const game = {
         game.state.itemIdsToWin = [
           items[Math.floor(Math.random() * items.length)].id,
           items[Math.floor(Math.random() * items.length)].id
-        ];
+        ]
       }
+      const recipeItems = recipes.map((recipe) => recipe.result);
+      recipeItems.forEach((item) => game.state.items.push(item));
     },
     randomlyDistributeEnemiesToRooms() { // TODO: Need to randomly sort rooms
       let availableEnemies = [...game.state.enemies];
       const dealRandomEnemyToRoom = (room) => {
-        if (!availableEnemies.length) {
-          return;
-        }
+        if (!availableEnemies.length) { return; }
         const enemyToDealOut = getRandomArrayItem(availableEnemies);
         room.enemies.push(enemyToDealOut.id);
         availableEnemies = availableEnemies.filter((enemy) => enemy.id !== enemyToDealOut.id);
@@ -135,13 +131,11 @@ const game = {
       while (availableEnemies.length) {
         rooms.forEach(dealRandomEnemyToRoom);
       }
-    },
+    },   
     randomlyDistributeHealersToRooms() {
       let availableHealers = [...game.state.healers];
       const dealRandomHealerToRoom = (room) => {
-        if (!availableHealers.length) {
-          return;
-        }
+        if (!availableHealers.length) { return; }
         const healerToDealOut = getRandomArrayItem(availableHealers);
         room.healers.push(healerToDealOut.id);
         availableHealers = availableHealers.filter((healer) => healer.id !== healerToDealOut.id);
@@ -175,9 +169,34 @@ const game = {
       }
       game.showCurrentRoom(false);
     },
+    craftItem(itemName1, itemName2) { //TODO: Make a different game mode where you have to craft the item
+      const item1 = items.find((item) => item.name.toLowerCase() === itemName1.toLowerCase());
+      const item2 = items.find((item) => item.name.toLowerCase() === itemName2.toLowerCase());
+      if (!(item1 && item2)) {
+        console.log('Missing or unknown item');
+        return;
+      }
+      const recipe = game.state.recipes.find((recipe) => recipe.ingredients.includes(item1.id) && recipe.ingredients.includes(item2.id));
+      if (!recipe) {
+        console.log(`${item1.name} can not be crafted with ${item2.name}`)
+        return;
+      }
+      if (!(game.state.player.inventory.includes(item1.id) && game.state.player.inventory.includes(item2.id))) {
+        console.log(`You do not have the items that you wish to craft with, make sure these items are in your inventory first...`); 
+        return; 
+      }
+      this.spawnItem(recipe.result.id, game.state.player);
+      this.moveItem(item1.id, game.state.player, game.state.trashCan);
+      this.moveItem(item2.id, game.state.player, game.state.trashCan);
+      console.log(`${chalk.bold.green(recipe.result.name)} has been added to your inventory`)
+    },
+    spawnItem(itemIdToSpawn, destination) {
+       destination.inventory.push(itemIdToSpawn);
+    },
     moveItemFromCurrentRoomToPlayer(itemName) {
       if (!itemName) {
         say.speak(`You forgot to put the name of the item to pick up hoor
+
 
                    try again!`, 'princess');
         game.consoleOutPut({
@@ -206,13 +225,13 @@ const game = {
         return;
       }
       const item = items.find((item) => item.name.toLowerCase() === itemName.toLowerCase());
-      const healer = healers.find((healer) => healer.name.toLowerCase() === itemName.toLowerCase()); //TODO: Make a use fuction to use the healers
+      const healer = healers.find((healer) => healer.name.toLowerCase() === itemName.toLowerCase()); // TODO: Remove the healer once it has been picked up once by the player
       if (healer) {
         this.moveItem(healer.id, room, player);
         this.moveItem(healer.id, player, trashCan);
         game.consoleOutPut({
           text: `
-
+                    
                       You used "${healer.name}"
 
             `,
@@ -375,7 +394,7 @@ const game = {
           text: `
                   * (${chalkFormat2(showEnemyOrHealer.name)})
            `,
-        });
+      });
   },
   showEnemyAttackMessage(enemy) {
     game.consoleOutPut({ text: `${enemy.attackMessage} and lost ${chalk.red(enemy.damage)} health "${chalk.bold.red(enemy.name)}" ` });
@@ -385,27 +404,17 @@ const game = {
       game.actions.hurtPlayer(showEnemyOrHealer.damage, false);
       return;
     } // TODO: Fix the flashing of the text
-    if (!showEnemyOrHealer.damage) {
-      return;
-    }
-    if (showEnemyOrHealer.isItem && (this.state.itemIdsToWin.includes(showEnemyOrHealer.id))) {
-      return;
-    }
-    if (shouldSpeak) {
-      game.actions.hurtPlayer(showEnemyOrHealer.damage);
-    }
+    if (!showEnemyOrHealer.damage) { return; }
+    if (showEnemyOrHealer.isItem && (this.state.itemIdsToWin.includes(showEnemyOrHealer.id))) { return; }
+    if (shouldSpeak) { game.actions.hurtPlayer(showEnemyOrHealer.damage); }
     game.actions.hurtPlayer(showEnemyOrHealer.damage, false);
   },
   healPlayerIfNeeded(showEnemyOrHealer) {
-    if (!showEnemyOrHealer.healingAmount) {
-      return;
-    }
-    if (showEnemyOrHealer.isItem && showEnemyOrHealer === this.state.itemIdsToWin) {
-      return;
-    }
+    if (!showEnemyOrHealer.healingAmount) { return; }
+    if (showEnemyOrHealer.isItem && showEnemyOrHealer === this.state.itemIdsToWin) { return; }
     game.actions.healPlayer(showEnemyOrHealer.healingAmount);
+    //TODO: Make this work
     // TODO: Add a voice when gained healh
-
   },
   flashScreenRed(text) { // TODO: Finish implementing this
     // TODO: Fix the fact that it's replacing the prompt
@@ -480,10 +489,10 @@ const game = {
       say.speak(`You have ${this.state.player.health} health out of ${this.state.player.maxHealth}`, 'princess');
     }
     game.consoleOutPut({
-        text: `
-               You have ${this.state.player.health} health out of ${this.state.player.maxHealth}
-        `,
-      });
+      text: `
+             You have ${this.state.player.health} health out of ${this.state.player.maxHealth}
+      `,
+    });
   },
   showCurrentRoomContents(shouldSpeak = true) {
     const currentRoom = this.getCurrentRoom();
@@ -560,27 +569,24 @@ const game = {
         text: `
 
             You have the following items:
-
           `,
-       });
-    this.state.player.inventory.map(getItemById).forEach(this.showEnemyOrHealer);
+    });
+
+    this.state.player.inventory //TODO: Map the crafted items as well
+        .map(getItemById)
+        .forEach(this.showEnemyOrHealer);
     const continueSpeakingItems = () => {
       const speakItem = (index = 0) => {
         const itemId = this.state.player.inventory[index];
-        if (!itemId) {
-          return;
-        }
+        if (!itemId) { return; }
         const item = getItemById(itemId);
-        if (!item) {
-          return;
-        }
+        if (!item) { return; }
         const isLastItemInInventory = (index >= (this.state.player.inventory.length - 1));
         const conditionalAnd = (index)
           ? `, and , `
           : '';
         const conditionalThatsAll = (isLastItemInInventory)
           ? `.
-
                   That's all! Nothing else? no more!
 
                 `

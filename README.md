@@ -24,26 +24,6 @@ AKA: Tonysacs(TM)
 
 # TODO:
   * Make win conditions more difficult (bringing item to room).
-  * Have logic check the time of day and change the colors based on that info (Good evening? (based on time))
-      ```js
-
-      const now = new Date();
-      const currentHour = now.getHours();
-      switch(true) {
-        case (currentHour < 12): {
-          // This is the morning, TODO: do something
-          break;
-        }
-        case ((currentHour >= 12) && (currentHour < 18)): {
-          // This is the afternoon, TODO: do something
-          break;
-        }
-        case ((currentHour >= 18) && (currentHour <= 24)): {
-          // This is the night, TODO: do something
-          break;
-        }
-      }
-
-      ```
-
-  * crafting system (combining items)
+  * Make different game modes (Crafting game mode).
+  * Add weapons to the game?
+  
