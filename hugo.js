@@ -128,6 +128,16 @@ const promptForUserCommand = () => {
                  break;
              case (sanitizedInput === 'die'): // TODO: This is "secret" it won't appear in help. Should disable this in the future
                  game.actions.hurtPlayer(100);
+                 break;
+             case (commandLookup.craftItem.commands.some(doesSanitizedInputStartWithCommand)): //TODO: Make this work
+                     specificCommandUsed = commandLookup.craftItem.commands.find(doesSanitizedInputStartWithCommand);
+                     itemParts = sanitizedInput
+                         .split(specificCommandUsed);
+                     const seperatedItems = itemParts[1].split(' and ');
+                     itemName1 = getSanitizedText(seperatedItems[0]);
+                     itemName2 = getSanitizedText(seperatedItems[1]);
+                     game.actions.craftItem(itemName1, itemName2);
+                     break;
             default:
                 say.speak(`Oops please enter another command hoor. Type in "help" for a list of commands`, 'princess');
                 console.log(chalk.white(`

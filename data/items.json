@@ -4,7 +4,6 @@
     "isItem": true,
     "name": "Pen",
     "damage": 20,
-    "heal": 0,
     "clues": ["You can use this to write things...", "Has ink inside of it...", "Cats love to play with them..."]
   },
   "computer": {
@@ -12,7 +11,6 @@
     "isItem": true,
     "name": "Computer",
     "damage": 20,
-    "heal": 0,
     "clues": ["This item is made by many companies like Microsoft or Apple...", "[ENTER PASSWORD]...", "You use it to \"Hack into the system...\""]
   },
   "djKhaled": {
@@ -20,7 +18,6 @@
     "isItem": true,
     "name": "DJ KHALED",
     "damage": 20,
-    "heal": 0,
     "clues": ["\"WE THE BEST MUSIC!!!!...\"", "\"Ive changed...... A LOT\"", "\"Say my name...\""]
   },
   "footBall": {
@@ -28,7 +25,6 @@
     "isItem": true,
     "name": "Football",
     "damage": 20,
-    "heal": 0,
     "clues": ["\"GOOOAAALLL!!!...\"", "Americans call it soccer...", "\"PANNA...\""]
   },
   "recordingOfTramMan": {
@@ -50,7 +46,6 @@
     "isItem": true,
     "name": "Munster Cheese",
     "damage": 20,
-    "heal": 0,
     "clues": ["The smell is worse than its taste...", "Due to bad breath after eating this, your Charisma will lower significantly...", "a very smelly product made from milk..."]
   },
   "rum": {
@@ -66,7 +61,6 @@
     "isItem": true,
     "name": "Car",
     "damage": 20,
-    "heal": 0,
     "clues": ["\"BEEP BEEP!\"", "\"Not reccomended to combine this item with Rum...\"", "Like a horse drawn carriage but without the horse..."]
   },
   "surpriseTest": {
@@ -74,7 +68,6 @@
     "isItem": true,
     "name": "Surprise Test",
     "damage": 20,
-    "heal": 0,
     "clues": ["No one studies for this...", "Every high school students worst nightmare...", "One of the worst type of surprises..."]
   },
   "cat": {
@@ -82,7 +75,6 @@
     "isItem": true,
     "name": "Cat",
     "damage": 20,
-    "heal": 0,
     "clues": ["\"Meow...\"", "\"WARNING: We are not responsible for any scratches caused by this item...\"", "This item has fur, claws, and loves laser pointers..."]
   },
   "cdOfLatestEurovisionSingles": {
@@ -90,11 +82,11 @@
     "isItem": true,
     "name": "CD of latest Eurovision singles",
     "damage": 20,
-    "heal": 0,
     "clues": ["This item has all the greatist songs known to man (At least according to Europe)...", "After listening to this item you have decided to never listen to music again...", "On the back of this item you see that its about \"Love, Unity, and Terrible English Lyrics...\""]
   },
   "yearBook": {
     "id": 12,
+    "isItem": true,
     "name": "Year Book",
     "damage": 20,
     "clues": ["This item has all the most embarrassing pictures of the whole school...", "Its always a big competition to see who gets the most people to sign the back of this item in some schools...", "You go to this item when your kids asked what you looked like when you where a kid..."]
@@ -104,7 +96,6 @@
     "isItem": true,
     "name": "Fax Machine",
     "damage": 20,
-    "heal": 0,
     "clues": ["\"EERT! EEEIII! KRXNXX!...\"", "This ancient item was once used to send documents and messages to people long before they had e-mails and other modern technologies...", "Very few people use this to send messages anymore as its very loud, old, and inconvenient to use..."]
   },
   "clock": {
@@ -112,7 +103,6 @@
     "isItem": true,
     "name": "Clock",
     "damage": 20,
-    "heal": 0,
     "clues": ["\"TICK TOCK...\"", "It has a face and two hands but no arms or legs...", "It usually hangs on the wall..."]
   }
 }

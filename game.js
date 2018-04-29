@@ -5,6 +5,7 @@ const say = require('say');
 const chalkAnimation = require('chalk-animation');
 
 //TODO: Find out to change the font/increase the size of the font
+const recipesLookup = require('./data/recipes.json');
 const itemsLookup = require('./data/items.json');
 const roomsLookup = require('./data/rooms.json');
 const commandLookup = require('./data/commands.json');
@@ -12,6 +13,7 @@ const enemiesLookup = require('./data/enemies.json');
 const healersLookup = require('./data/healers.json');
 
 const commands = Object.values(commandLookup);
+const recipes = Object.values(recipesLookup);
 const items = Object.values(itemsLookup);
 const rooms = Object.values(roomsLookup);
 const enemies = Object.values(enemiesLookup);
@@ -28,7 +30,7 @@ const trashCan = { //TODO: Remove this, and replace it with something else
     inventory: [],
 };
 
-const getItemById = (itemId) => items.find((item) => item.id === itemId);
+const getItemById = (itemId) => game.state.items.find((item) => item.id === itemId);
 const getEnemyById = (enemyId) => enemies.find((enemy) => enemy.id === enemyId);
 const getHealerById = (healersId) => healers.find((healers) => healers.id === healersId);
 const getRoomById = (roomId) => rooms.find((room) => room.id === roomId);
@@ -58,6 +60,7 @@ const game = {
         player,
         trashCan,
         rooms,
+        recipes,
         items,
         enemies,
         healers,
@@ -67,7 +70,28 @@ const game = {
         ],
     },
     actions: {
-          hurtPlayer(amount, shouldSpeak = true) {
+        craftItem(itemName1, itemName2) { //TODO: Make a different game mode where you have to craft the item
+            const item1 = items.find((item) => item.name.toLowerCase() === itemName1.toLowerCase());
+            const item2 = items.find((item) => item.name.toLowerCase() === itemName2.toLowerCase());
+            if (!(item1 && item2)) {
+              console.log('Missing or unknown item');
+              return;
+            }
+            const recipe = game.state.recipes.find((recipe) => recipe.ingredients.includes(item1.id) && recipe.ingredients.includes(item2.id));
+            if (!recipe) {
+              console.log(`${item1.name} can not be crafted with ${item2.name}`)
+              return;
+            }
+            if (!(game.state.player.inventory.includes(item1.id) && game.state.player.inventory.includes(item2.id))) { console.log(`You do not have the items that you wish to craft with, make sure these items are in your inventory first...`); return; }
+            this.spawnItem(recipe.result.id, game.state.player);
+            this.moveItem(item1.id, game.state.player, game.state.trashCan);
+            this.moveItem(item2.id, game.state.player, game.state.trashCan);
+            console.log(`${chalk.bold.green(recipe.result.name)} has been added to your inventory`)
+        },
+        spawnItem(itemIdToSpawn, destination) {
+           destination.inventory.push(itemIdToSpawn);
+        },
+        hurtPlayer(amount, shouldSpeak = true) {
             if (!amount) { return; }
             game.state.player.health -= amount;
             if (game.state.player.health <= 0) {
@@ -112,6 +136,8 @@ const game = {
                 items[Math.floor(Math.random() * items.length)].id,
               ];
             }
+            const recipeItems = recipes.map((recipe) => recipe.result);
+            recipeItems.forEach((item) => game.state.items.push(item));
         },
         randomlyDistributeEnemiesToRooms() { // TODO: Need to randomly sort rooms
             let availableEnemies = [...game.state.enemies];
@@ -178,7 +204,7 @@ const game = {
                 return;
             }
             const item = items.find((item) => item.name.toLowerCase() === itemName.toLowerCase());
-            const healer = healers.find((healer) => healer.name.toLowerCase() === itemName.toLowerCase()); //TODO: Make a use fuction to use the healers
+            const healer = healers.find((healer) => healer.name.toLowerCase() === itemName.toLowerCase()); // TODO: Remove the healer once it has been picked up once by the player
             if (healer) { this.moveItem(healer.id, room, player); this.moveItem(healer.id, player, trashCan); console.log(chalk.white(`
 
                       You used "${healer.name}"
@@ -336,7 +362,7 @@ const game = {
         if (shouldSpeak) { game.actions.hurtPlayer(showEnemyOrHealer.damage); }
         game.actions.hurtPlayer(showEnemyOrHealer.damage, false);
     },
-    healPlayerIfNeeded(showEnemyOrHealer) {
+    healPlayerIfNeeded(showEnemyOrHealer) { //TODO: Remove the healing item after it being used
         if (!showEnemyOrHealer.healingAmount) { return; }
         if (showEnemyOrHealer.isItem && showEnemyOrHealer === this.state.itemIdsToWin) { return; }
         game.actions.healPlayer(showEnemyOrHealer.healingAmount);
@@ -449,7 +475,7 @@ const game = {
             You have the following items:
 
         `));
-        this.state.player.inventory
+        this.state.player.inventory //TODO: Map the crafted items as well
             .map(getItemById)
             .forEach(this.showEnemyOrHealer);
         const continueSpeakingItems = () => {
