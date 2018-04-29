@@ -50,5 +50,9 @@
   "showPlayerStatus": {
     "commands": ["show player status", "show health", "show player health", "how much health do i have"],
     "description": "Shows your player status (Health)"
+  },
+  "craftItem": {
+    "commands": ["craft", "combine"],
+    "description": "Crafts an item (Crafted through 2 items)"
   }
 }
