@@ -2,7 +2,7 @@ require('babel-register');
 const chalk = require('chalk');
 const say = require('say');
 
-// TODO: Add enemies to the game or make a separate folder for items that hurt you
+
 
 const readline = require('readline');
 
@@ -144,7 +144,7 @@ const promptForUserCommand = () => {
 const startGame = () => {
     game.actions.movePlayerToRandomRoom();
     game.actions.randomlyDistributeItemsToRooms();
-    game.actions.randomlyDistributeHealersToRooms();    
+    game.actions.randomlyDistributeHealersToRooms();
     game.actions.randomlyDistributeEnemiesToRooms();
     game.welcomeMessage();
     promptForUserCommand();

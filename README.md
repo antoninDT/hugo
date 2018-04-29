@@ -25,4 +25,5 @@ AKA: Tonysacs(TM)
 # TODO:
   * Make win conditions more difficult (bringing item to room).
   * Make different game modes (Crafting game mode).
+  * Add weapons to the game?
   

@@ -1,0 +1,92 @@
+{
+  "chewedUpPen": {
+      "ingredients": [0, 10],
+      "result": {
+        "id": 9001,
+        "isItem": true,
+        "name": "Chewed up pen",
+        "clues": ["One of the many side effects of owning a cat...", "This used to be a perfectly good pen, but a certain beast came and ruined it"]
+      }
+   },
+  "signedYearBook": {
+    "ingredients": [0, 12],
+     "result": {
+       "id": 9002,
+       "isItem": true,
+       "name": "Signed year book",
+       "clues": ["\"H.A.G.S\"", "Signed by all your friends at the end of a long school year", "Usually signed in the front or the back of the year book"]
+      }
+   },
+   "deflatedFootBall": {
+     "ingredients": [0, 3],
+      "result": {
+      "id": 9003,
+      "isItem": true,
+      "name": "Deflated football",
+      "clues": ["If you kick this football it wont go very far...", "The result of combining a sharp object with a football"]
+      }
+   },
+    "reincarnationOfTramMan": {
+      "ingredients": [1, 4],
+      "result": {
+       "id": 9004,
+       "isItem": true,
+       "name": "Reincarnation of tram man",
+       "clues": ["You wonder what would happen if you put the recording of tram man inside the computer..."]
+      }
+   },
+    "smartWatch": {
+      "ingredients": [1, 14],
+      "result": {
+      "id": 9005,
+      "isItem": true,
+      "name": "Smart watch",
+      "clues": ["You remeber that it was a special type of clock with a computer inside of it", "The smartest of all clocks and watches"]
+     }
+   },
+    "djKhaledLatestAlbum": {
+      "ingredients": [2, 11],
+      "result": {
+      "id": 9006,
+      "isItem": true,
+      "name": "Dj Khaled's latest album",
+      "clues": ["You recognize a few lyrics from some of the latest Eurovision singles... but how can that be... after all it is a DJ Khaled album...", "Either the worst or best combo of music"]
+     }
+   },
+    "controlledCat": {
+     "ingredients": [5, 10],
+     "result": {
+     "id": 9007,
+     "isItem": true,
+     "name": "Controlled cat",
+     "clues": ["The result of unleashing the all mighty laser pointer near a cat", "This cat will now do whatever you wish... as long as the laser pointer works"]
+     }
+   },
+    "theCheesiestAlbumKnownToMan": {
+     "ingredients": [6, 11],
+     "result": {
+      "id": 9008,
+      "isItem": true,
+      "name": "The cheesiest album known to man",
+      "clues": ["The result of the two cheesiests items", "Known to make people deaf from the cheesiness"]
+    }
+  },
+    "dui": {
+      "ingredients": [7, 8],
+      "result": {
+      "id": 9009,
+      "isItem": true,
+      "name": "DUI",
+      "clues": ["Congrats you just go a ticket for drunk driving", "The deadly combo of alcohol and driving"]
+    }
+  },
+    "worstSurpriseByFax": {
+      "ingredients": [9, 13],
+      "result": {
+      "id": 9010,
+      "isItem": true,
+      "name": "Worst surprise by fax",
+      "clues": ["Not the suprise any student would want to recieve via fax"]
+    }
+  }
+}
