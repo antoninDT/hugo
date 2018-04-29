@@ -5,7 +5,8 @@ const say = require('say');
 const chalkAnimation = require('chalk-animation');
 
 const { basicBoxOptions, basicCFontOptions, getTextColorBasedOnCurrentTime, consoleOutPut } = require('./console.utility');
-const { defaultRoomId, getRoomById, roomsLookup, rooms, showCurrentRoomWrapper, showRoomsWrapper } = require('./room.utility');
+const { defaultRoomId, getRoomById, roomsLookup, rooms, showCurrentRoomWrapper, showRoomsWrapper, getCurrentRoomClueWrapper } = require('./room.utility');
+const { getRandomArrayItem } = require('./general.utility');
 
 //TODO: Find out to change the font/increase the size of the font
 const recipesLookup = require('./data/recipes.json');
@@ -33,10 +34,6 @@ const trashCan = { //TODO: Remove this, and replace it with something else
 const getItemById = (itemId) => game.state.items.find((item) => item.id === itemId);
 const getEnemyById = (enemyId) => enemies.find((enemy) => enemy.id === enemyId);
 const getHealerById = (healersId) => healers.find((healers) => healers.id === healersId);
-
-const getRandomArrayItem = (array) => {
-  return array[Math.floor(Math.random() * array.length)];
-};
 
 const game = {
   state: {
@@ -182,7 +179,7 @@ const game = {
       `,
     });
   },
-  showCurrentRoomContents(shouldSpeak = true) {
+  showCurrentRoomContents(shouldSpeak = true) { //TODO: Refactor this into room.utility
     const currentRoom = this.getCurrentRoom();
     const currentRoomContentsVoice = 'princess';
     const roomContents = [
@@ -432,12 +429,6 @@ const game = {
     const randomItemClue = getRandomArrayItem(itemToWin.clues);
     return randomItemClue;
   },
-  getCurrentRoomClue(randomItemIdToWin) {
-
-    const roomContainingTheItem = rooms.find((room) => room.inventory.includes(randomItemIdToWin));
-    const randomClueForRoom = getRandomArrayItem(roomContainingTheItem.clues);
-    return randomClueForRoom;
-  },
   giveItemClue(shouldSpeakClue = true) {
     const randomItemIdToWin = this.getRandomItemIdToWin();
     const roomClue = this.getCurrentRoomClue(randomItemIdToWin);
@@ -511,6 +502,7 @@ const game = {
     });
   }
 };
+game.getCurrentRoomClue = getCurrentRoomClueWrapper(game);
 game.showRooms = showRoomsWrapper(game);
 game.showCurrentRoom = showCurrentRoomWrapper(game);
 

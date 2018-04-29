@@ -1,6 +1,8 @@
 const chalk = require('chalk');
 const say = require('say');
 
+const { getRandomArrayItem } = require('./general.utility');
+
 const roomsLookup = require('./data/rooms.json');
 
 const rooms = Object.values(roomsLookup);
@@ -33,6 +35,12 @@ const showCurrentRoomWrapper = (game) => (shouldSpeakCurrentRoom = true) => {
   if (shouldSpeakCurrentRoom) { say.speak(`You are in the ${currentRoomName}`, 'princess'); }
 };
 
+const getCurrentRoomClueWrapper = (game) => (randomItemIdToWin) => { // TODO: Refactor this to room.utility
+  const roomContainingTheItem = rooms.find((room) => room.inventory.includes(randomItemIdToWin));
+  const randomClueForRoom = getRandomArrayItem(roomContainingTheItem.clues);
+  return randomClueForRoom;
+};
+
 const api = {
   defaultRoomId,
   getRoomById,
@@ -40,5 +48,6 @@ const api = {
   rooms,
   showCurrentRoomWrapper,
   showRoomsWrapper,
+  getCurrentRoomClueWrapper,
 };
 module.exports = api;
