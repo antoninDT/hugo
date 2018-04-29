@@ -5,11 +5,11 @@ const say = require('say');
 const chalkAnimation = require('chalk-animation');
 
 const { basicBoxOptions, basicCFontOptions, getTextColorBasedOnCurrentTime, consoleOutPut } = require('./console.utility');
+const { defaultRoomId, getRoomById, roomsLookup, rooms, showCurrentRoomWrapper, showRoomsWrapper } = require('./room.utility');
 
 //TODO: Find out to change the font/increase the size of the font
 const recipesLookup = require('./data/recipes.json');
 const itemsLookup = require('./data/items.json');
-const roomsLookup = require('./data/rooms.json');
 const commandLookup = require('./data/commands.json');
 const enemiesLookup = require('./data/enemies.json');
 const healersLookup = require('./data/healers.json');
@@ -17,11 +17,9 @@ const healersLookup = require('./data/healers.json');
 const commands = Object.values(commandLookup);
 const recipes = Object.values(recipesLookup);
 const items = Object.values(itemsLookup);
-const rooms = Object.values(roomsLookup);
 const enemies = Object.values(enemiesLookup);
 const healers = Object.values(healersLookup);
 
-const defaultRoomId = roomsLookup.hall.id;
 const player = {
   health: 100,
   maxHealth: 100,
@@ -35,7 +33,6 @@ const trashCan = { //TODO: Remove this, and replace it with something else
 const getItemById = (itemId) => game.state.items.find((item) => item.id === itemId);
 const getEnemyById = (enemyId) => enemies.find((enemy) => enemy.id === enemyId);
 const getHealerById = (healersId) => healers.find((healers) => healers.id === healersId);
-const getRoomById = (roomId) => rooms.find((room) => room.id === roomId);
 
 const getRandomArrayItem = (array) => {
   return array[Math.floor(Math.random() * array.length)];
@@ -54,253 +51,6 @@ const game = {
       items[Math.floor(Math.random() * items.length)].id,
       items[Math.floor(Math.random() * items.length)].id
     ]
-  },
-  actions: {
-    hurtPlayer(amount, shouldSpeak = true) {
-      if (!amount) { return; }
-      game.state.player.health -= amount;
-      if (game.state.player.health <= 0) {
-        game.showLoseScreen();
-        return;
-      }
-      if (shouldSpeak) {
-        game.showPlayerStatus();
-        return;
-      }
-      game.showPlayerStatus(false, true);
-    },
-    healPlayer(amount) { // TODO: Use this function later
-      if (!amount) { return; }
-      game.state.player.health += amount;
-      if (game.state.player.health > game.state.player.maxHealth) {
-        game.state.player.health = game.state.player.maxHealth;
-      }
-      game.showPlayerStatus(false, false);
-    },
-    movePlayerToRandomRoom() {
-      const randomRoom = getRandomArrayItem(game.state.rooms);
-      this.movePlayerToRoom(randomRoom.id, false, false);
-    },
-    randomlyDistributeItemsToRooms() { // TODO: Need to randomly sort rooms
-      let availableItems = [...game.state.items];
-      const dealRandomItemToRoom = (room) => {
-        if (!availableItems.length) { return; }
-        const itemToDealOut = getRandomArrayItem(availableItems);
-        room.inventory.push(itemToDealOut.id);
-        availableItems = availableItems.filter((item) => item.id !== itemToDealOut.id);
-      };
-      while (availableItems.length) {
-        rooms.forEach(dealRandomItemToRoom);
-      }
-      const areThereDuplicates = () => {
-        const countOfDedupedItemIdsToWin = new Set(game.state.itemIdsToWin).size;
-        const result = (game.state.itemIdsToWin.length !== countOfDedupedItemIdsToWin);
-        return result;
-      };
-      while (areThereDuplicates()) {
-        game.state.itemIdsToWin = [
-          items[Math.floor(Math.random() * items.length)].id,
-          items[Math.floor(Math.random() * items.length)].id
-        ]
-      }
-      const recipeItems = recipes.map((recipe) => recipe.result);
-      recipeItems.forEach((item) => game.state.items.push(item));
-    },
-    randomlyDistributeEnemiesToRooms() { // TODO: Need to randomly sort rooms
-      let availableEnemies = [...game.state.enemies];
-      const dealRandomEnemyToRoom = (room) => {
-        if (!availableEnemies.length) { return; }
-        const enemyToDealOut = getRandomArrayItem(availableEnemies);
-        room.enemies.push(enemyToDealOut.id);
-        availableEnemies = availableEnemies.filter((enemy) => enemy.id !== enemyToDealOut.id);
-      };
-      while (availableEnemies.length) {
-        rooms.forEach(dealRandomEnemyToRoom);
-      }
-    },
-    randomlyDistributeHealersToRooms() {
-      let availableHealers = [...game.state.healers];
-      const dealRandomHealerToRoom = (room) => {
-        if (!availableHealers.length) { return; }
-        const healerToDealOut = getRandomArrayItem(availableHealers);
-        room.healers.push(healerToDealOut.id);
-        availableHealers = availableHealers.filter((healer) => healer.id !== healerToDealOut.id);
-      };
-      while (availableHealers.length) {
-        rooms.forEach(dealRandomHealerToRoom);
-      }
-    },
-    moveItem(itemIdToMove, source, destination) {
-      const newSourceItems = source.inventory.filter((itemId) => itemId !== itemIdToMove);
-      source.inventory = newSourceItems;
-      destination.inventory.push(itemIdToMove);
-    },
-    movePlayerToRoom(roomId, shouldSpeakCurrentRoom = true, shouldCheckConnectedRooms = true) {
-      const room = getRoomById(roomId);
-      const currentRoom = game.getCurrentRoom();
-      const roomName = room.name;
-      if (!currentRoom.connectedRooms.includes(room.id) && shouldCheckConnectedRooms) {
-        game.consoleOutPut({
-          text: `
-            ${roomName} is not connected to the current room
-          `,
-        });
-        say.speak(`${roomName} is not connected to the current room`, 'princess');
-        return;
-      } //TODO: Say which rooms are connected to the current room
-      game.state.player.currentRoomId = roomId;
-      if (shouldSpeakCurrentRoom) {
-        game.showCurrentRoom();
-        return;
-      }
-      game.showCurrentRoom(false);
-    },
-    craftItem(itemName1, itemName2) { //TODO: Make a different game mode where you have to craft the item
-      const item1 = items.find((item) => item.name.toLowerCase() === itemName1.toLowerCase());
-      const item2 = items.find((item) => item.name.toLowerCase() === itemName2.toLowerCase());
-      if (!(item1 && item2)) {
-        console.log('Missing or unknown item');
-        return;
-      }
-      const recipe = game.state.recipes.find((recipe) => recipe.ingredients.includes(item1.id) && recipe.ingredients.includes(item2.id));
-      if (!recipe) {
-        console.log(`${item1.name} can not be crafted with ${item2.name}`)
-        return;
-      }
-      if (!(game.state.player.inventory.includes(item1.id) && game.state.player.inventory.includes(item2.id))) {
-        console.log(`You do not have the items that you wish to craft with, make sure these items are in your inventory first...`);
-        return;
-      }
-      this.spawnItem(recipe.result.id, game.state.player);
-      this.moveItem(item1.id, game.state.player, game.state.trashCan);
-      this.moveItem(item2.id, game.state.player, game.state.trashCan);
-      console.log(`${chalk.bold.green(recipe.result.name)} has been added to your inventory`)
-    },
-    spawnItem(itemIdToSpawn, destination) {
-       destination.inventory.push(itemIdToSpawn);
-    },
-    moveItemFromCurrentRoomToPlayer(itemName) {
-      if (!itemName) {
-        say.speak(`You forgot to put the name of the item to pick up hoor
-
-
-                   try again!`, 'princess');
-        game.consoleOutPut({
-          text: `
-
-                                   😂😂😂
-                   You forgot to put the name of the item to pick up hoor... try again!
-                                   😂😂😂
-
-          `,
-       });
-       return;
-      }
-      const room = game.state.rooms.find((room) => room.id === game.state.player.currentRoomId);
-      if (!room.inventory || !room.inventory.length) {
-        say.speak(`The room is empty`, 'princess');
-        game.consoleOutPut({
-          text: `
-
-                    🕸️🕸️🕸️🕸️🕸️🕸️🕸️🕸️️
-                    room is empty...
-                    🕸️🕸️🕸️🕸️🕸️🕸️🕸️🕸️
-
-          `,
-        });
-        return;
-      }
-      const item = items.find((item) => item.name.toLowerCase() === itemName.toLowerCase());
-      const healer = healers.find((healer) => healer.name.toLowerCase() === itemName.toLowerCase()); // TODO: Remove the healer once it has been picked up once by the player
-      if (healer) {
-        this.moveItem(healer.id, room, player);
-        this.moveItem(healer.id, player, trashCan);
-        game.consoleOutPut({
-          text: `
-
-                      You used "${healer.name}"
-
-            `,
-          });
-        game.healPlayerIfNeeded(healer);
-        return;
-      }
-      if (!item || !room.inventory.includes(item.id)) {
-        say.speak(`The current room does not have "${itemName}"`, 'princess');
-        game.consoleOutPut({
-          text: `
-
-                         The current room does not have "${chalk.bold.red(itemName)}"
-
-             `,
-          });
-        return;
-      }
-      this.moveItem(item.id, room, player);
-      say.speak(`You have put "${item.name}" in your inventory`, 'princess');
-      game.consoleOutPut({
-        text: `
-
-                    You have put "${chalk.bold.red(item.name)}" into your inventory
-
-           `,
-        });
-      game.dealDamageIfNeeded(item, false);
-      if (game.didPlayerWin()) {
-        game.showWinScreen();
-      }
-    },
-    moveItemFromPlayerToCurrentRoom(itemName) {
-      if (!itemName) {
-        say.speak(`You forgot to put the name of the item to drop hoor
-
-                 try again!`, 'princess');
-        game.consoleOutPut({
-          text: `
-
-                                    😂😂😂
-                    You forgot to put the name of the item to drop hoor... try again!
-                                    😂😂😂
-
-               `,
-            });
-        return;
-      }
-      if (!game.state.player.inventory || !game.state.player.inventory.length) {
-        say.speak(`There is nothing in your Inventory`, 'princess');
-        game.consoleOutPut({
-          text: `
-
-                    🕸️🕸️🕸️🕸️🕸️🕸️🕸️🕸️️
-                    Inventory is empty...
-                    🕸️🕸️🕸️🕸️🕸️🕸️🕸️🕸️
-
-               `,
-            });
-        return;
-      }
-      const item = items.find((item) => item.name.toLowerCase() === itemName.toLowerCase());
-      if (!item || !game.state.player.inventory.includes(item.id)) {
-        say.speak(`"${itemName}" is not in your inventory`, 'princess');
-        game.consoleOutPut({
-          text: `
-
-                         "${chalk.bold.red(itemName)}" is not in your inventory...
-
-               `,
-            });
-        return;
-      }
-      this.moveItem(item.id, game.state.player, game.getCurrentRoom());
-      say.speak(`You have dropped "${item.name}"`, 'princess');
-      game.consoleOutPut({
-        text: `
-
-                    You have dropped "${chalk.bold.red(item.name)}"
-
-           `,
-        });
-    }
   },
   didPlayerWin() {
     return this.state.itemIdsToWin.every((itemIdToWin) => this.state.player.inventory.includes(itemIdToWin))
@@ -346,18 +96,6 @@ const game = {
         `,
       });
     this.goodbye(false);
-  },
-  showRooms() { // TODO: Add voices to this
-    const getRoomName = (room) => room.name;
-    const getConnectedRooms = (room) => room.connectedRooms;
-    const currentRoom = this.getCurrentRoom();
-    const roomContents = [...currentRoom.connectedRooms.map(getRoomById)];
-    const nameOfRoomContents = [...roomContents.map(getRoomName)];
-    const showRoomName = (roomName) => game.consoleOutPut({ text: `    * ${chalk.bold.greenBright(roomName)}` });
-    game.consoleOutPut({ text: 'Here are the all rooms:', color: 'yellowBright', chalkSetting: 'italic' });
-    this.state.rooms.map(getRoomName).forEach(showRoomName);
-    game.consoleOutPut({ text: `Here are the rooms that are connected to your room: `, color: 'yellowBright', chalkSetting: 'italic' });
-    nameOfRoomContents.forEach(showRoomName);
   },
   getCurrentRoom() {
     const result = this.state.rooms.find((room) => room.id === this.state.player.currentRoomId);
@@ -722,19 +460,6 @@ const game = {
          `,
       });
   },
-  showCurrentRoom(shouldSpeakCurrentRoom = true) {
-    const currentRoomName = this.getCurrentRoom().name
-    game.consoleOutPut({
-        text: `
-
-            You are in the ${chalk.bold.greenBright(currentRoomName)}.
-
-         `,
-      });
-    if (shouldSpeakCurrentRoom) {
-      say.speak(`You are in the ${currentRoomName}`, 'princess');
-    }
-  },
   showHelp() {
     const commandBoxOptions = {
       ...basicBoxOptions,
@@ -786,6 +511,257 @@ const game = {
     });
   }
 };
+game.showRooms = showRoomsWrapper(game);
+game.showCurrentRoom = showCurrentRoomWrapper(game);
+
+const actions = {
+    hurtPlayer(amount, shouldSpeak = true) {
+      if (!amount) { return; }
+      game.state.player.health -= amount;
+      if (game.state.player.health <= 0) {
+        game.showLoseScreen();
+        return;
+      }
+      if (shouldSpeak) {
+        game.showPlayerStatus();
+        return;
+      }
+      game.showPlayerStatus(false, true);
+    },
+    healPlayer(amount) { // TODO: Use this function later
+      if (!amount) { return; }
+      game.state.player.health += amount;
+      if (game.state.player.health > game.state.player.maxHealth) {
+        game.state.player.health = game.state.player.maxHealth;
+      }
+      game.showPlayerStatus(false, false);
+    },
+    movePlayerToRandomRoom() {
+      const randomRoom = getRandomArrayItem(game.state.rooms);
+      this.movePlayerToRoom(randomRoom.id, false, false);
+    },
+    randomlyDistributeItemsToRooms() { // TODO: Need to randomly sort rooms
+      let availableItems = [...game.state.items];
+      const dealRandomItemToRoom = (room) => {
+        if (!availableItems.length) { return; }
+        const itemToDealOut = getRandomArrayItem(availableItems);
+        room.inventory.push(itemToDealOut.id);
+        availableItems = availableItems.filter((item) => item.id !== itemToDealOut.id);
+      };
+      while (availableItems.length) {
+        rooms.forEach(dealRandomItemToRoom);
+      }
+      const areThereDuplicates = () => {
+        const countOfDedupedItemIdsToWin = new Set(game.state.itemIdsToWin).size;
+        const result = (game.state.itemIdsToWin.length !== countOfDedupedItemIdsToWin);
+        return result;
+      };
+      while (areThereDuplicates()) {
+        game.state.itemIdsToWin = [
+          items[Math.floor(Math.random() * items.length)].id,
+          items[Math.floor(Math.random() * items.length)].id
+        ]
+      }
+      const recipeItems = recipes.map((recipe) => recipe.result);
+      recipeItems.forEach((item) => game.state.items.push(item));
+    },
+    randomlyDistributeEnemiesToRooms() { // TODO: Need to randomly sort rooms
+      let availableEnemies = [...game.state.enemies];
+      const dealRandomEnemyToRoom = (room) => {
+        if (!availableEnemies.length) { return; }
+        const enemyToDealOut = getRandomArrayItem(availableEnemies);
+        room.enemies.push(enemyToDealOut.id);
+        availableEnemies = availableEnemies.filter((enemy) => enemy.id !== enemyToDealOut.id);
+      };
+      while (availableEnemies.length) {
+        rooms.forEach(dealRandomEnemyToRoom);
+      }
+    },
+    randomlyDistributeHealersToRooms() {
+      let availableHealers = [...game.state.healers];
+      const dealRandomHealerToRoom = (room) => {
+        if (!availableHealers.length) { return; }
+        const healerToDealOut = getRandomArrayItem(availableHealers);
+        room.healers.push(healerToDealOut.id);
+        availableHealers = availableHealers.filter((healer) => healer.id !== healerToDealOut.id);
+      };
+      while (availableHealers.length) {
+        rooms.forEach(dealRandomHealerToRoom);
+      }
+    },
+    moveItem(itemIdToMove, source, destination) {
+      const newSourceItems = source.inventory.filter((itemId) => itemId !== itemIdToMove);
+      source.inventory = newSourceItems;
+      destination.inventory.push(itemIdToMove);
+    },
+    movePlayerToRoom(roomId, shouldSpeakCurrentRoom = true, shouldCheckConnectedRooms = true) {
+      const room = getRoomById(roomId);
+      const currentRoom = game.getCurrentRoom();
+      const roomName = room.name;
+      if (!currentRoom.connectedRooms.includes(room.id) && shouldCheckConnectedRooms) {
+        game.consoleOutPut({
+          text: `
+            ${roomName} is not connected to the current room
+          `,
+        });
+        say.speak(`${roomName} is not connected to the current room`, 'princess');
+        return;
+      } //TODO: Say which rooms are connected to the current room
+      game.state.player.currentRoomId = roomId;
+      if (shouldSpeakCurrentRoom) {
+        game.showCurrentRoom();
+        return;
+      }
+      game.showCurrentRoom(false);
+    },
+    craftItem(itemName1, itemName2) { //TODO: Make a different game mode where you have to craft the item
+      const item1 = items.find((item) => item.name.toLowerCase() === itemName1.toLowerCase());
+      const item2 = items.find((item) => item.name.toLowerCase() === itemName2.toLowerCase());
+      if (!(item1 && item2)) {
+        console.log('Missing or unknown item');
+        return;
+      }
+      const recipe = game.state.recipes.find((recipe) => recipe.ingredients.includes(item1.id) && recipe.ingredients.includes(item2.id));
+      if (!recipe) {
+        console.log(`${item1.name} can not be crafted with ${item2.name}`)
+        return;
+      }
+      if (!(game.state.player.inventory.includes(item1.id) && game.state.player.inventory.includes(item2.id))) {
+        console.log(`You do not have the items that you wish to craft with, make sure these items are in your inventory first...`);
+        return;
+      }
+      this.spawnItem(recipe.result.id, game.state.player);
+      this.moveItem(item1.id, game.state.player, game.state.trashCan);
+      this.moveItem(item2.id, game.state.player, game.state.trashCan);
+      console.log(`${chalk.bold.green(recipe.result.name)} has been added to your inventory`)
+    },
+    spawnItem(itemIdToSpawn, destination) {
+       destination.inventory.push(itemIdToSpawn);
+    },
+    moveItemFromCurrentRoomToPlayer(itemName) {
+      if (!itemName) {
+        say.speak(`You forgot to put the name of the item to pick up hoor
+
+
+                   try again!`, 'princess');
+        game.consoleOutPut({
+          text: `
+
+                                   😂😂😂
+                   You forgot to put the name of the item to pick up hoor... try again!
+                                   😂😂😂
+
+          `,
+       });
+       return;
+      }
+      const room = game.state.rooms.find((room) => room.id === game.state.player.currentRoomId);
+      if (!room.inventory || !room.inventory.length) {
+        say.speak(`The room is empty`, 'princess');
+        game.consoleOutPut({
+          text: `
+
+                    🕸️🕸️🕸️🕸️🕸️🕸️🕸️🕸️️
+                    room is empty...
+                    🕸️🕸️🕸️🕸️🕸️🕸️🕸️🕸️
+
+          `,
+        });
+        return;
+      }
+      const item = items.find((item) => item.name.toLowerCase() === itemName.toLowerCase());
+      const healer = healers.find((healer) => healer.name.toLowerCase() === itemName.toLowerCase()); // TODO: Remove the healer once it has been picked up once by the player
+      if (healer) {
+        this.moveItem(healer.id, room, player);
+        this.moveItem(healer.id, player, trashCan);
+        game.consoleOutPut({
+          text: `
+
+                      You used "${healer.name}"
+
+            `,
+          });
+        game.healPlayerIfNeeded(healer);
+        return;
+      }
+      if (!item || !room.inventory.includes(item.id)) {
+        say.speak(`The current room does not have "${itemName}"`, 'princess');
+        game.consoleOutPut({
+          text: `
+
+                         The current room does not have "${chalk.bold.red(itemName)}"
+
+             `,
+          });
+        return;
+      }
+      this.moveItem(item.id, room, player);
+      say.speak(`You have put "${item.name}" in your inventory`, 'princess');
+      game.consoleOutPut({
+        text: `
+
+                    You have put "${chalk.bold.red(item.name)}" into your inventory
+
+           `,
+        });
+      game.dealDamageIfNeeded(item, false);
+      if (game.didPlayerWin()) {
+        game.showWinScreen();
+      }
+    },
+    moveItemFromPlayerToCurrentRoom(itemName) {
+      if (!itemName) {
+        say.speak(`You forgot to put the name of the item to drop hoor
+
+                 try again!`, 'princess');
+        game.consoleOutPut({
+          text: `
+
+                                    😂😂😂
+                    You forgot to put the name of the item to drop hoor... try again!
+                                    😂😂😂
+
+               `,
+            });
+        return;
+      }
+      if (!game.state.player.inventory || !game.state.player.inventory.length) {
+        say.speak(`There is nothing in your Inventory`, 'princess');
+        game.consoleOutPut({
+          text: `
+
+                    🕸️🕸️🕸️🕸️🕸️🕸️🕸️🕸️️
+                    Inventory is empty...
+                    🕸️🕸️🕸️🕸️🕸️🕸️🕸️🕸️
+
+               `,
+            });
+        return;
+      }
+      const item = items.find((item) => item.name.toLowerCase() === itemName.toLowerCase());
+      if (!item || !game.state.player.inventory.includes(item.id)) {
+        say.speak(`"${itemName}" is not in your inventory`, 'princess');
+        game.consoleOutPut({
+          text: `
+
+                         "${chalk.bold.red(itemName)}" is not in your inventory...
+
+               `,
+            });
+        return;
+      }
+      this.moveItem(item.id, game.state.player, game.getCurrentRoom());
+      say.speak(`You have dropped "${item.name}"`, 'princess');
+      game.consoleOutPut({
+        text: `
+
+                    You have dropped "${chalk.bold.red(item.name)}"
+
+           `,
+        });
+    }
+};
+game.actions = actions;
 
 const getNewGame = () => {
   const result = {
