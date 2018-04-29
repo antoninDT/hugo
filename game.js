@@ -70,7 +70,7 @@ const game = {
         ],
     },
     actions: {
-        craftItem(itemName1, itemName2) { //TODO: Make a different game mode where you have to craft the item 
+        craftItem(itemName1, itemName2) { //TODO: Make a different game mode where you have to craft the item
             const item1 = items.find((item) => item.name.toLowerCase() === itemName1.toLowerCase());
             const item2 = items.find((item) => item.name.toLowerCase() === itemName2.toLowerCase());
             if (!(item1 && item2)) {
@@ -82,7 +82,7 @@ const game = {
               console.log(`${item1.name} can not be crafted with ${item2.name}`)
               return;
             }
-            if (!game.state.player.inventory.includes(item1.id && item2.id)) { console.log(`You do not have the items that you wish to craft with, make sure these items are in your inventory first...`); return; }
+            if (!(game.state.player.inventory.includes(item1.id) && game.state.player.inventory.includes(item2.id))) { console.log(`You do not have the items that you wish to craft with, make sure these items are in your inventory first...`); return; }
             this.spawnItem(recipe.result.id, game.state.player);
             this.moveItem(item1.id, game.state.player, game.state.trashCan);
             this.moveItem(item2.id, game.state.player, game.state.trashCan);
