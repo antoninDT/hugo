@@ -8,7 +8,7 @@ const { basicBoxOptions, basicCFontOptions, getTextColorBasedOnCurrentTime, cons
 const { defaultRoomId, getRoomById, roomsLookup, rooms, showCurrentRoomWrapper, showRoomsWrapper, showCurrentRoomContentsWrapper, getCurrentRoomWrapper, randomlyDistributeItemsToRoomsWrapper, randomlyDistributeEnemiesToRoomsWrapper, randomlyDistributeHealersToRoomsWrapper, showEnemyAttackMessageWrapper } = require('./room.utility');
 const { getRandomArrayItem } = require('./general.utility');
 const { getItemByIdWrapper, getEnemyByIdWrapper, getHealerByIdWrapper, showEnemyOrHealerWrapper, getCurrentRoomClueWrapper, getCurrentItemClueWrapper, giveItemClueWrapper, getRandomItemIdToWinWrapper } = require('./item.utility');
-const { dealDamageIfNeededWrapper, healPlayerIfNeededWrapper, moveItemFromCurrentRoomToPlayerWrapper, moveItemWrapper, movePlayerToRoomWrapper, movePlayerToRandomRoomWrapper, hurtPlayerWrapper } = require('./player.utility');
+const { dealDamageIfNeededWrapper, healPlayerIfNeededWrapper, moveItemFromCurrentRoomToPlayerWrapper, moveItemWrapper, movePlayerToRoomWrapper, movePlayerToRandomRoomWrapper, hurtPlayerWrapper, healPlayerWrapper } = require('./player.utility');
 
 //TODO: Find out to change the font/increase the size of the font
 const recipesLookup = require('./data/recipes.json');
@@ -364,6 +364,7 @@ const game = {
     });
   }
 };
+game.healPlayer = healPlayerWrapper(game); //TODO: Does this need to be in action?
 game.hurtPlayer = hurtPlayerWrapper(game); //TODO: Does this need to be in action?
 game.movePlayerToRandomRoom = movePlayerToRandomRoomWrapper(game); //TODO: Does this need to be in action?
 game.movePlayerToRoom = movePlayerToRoomWrapper(game); //TODO: Does this need to be in action?
@@ -390,14 +391,6 @@ game.showRooms = showRoomsWrapper(game);
 game.showCurrentRoom = showCurrentRoomWrapper(game);
 
 const actions = {
-    healPlayer(amount) { // TODO: Use this function later
-      if (!amount) { return; }
-      game.state.player.health += amount;
-      if (game.state.player.health > game.state.player.maxHealth) {
-        game.state.player.health = game.state.player.maxHealth;
-      }
-      game.showPlayerStatus(false, false);
-    },
     craftItem(itemName1, itemName2) { //TODO: Make a different game mode where you have to craft the item
       const item1 = items.find((item) => item.name.toLowerCase() === itemName1.toLowerCase());
       const item2 = items.find((item) => item.name.toLowerCase() === itemName2.toLowerCase());

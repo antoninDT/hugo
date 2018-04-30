@@ -6,7 +6,6 @@ const { getRandomArrayItem } = require('./general.utility');
 
 const dealDamageIfNeededWrapper = (game) => (showEnemyOrHealer, shouldSpeak = true) => {
   if (showEnemyOrHealer.isEnemy) {
-    game.hurtPlayer(showEnemyOrHealer.damage, false);
     return;
   } // TODO: Fix the flashing of the text
   if (!showEnemyOrHealer.damage) { return; }
@@ -18,7 +17,7 @@ const dealDamageIfNeededWrapper = (game) => (showEnemyOrHealer, shouldSpeak = tr
 const healPlayerIfNeededWrapper = (game) => (showEnemyOrHealer) => { //TODO: Make this work
   if (!showEnemyOrHealer.healingAmount) { return; }
   if (showEnemyOrHealer.isItem && showEnemyOrHealer === game.state.itemIdsToWin) { return; }
-  game.actions.healPlayer(showEnemyOrHealer.healingAmount);  // TODO: Add a voice when gained healh
+  game.healPlayer(showEnemyOrHealer.healingAmount);  // TODO: Add a voice when gained healh
 };
 
 const moveItemFromCurrentRoomToPlayerWrapper = (game) => (itemName) => {
@@ -56,7 +55,7 @@ const moveItemFromCurrentRoomToPlayerWrapper = (game) => (itemName) => {
   const healer = game.state.healers.find((healer) => healer.name.toLowerCase() === itemName.toLowerCase()); // TODO: Remove the healer once it has been picked up once by the player
   if (healer) {
     game.moveItem(healer.id, room, game.state.player);
-    game.moveItem(healer.id, player, trashCan);
+    game.moveItem(healer.id, game.state.player, game.state.trashCan);
     game.consoleOutPut({
       text: `
 
@@ -139,7 +138,17 @@ const hurtPlayerWrapper = (game) => (amount, shouldSpeak = true) => {
   game.showPlayerStatus(false, true);
 };
 
+const healPlayerWrapper = (game) => (amount) => { // TODO: Use this function later
+  if (!amount) { return; }
+  game.state.player.health += amount;
+  if (game.state.player.health > game.state.player.maxHealth) {
+    game.state.player.health = game.state.player.maxHealth;
+  }
+  game.showPlayerStatus(false, false);
+};
+
 const api = {
+  healPlayerWrapper,
   hurtPlayerWrapper,
   movePlayerToRandomRoomWrapper,
   movePlayerToRoomWrapper,
