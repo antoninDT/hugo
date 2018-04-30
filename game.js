@@ -7,7 +7,7 @@ const chalkAnimation = require('chalk-animation');
 const { basicBoxOptions, basicCFontOptions, getTextColorBasedOnCurrentTime, consoleOutPut, clearScreenWrapper } = require('./console.utility');
 const { defaultRoomId, getRoomById, roomsLookup, rooms, showCurrentRoomWrapper, showRoomsWrapper, showCurrentRoomContentsWrapper, getCurrentRoomWrapper, randomlyDistributeItemsToRoomsWrapper, randomlyDistributeEnemiesToRoomsWrapper, randomlyDistributeHealersToRoomsWrapper, showEnemyAttackMessageWrapper } = require('./room.utility');
 const { getRandomArrayItem } = require('./general.utility');
-const { getItemByIdWrapper, getEnemyByIdWrapper, getHealerByIdWrapper, showEnemyOrHealerWrapper, getCurrentRoomClueWrapper, getCurrentItemClueWrapper, giveItemClueWrapper } = require('./item.utility');
+const { getItemByIdWrapper, getEnemyByIdWrapper, getHealerByIdWrapper, showEnemyOrHealerWrapper, getCurrentRoomClueWrapper, getCurrentItemClueWrapper, giveItemClueWrapper, getRandomItemIdToWinWrapper } = require('./item.utility');
 
 //TODO: Find out to change the font/increase the size of the font
 const recipesLookup = require('./data/recipes.json');
@@ -172,7 +172,7 @@ const game = {
           `,
     });
 
-    this.state.player.inventory //TODO: Map the crafted items as well
+    this.state.player.inventory
         .map(this.getItemById)
         .forEach(this.showEnemyOrHealer);
     const continueSpeakingItems = () => {
@@ -329,13 +329,6 @@ const game = {
     this.showCurrentRoom(false);
     this.giveItemClue(false);
   },
-  getRandomItemIdToWin() {
-    let itemId = getRandomArrayItem(this.state.itemIdsToWin);
-    while (this.state.player.inventory.includes(itemId)) {
-      itemId = getRandomArrayItem(this.state.itemIdsToWin)
-    }
-    return itemId;
-  },
   showHelp() {
     const commandBoxOptions = {
       ...basicBoxOptions,
@@ -387,6 +380,7 @@ const game = {
     });
   }
 };
+game.getRandomItemIdToWin = getRandomItemIdToWinWrapper(game);
 game.giveItemClue = giveItemClueWrapper(game);
 game.getCurrentItemClue = getCurrentItemClueWrapper(game);
 game.clearScreen = clearScreenWrapper(game);

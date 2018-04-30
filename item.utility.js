@@ -62,7 +62,16 @@ const giveItemClueWrapper = (game) => (shouldSpeakClue = true) => {
     });
 };
 
+const getRandomItemIdToWinWrapper = (game) => () => {
+  let itemId = getRandomArrayItem(game.state.itemIdsToWin);
+  while (game.state.player.inventory.includes(itemId)) {
+    itemId = getRandomArrayItem(game.state.itemIdsToWin)
+  }
+  return itemId;
+};
+
 const api = {
+  getRandomItemIdToWinWrapper,
   giveItemClueWrapper,
   getCurrentItemClueWrapper,
   getCurrentRoomClueWrapper,
