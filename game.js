@@ -5,7 +5,7 @@ const say = require('say');
 const chalkAnimation = require('chalk-animation');
 
 const { basicBoxOptions, basicCFontOptions, getTextColorBasedOnCurrentTime, consoleOutPut } = require('./console.utility');
-const { defaultRoomId, getRoomById, roomsLookup, rooms, showCurrentRoomWrapper, showRoomsWrapper, getCurrentRoomClueWrapper, showCurrentRoomContentsWrapper, getCurrentRoomWrapper, randomlyDistributeItemsToRoomsWrapper, randomlyDistributeEnemiesToRoomsWrapper, randomlyDistributeHealersToRoomsWrapper } = require('./room.utility');
+const { defaultRoomId, getRoomById, roomsLookup, rooms, showCurrentRoomWrapper, showRoomsWrapper, getCurrentRoomClueWrapper, showCurrentRoomContentsWrapper, getCurrentRoomWrapper, randomlyDistributeItemsToRoomsWrapper, randomlyDistributeEnemiesToRoomsWrapper, randomlyDistributeHealersToRoomsWrapper, showEnemyAttackMessageWrapper } = require('./room.utility');
 const { getRandomArrayItem } = require('./general.utility');
 const { getItemByIdWrapper, getEnemyByIdWrapper, getHealerByIdWrapper, showEnemyOrHealerWrapper } = require('./item.utility');
 
@@ -90,9 +90,6 @@ const game = {
         `,
       });
     this.goodbye(false);
-  },
-  showEnemyAttackMessage(enemy) {
-    game.consoleOutPut({ text: `${enemy.attackMessage} and lost ${chalk.red(enemy.damage)} health "${chalk.bold.red(enemy.name)}" ` });
   },
   dealDamageIfNeeded(showEnemyOrHealer, shouldSpeak = true) {
     if (showEnemyOrHealer.isEnemy) {
@@ -342,7 +339,7 @@ const game = {
     }
     return itemId;
   },
-  getCurrentItemClue(randomItemIdToWin) {
+  getCurrentItemClue(randomItemIdToWin) { //TODO: Refactor this into item.utility
     const itemToWin = items.find((item) => item.id === randomItemIdToWin);
     const randomItemClue = getRandomArrayItem(itemToWin.clues);
     return randomItemClue;
@@ -420,6 +417,7 @@ const game = {
     });
   }
 };
+game.showEnemyAttackMessage = showEnemyAttackMessageWrapper(game);
 game.showEnemyOrHealer = showEnemyOrHealerWrapper(game);
 game.randomlyDistributeHealersToRooms = randomlyDistributeHealersToRoomsWrapper(game); //TODO: Does this need to be in action?
 game.randomlyDistributeEnemiesToRooms = randomlyDistributeEnemiesToRoomsWrapper(game); //TODO: Does this need to be in action?
@@ -507,7 +505,7 @@ const actions = {
     },
     spawnItem(itemIdToSpawn, destination) {
        destination.inventory.push(itemIdToSpawn);
-    },
+    }, //TODO: Refactor this into item.utility
     moveItemFromCurrentRoomToPlayer(itemName) {
       if (!itemName) {
         say.speak(`You forgot to put the name of the item to pick up hoor

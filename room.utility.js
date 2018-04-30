@@ -15,6 +15,10 @@ const getCurrentRoomWrapper = (game) => () => {
   return result;
 };
 
+const showEnemyAttackMessageWrapper = (game) => (enemy) => {
+  game.consoleOutPut({ text: `${enemy.attackMessage} and lost ${chalk.red(enemy.damage)} health "${chalk.bold.red(enemy.name)}" ` });
+};
+
 const showRoomsWrapper = (game) => () => { // TODO: Add voices to this
     const getRoomName = (room) => room.name;
     const getConnectedRooms = (room) => room.connectedRooms;
@@ -156,6 +160,7 @@ const randomlyDistributeHealersToRoomsWrapper = (game) => () => {
 };
 
 const api = {
+  showEnemyAttackMessageWrapper,
   randomlyDistributeHealersToRoomsWrapper,
   randomlyDistributeEnemiesToRoomsWrapper,
   randomlyDistributeItemsToRoomsWrapper,
