@@ -5,9 +5,9 @@ const say = require('say');
 const chalkAnimation = require('chalk-animation');
 
 const { basicBoxOptions, basicCFontOptions, getTextColorBasedOnCurrentTime, consoleOutPut, clearScreenWrapper } = require('./console.utility');
-const { defaultRoomId, getRoomById, roomsLookup, rooms, showCurrentRoomWrapper, showRoomsWrapper, getCurrentRoomClueWrapper, showCurrentRoomContentsWrapper, getCurrentRoomWrapper, randomlyDistributeItemsToRoomsWrapper, randomlyDistributeEnemiesToRoomsWrapper, randomlyDistributeHealersToRoomsWrapper, showEnemyAttackMessageWrapper } = require('./room.utility');
+const { defaultRoomId, getRoomById, roomsLookup, rooms, showCurrentRoomWrapper, showRoomsWrapper, showCurrentRoomContentsWrapper, getCurrentRoomWrapper, randomlyDistributeItemsToRoomsWrapper, randomlyDistributeEnemiesToRoomsWrapper, randomlyDistributeHealersToRoomsWrapper, showEnemyAttackMessageWrapper } = require('./room.utility');
 const { getRandomArrayItem } = require('./general.utility');
-const { getItemByIdWrapper, getEnemyByIdWrapper, getHealerByIdWrapper, showEnemyOrHealerWrapper } = require('./item.utility');
+const { getItemByIdWrapper, getEnemyByIdWrapper, getHealerByIdWrapper, showEnemyOrHealerWrapper, getCurrentRoomClueWrapper, getCurrentItemClueWrapper, giveItemClueWrapper } = require('./item.utility');
 
 //TODO: Find out to change the font/increase the size of the font
 const recipesLookup = require('./data/recipes.json');
@@ -173,13 +173,13 @@ const game = {
     });
 
     this.state.player.inventory //TODO: Map the crafted items as well
-        .map(getItemById)
+        .map(this.getItemById)
         .forEach(this.showEnemyOrHealer);
     const continueSpeakingItems = () => {
       const speakItem = (index = 0) => {
         const itemId = this.state.player.inventory[index];
         if (!itemId) { return; }
-        const item = getItemById(itemId);
+        const item = this.getItemById(itemId);
         if (!item) { return; }
         const isLastItemInInventory = (index >= (this.state.player.inventory.length - 1));
         const conditionalAnd = (index)
@@ -336,33 +336,6 @@ const game = {
     }
     return itemId;
   },
-  getCurrentItemClue(randomItemIdToWin) { //TODO: Refactor this into item.utility
-    const itemToWin = items.find((item) => item.id === randomItemIdToWin);
-    const randomItemClue = getRandomArrayItem(itemToWin.clues);
-    return randomItemClue;
-  },
-  giveItemClue(shouldSpeakClue = true) {
-    const randomItemIdToWin = this.getRandomItemIdToWin();
-    const roomClue = this.getCurrentRoomClue(randomItemIdToWin);
-    const itemClue = this.getCurrentItemClue(randomItemIdToWin);
-    if (shouldSpeakClue) {
-      say.speak(`
-
-        Here is you clue: ${itemClue}
-
-        and. ${roomClue}
-
-        `, 'Princess',);
-    }
-    game.consoleOutPut({ text: 'Here is your clue:', color: 'yellowBright' });
-    game.consoleOutPut({
-        text: `
-
-            ${chalk.bold.red(itemClue)} and ${chalk.bold.red(roomClue)}
-
-         `,
-      });
-  },
   showHelp() {
     const commandBoxOptions = {
       ...basicBoxOptions,
@@ -414,6 +387,8 @@ const game = {
     });
   }
 };
+game.giveItemClue = giveItemClueWrapper(game);
+game.getCurrentItemClue = getCurrentItemClueWrapper(game);
 game.clearScreen = clearScreenWrapper(game);
 game.showEnemyAttackMessage = showEnemyAttackMessageWrapper(game);
 game.showEnemyOrHealer = showEnemyOrHealerWrapper(game);

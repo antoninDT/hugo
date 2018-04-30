@@ -44,12 +44,6 @@ const showCurrentRoomWrapper = (game) => (shouldSpeakCurrentRoom = true) => {
   if (shouldSpeakCurrentRoom) { say.speak(`You are in the ${currentRoomName}`, 'princess'); }
 };
 
-const getCurrentRoomClueWrapper = (game) => (randomItemIdToWin) => {
-  const roomContainingTheItem = rooms.find((room) => room.inventory.includes(randomItemIdToWin));
-  const randomClueForRoom = getRandomArrayItem(roomContainingTheItem.clues);
-  return randomClueForRoom;
-};
-
 const showCurrentRoomContentsWrapper = (game) => (shouldSpeak = true) => { //TODO: Refactor this into room.utility
   const currentRoom = game.getCurrentRoom(); //Fix this
   const currentRoomContentsVoice = 'princess';
@@ -172,6 +166,5 @@ const api = {
   rooms,
   showCurrentRoomWrapper,
   showRoomsWrapper,
-  getCurrentRoomClueWrapper,
 };
 module.exports = api;
