@@ -89,7 +89,7 @@ const promptForUserCommand = () => {
                 itemParts = sanitizedInput
                     .split(specificCommandUsed);
                 itemName = getSanitizedText(itemParts[1]);
-                game.actions.moveItemFromCurrentRoomToPlayer(itemName, sanitizedInput);
+                game.moveItemFromCurrentRoomToPlayer(itemName, sanitizedInput);
                 break;
             case (commandLookup.transferItemToRoomInventory.commands.some(doesSanitizedInputStartWithCommand)):
                 specificCommandUsed = commandLookup.transferItemToRoomInventory.commands.find(doesSanitizedInputStartWithCommand);
