@@ -199,7 +199,74 @@ const healPlayerWrapper = (game) => (amount) => { // TODO: Use this function lat
   game.showPlayerStatus(false, false);
 };
 
+const showPlayerStatusWrapper = (game) => (shouldSpeak = true, shouldFlash = true) => {
+  const text = `You have ${game.state.player.health} health out of ${game.state.player.maxHealth}`;
+  if (shouldFlash) {
+    game.flashScreenRed(text);
+    return;
+  }
+  if (shouldSpeak) {
+    say.speak(`You have ${game.state.player.health} health out of ${game.state.player.maxHealth}`, 'princess');
+  }
+  game.consoleOutPut({
+    text: `
+           You have ${game.state.player.health} health out of ${game.state.player.maxHealth}
+    `,
+  });
+};
+
+const showInventoryWrapper = (game) => () => {
+  const inventoryVoice = 'princess';
+  if (!game.state.player.inventory.length) {
+    say.speak('There is nothing in your Inventory', inventoryVoice);
+    game.consoleOutPut({
+        text: `
+
+              There is nothing in your Inventory...
+
+                        😐😐😐
+           `,
+        });
+    return;
+  }
+  game.consoleOutPut({
+      color: 'yellowBright',
+      text: `
+
+          You have the following items:
+        `,
+  });
+
+  game.state.player.inventory
+      .map(game.getItemById)
+      .forEach(game.showEnemyOrHealer);
+  const continueSpeakingItems = () => {
+    const speakItem = (index = 0) => {
+      const itemId = game.state.player.inventory[index];
+      if (!itemId) { return; }
+      const item = game.getItemById(itemId);
+      if (!item) { return; }
+      const isLastItemInInventory = (index >= (game.state.player.inventory.length - 1));
+      const conditionalAnd = (index)
+        ? `, and , `
+        : '';
+      const conditionalThatsAll = (isLastItemInInventory)
+        ? `.
+                That's all! Nothing else? no more!
+
+              `
+        : '';
+      const itemSentence = `${conditionalAnd} ${item.name}${conditionalThatsAll}`; // TODO: Add an item description here and in the items.js file
+      say.speak(itemSentence, inventoryVoice, null, () => speakItem(index + 1));
+    };
+    speakItem();
+  };
+  say.speak('You have the following items in your inventory: ', inventoryVoice, null, continueSpeakingItems);
+};
+
 const api = {
+  showInventoryWrapper,
+  showPlayerStatusWrapper,
   moveItemFromPlayerToCurrentRoomWrapper,
   healPlayerWrapper,
   hurtPlayerWrapper,

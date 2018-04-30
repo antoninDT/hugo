@@ -8,7 +8,7 @@ const { basicBoxOptions, basicCFontOptions, getTextColorBasedOnCurrentTime, cons
 const { defaultRoomId, getRoomById, roomsLookup, rooms, showCurrentRoomWrapper, showRoomsWrapper, showCurrentRoomContentsWrapper, getCurrentRoomWrapper, randomlyDistributeItemsToRoomsWrapper, randomlyDistributeEnemiesToRoomsWrapper, randomlyDistributeHealersToRoomsWrapper, showEnemyAttackMessageWrapper } = require('./room.utility');
 const { getRandomArrayItem } = require('./general.utility');
 const { getItemByIdWrapper, getEnemyByIdWrapper, getHealerByIdWrapper, showEnemyOrHealerWrapper, getCurrentRoomClueWrapper, getCurrentItemClueWrapper, giveItemClueWrapper, getRandomItemIdToWinWrapper, craftItemWrapper, spawnItemWrapper } = require('./item.utility');
-const { dealDamageIfNeededWrapper, healPlayerIfNeededWrapper, moveItemFromCurrentRoomToPlayerWrapper, moveItemWrapper, movePlayerToRoomWrapper, movePlayerToRandomRoomWrapper, hurtPlayerWrapper, healPlayerWrapper, moveItemFromPlayerToCurrentRoomWrapper } = require('./player.utility');
+const { dealDamageIfNeededWrapper, healPlayerIfNeededWrapper, moveItemFromCurrentRoomToPlayerWrapper, moveItemWrapper, movePlayerToRoomWrapper, movePlayerToRandomRoomWrapper, hurtPlayerWrapper, healPlayerWrapper, moveItemFromPlayerToCurrentRoomWrapper, showPlayerStatusWrapper, showInventoryWrapper } = require('./player.utility');
 
 //TODO: Find out to change the font/increase the size of the font
 const recipesLookup = require('./data/recipes.json');
@@ -119,69 +119,6 @@ const game = {
   },
   getTextColorBasedOnCurrentTime,
   consoleOutPut,
-  showPlayerStatus(shouldSpeak = true, shouldFlash = true) {
-    const text = `You have ${this.state.player.health} health out of ${this.state.player.maxHealth}`;
-    if (shouldFlash) {
-      this.flashScreenRed(text);
-      return;
-    }
-    if (shouldSpeak) {
-      say.speak(`You have ${this.state.player.health} health out of ${this.state.player.maxHealth}`, 'princess');
-    }
-    game.consoleOutPut({
-      text: `
-             You have ${this.state.player.health} health out of ${this.state.player.maxHealth}
-      `,
-    });
-  },
-  showInventory() {
-    const inventoryVoice = 'princess';
-    if (!this.state.player.inventory.length) {
-      say.speak('There is nothing in your Inventory', inventoryVoice);
-      game.consoleOutPut({
-          text: `
-
-                There is nothing in your Inventory...
-
-                          😐😐😐
-             `,
-          });
-      return;
-    }
-    game.consoleOutPut({
-        color: 'yellowBright',
-        text: `
-
-            You have the following items:
-          `,
-    });
-
-    this.state.player.inventory
-        .map(this.getItemById)
-        .forEach(this.showEnemyOrHealer);
-    const continueSpeakingItems = () => {
-      const speakItem = (index = 0) => {
-        const itemId = this.state.player.inventory[index];
-        if (!itemId) { return; }
-        const item = this.getItemById(itemId);
-        if (!item) { return; }
-        const isLastItemInInventory = (index >= (this.state.player.inventory.length - 1));
-        const conditionalAnd = (index)
-          ? `, and , `
-          : '';
-        const conditionalThatsAll = (isLastItemInInventory)
-          ? `.
-                  That's all! Nothing else? no more!
-
-                `
-          : '';
-        const itemSentence = `${conditionalAnd} ${item.name}${conditionalThatsAll}`; // TODO: Add an item description here and in the items.js file
-        say.speak(itemSentence, inventoryVoice, null, () => speakItem(index + 1));
-      };
-      speakItem();
-    };
-    say.speak('You have the following items in your inventory: ', inventoryVoice, null, continueSpeakingItems);
-  },
   sampleVoices() {
     const voices = [
       'Agnes',
@@ -364,6 +301,8 @@ const game = {
     });
   }
 };
+game.showInventory = showInventoryWrapper(game);
+game.showPlayerStatus = showPlayerStatusWrapper(game);
 game.moveItemFromPlayerToCurrentRoom = moveItemFromPlayerToCurrentRoomWrapper(game); //TODO: Does this need to be in action?
 game.spawnItem = spawnItemWrapper(game); //TODO: Does this need to be in action?
 game.craftItem = craftItemWrapper(game); //TODO: Does this need to be in action?
