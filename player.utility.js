@@ -6,13 +6,13 @@ const { getRandomArrayItem } = require('./general.utility');
 
 const dealDamageIfNeededWrapper = (game) => (showEnemyOrHealer, shouldSpeak = true) => {
   if (showEnemyOrHealer.isEnemy) {
-    game.actions.hurtPlayer(showEnemyOrHealer.damage, false);
+    game.hurtPlayer(showEnemyOrHealer.damage, false);
     return;
   } // TODO: Fix the flashing of the text
   if (!showEnemyOrHealer.damage) { return; }
   if (showEnemyOrHealer.isItem && (game.state.itemIdsToWin.includes(showEnemyOrHealer.id))) { return; }
   if (shouldSpeak) { game.actions.hurtPlayer(showEnemyOrHealer.damage); }
-  game.actions.hurtPlayer(showEnemyOrHealer.damage, false);
+  game.hurtPlayer(showEnemyOrHealer.damage, false);
 };
 
 const healPlayerIfNeededWrapper = (game) => (showEnemyOrHealer) => { //TODO: Make this work
@@ -125,7 +125,22 @@ const movePlayerToRandomRoomWrapper = (game) => () => {
   game.movePlayerToRoom(randomRoom.id, false, false);
 };
 
+const hurtPlayerWrapper = (game) => (amount, shouldSpeak = true) => {
+  if (!amount) { return; }
+  game.state.player.health -= amount;
+  if (game.state.player.health <= 0) {
+    game.showLoseScreen();
+    return;
+  }
+  if (shouldSpeak) {
+    game.showPlayerStatus();
+    return;
+  }
+  game.showPlayerStatus(false, true);
+};
+
 const api = {
+  hurtPlayerWrapper,
   movePlayerToRandomRoomWrapper,
   movePlayerToRoomWrapper,
   moveItemWrapper,

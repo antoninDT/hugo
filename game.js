@@ -8,7 +8,7 @@ const { basicBoxOptions, basicCFontOptions, getTextColorBasedOnCurrentTime, cons
 const { defaultRoomId, getRoomById, roomsLookup, rooms, showCurrentRoomWrapper, showRoomsWrapper, showCurrentRoomContentsWrapper, getCurrentRoomWrapper, randomlyDistributeItemsToRoomsWrapper, randomlyDistributeEnemiesToRoomsWrapper, randomlyDistributeHealersToRoomsWrapper, showEnemyAttackMessageWrapper } = require('./room.utility');
 const { getRandomArrayItem } = require('./general.utility');
 const { getItemByIdWrapper, getEnemyByIdWrapper, getHealerByIdWrapper, showEnemyOrHealerWrapper, getCurrentRoomClueWrapper, getCurrentItemClueWrapper, giveItemClueWrapper, getRandomItemIdToWinWrapper } = require('./item.utility');
-const { dealDamageIfNeededWrapper, healPlayerIfNeededWrapper, moveItemFromCurrentRoomToPlayerWrapper, moveItemWrapper, movePlayerToRoomWrapper, movePlayerToRandomRoomWrapper } = require('./player.utility');
+const { dealDamageIfNeededWrapper, healPlayerIfNeededWrapper, moveItemFromCurrentRoomToPlayerWrapper, moveItemWrapper, movePlayerToRoomWrapper, movePlayerToRandomRoomWrapper, hurtPlayerWrapper } = require('./player.utility');
 
 //TODO: Find out to change the font/increase the size of the font
 const recipesLookup = require('./data/recipes.json');
@@ -364,6 +364,7 @@ const game = {
     });
   }
 };
+game.hurtPlayer = hurtPlayerWrapper(game); //TODO: Does this need to be in action?
 game.movePlayerToRandomRoom = movePlayerToRandomRoomWrapper(game); //TODO: Does this need to be in action?
 game.movePlayerToRoom = movePlayerToRoomWrapper(game); //TODO: Does this need to be in action?
 game.moveItem = moveItemWrapper(game); //TODO: Does this need to be in action?
@@ -389,19 +390,6 @@ game.showRooms = showRoomsWrapper(game);
 game.showCurrentRoom = showCurrentRoomWrapper(game);
 
 const actions = {
-    hurtPlayer(amount, shouldSpeak = true) {
-      if (!amount) { return; }
-      game.state.player.health -= amount;
-      if (game.state.player.health <= 0) {
-        game.showLoseScreen();
-        return;
-      }
-      if (shouldSpeak) {
-        game.showPlayerStatus();
-        return;
-      }
-      game.showPlayerStatus(false, true);
-    },
     healPlayer(amount) { // TODO: Use this function later
       if (!amount) { return; }
       game.state.player.health += amount;

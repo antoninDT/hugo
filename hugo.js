@@ -127,7 +127,7 @@ const promptForUserCommand = () => {
                  console.dir(game.state);
                  break;
              case (sanitizedInput === 'die'): // TODO: This is "secret" it won't appear in help. Should disable this in the future
-                 game.actions.hurtPlayer(100);
+                 game.hurtPlayer(100);
                  break;
              case (commandLookup.craftItem.commands.some(doesSanitizedInputStartWithCommand)): //TODO: Make this work
                      specificCommandUsed = commandLookup.craftItem.commands.find(doesSanitizedInputStartWithCommand);
