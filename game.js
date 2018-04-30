@@ -7,7 +7,7 @@ const chalkAnimation = require('chalk-animation');
 const { basicBoxOptions, basicCFontOptions, getTextColorBasedOnCurrentTime, consoleOutPut } = require('./console.utility');
 const { defaultRoomId, getRoomById, roomsLookup, rooms, showCurrentRoomWrapper, showRoomsWrapper, getCurrentRoomClueWrapper, showCurrentRoomContentsWrapper, getCurrentRoomWrapper, randomlyDistributeItemsToRoomsWrapper, randomlyDistributeEnemiesToRoomsWrapper, randomlyDistributeHealersToRoomsWrapper } = require('./room.utility');
 const { getRandomArrayItem } = require('./general.utility');
-const { getItemByIdWrapper, getEnemyByIdWrapper, getHealerByIdWrapper } = require('./item.utility');
+const { getItemByIdWrapper, getEnemyByIdWrapper, getHealerByIdWrapper, showEnemyOrHealerWrapper } = require('./item.utility');
 
 //TODO: Find out to change the font/increase the size of the font
 const recipesLookup = require('./data/recipes.json');
@@ -90,25 +90,6 @@ const game = {
         `,
       });
     this.goodbye(false);
-  },
-  showEnemyOrHealer(showEnemyOrHealer) {
-    if (showEnemyOrHealer.isItem) {
-      const chalkFormat1 = chalk.bold.blue;
-      game.consoleOutPut({
-          text: `
-                  * (${chalkFormat1(showEnemyOrHealer.name)})
-         `,
-      });
-      return;
-    }
-    const chalkFormat2 = (showEnemyOrHealer.isEnemy)
-      ? chalk.bold.red
-      : chalk.bold.greenBright;
-      game.consoleOutPut({
-          text: `
-                  * (${chalkFormat2(showEnemyOrHealer.name)})
-           `,
-      });
   },
   showEnemyAttackMessage(enemy) {
     game.consoleOutPut({ text: `${enemy.attackMessage} and lost ${chalk.red(enemy.damage)} health "${chalk.bold.red(enemy.name)}" ` });
@@ -439,6 +420,7 @@ const game = {
     });
   }
 };
+game.showEnemyOrHealer = showEnemyOrHealerWrapper(game);
 game.randomlyDistributeHealersToRooms = randomlyDistributeHealersToRoomsWrapper(game); //TODO: Does this need to be in action?
 game.randomlyDistributeEnemiesToRooms = randomlyDistributeEnemiesToRoomsWrapper(game); //TODO: Does this need to be in action?
 game.randomlyDistributeItemsToRooms = randomlyDistributeItemsToRoomsWrapper(game); //TODO: Does this need to be in action?
