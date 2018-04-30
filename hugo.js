@@ -96,7 +96,7 @@ const promptForUserCommand = () => {
                 itemParts = sanitizedInput
                     .split(specificCommandUsed);
                 itemName = getSanitizedText(itemParts[1]);
-                game.actions.moveItemFromPlayerToCurrentRoom(itemName);
+                game.moveItemFromPlayerToCurrentRoom(itemName);
                 break;
             case (commandLookup.showClue.commands.includes(sanitizedInput)):
                 game.giveItemClue();

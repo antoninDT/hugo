@@ -8,7 +8,7 @@ const { basicBoxOptions, basicCFontOptions, getTextColorBasedOnCurrentTime, cons
 const { defaultRoomId, getRoomById, roomsLookup, rooms, showCurrentRoomWrapper, showRoomsWrapper, showCurrentRoomContentsWrapper, getCurrentRoomWrapper, randomlyDistributeItemsToRoomsWrapper, randomlyDistributeEnemiesToRoomsWrapper, randomlyDistributeHealersToRoomsWrapper, showEnemyAttackMessageWrapper } = require('./room.utility');
 const { getRandomArrayItem } = require('./general.utility');
 const { getItemByIdWrapper, getEnemyByIdWrapper, getHealerByIdWrapper, showEnemyOrHealerWrapper, getCurrentRoomClueWrapper, getCurrentItemClueWrapper, giveItemClueWrapper, getRandomItemIdToWinWrapper, craftItemWrapper, spawnItemWrapper } = require('./item.utility');
-const { dealDamageIfNeededWrapper, healPlayerIfNeededWrapper, moveItemFromCurrentRoomToPlayerWrapper, moveItemWrapper, movePlayerToRoomWrapper, movePlayerToRandomRoomWrapper, hurtPlayerWrapper, healPlayerWrapper } = require('./player.utility');
+const { dealDamageIfNeededWrapper, healPlayerIfNeededWrapper, moveItemFromCurrentRoomToPlayerWrapper, moveItemWrapper, movePlayerToRoomWrapper, movePlayerToRandomRoomWrapper, hurtPlayerWrapper, healPlayerWrapper, moveItemFromPlayerToCurrentRoomWrapper } = require('./player.utility');
 
 //TODO: Find out to change the font/increase the size of the font
 const recipesLookup = require('./data/recipes.json');
@@ -364,6 +364,7 @@ const game = {
     });
   }
 };
+game.moveItemFromPlayerToCurrentRoom = moveItemFromPlayerToCurrentRoomWrapper(game); //TODO: Does this need to be in action?
 game.spawnItem = spawnItemWrapper(game); //TODO: Does this need to be in action?
 game.craftItem = craftItemWrapper(game); //TODO: Does this need to be in action?
 game.healPlayer = healPlayerWrapper(game); //TODO: Does this need to be in action?
@@ -393,57 +394,7 @@ game.showRooms = showRoomsWrapper(game);
 game.showCurrentRoom = showCurrentRoomWrapper(game);
 
 const actions = {
-    moveItemFromPlayerToCurrentRoom(itemName) {
-      if (!itemName) {
-        say.speak(`You forgot to put the name of the item to drop hoor
 
-                 try again!`, 'princess');
-        game.consoleOutPut({
-          text: `
-
-                                    😂😂😂
-                    You forgot to put the name of the item to drop hoor... try again!
-                                    😂😂😂
-
-               `,
-            });
-        return;
-      }
-      if (!game.state.player.inventory || !game.state.player.inventory.length) {
-        say.speak(`There is nothing in your Inventory`, 'princess');
-        game.consoleOutPut({
-          text: `
-
-                    🕸️🕸️🕸️🕸️🕸️🕸️🕸️🕸️️
-                    Inventory is empty...
-                    🕸️🕸️🕸️🕸️🕸️🕸️🕸️🕸️
-
-               `,
-            });
-        return;
-      }
-      const item = items.find((item) => item.name.toLowerCase() === itemName.toLowerCase());
-      if (!item || !game.state.player.inventory.includes(item.id)) {
-        say.speak(`"${itemName}" is not in your inventory`, 'princess');
-        game.consoleOutPut({
-          text: `
-
-                         "${chalk.bold.red(itemName)}" is not in your inventory...
-
-               `,
-            });
-        return;
-      }
-      this.moveItem(item.id, game.state.player, game.getCurrentRoom());
-      say.speak(`You have dropped "${item.name}"`, 'princess');
-      game.consoleOutPut({
-        text: `
-
-                    You have dropped "${chalk.bold.red(item.name)}"
-
-           `,
-        });
-    }
 };
 game.actions = actions;
 

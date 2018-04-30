@@ -20,6 +20,58 @@ const healPlayerIfNeededWrapper = (game) => (showEnemyOrHealer) => { //TODO: Mak
   game.healPlayer(showEnemyOrHealer.healingAmount);  // TODO: Add a voice when gained healh
 };
 
+const moveItemFromPlayerToCurrentRoomWrapper = (game) => (itemName) => {
+  if (!itemName) {
+    say.speak(`You forgot to put the name of the item to drop hoor
+
+             try again!`, 'princess');
+    game.consoleOutPut({
+      text: `
+
+                                😂😂😂
+                You forgot to put the name of the item to drop hoor... try again!
+                                😂😂😂
+
+           `,
+        });
+    return;
+  }
+  if (!game.state.player.inventory || !game.state.player.inventory.length) {
+    say.speak(`There is nothing in your Inventory`, 'princess');
+    game.consoleOutPut({
+      text: `
+
+                🕸️🕸️🕸️🕸️🕸️🕸️🕸️🕸️️
+                Inventory is empty...
+                🕸️🕸️🕸️🕸️🕸️🕸️🕸️🕸️
+
+           `,
+        });
+    return;
+  }
+  const item = game.state.items.find((item) => item.name.toLowerCase() === itemName.toLowerCase());
+  if (!item || !game.state.player.inventory.includes(item.id)) {
+    say.speak(`"${itemName}" is not in your inventory`, 'princess');
+    game.consoleOutPut({
+      text: `
+
+                     "${chalk.bold.red(itemName)}" is not in your inventory...
+
+           `,
+        });
+    return;
+  }
+  game.moveItem(item.id, game.state.player, game.getCurrentRoom());
+  say.speak(`You have dropped "${item.name}"`, 'princess');
+  game.consoleOutPut({
+    text: `
+
+                You have dropped "${chalk.bold.red(item.name)}"
+
+       `,
+    });
+};
+
 const moveItemFromCurrentRoomToPlayerWrapper = (game) => (itemName) => {
   if (!itemName) {
     say.speak(`You forgot to put the name of the item to pick up hoor
@@ -148,6 +200,7 @@ const healPlayerWrapper = (game) => (amount) => { // TODO: Use this function lat
 };
 
 const api = {
+  moveItemFromPlayerToCurrentRoomWrapper,
   healPlayerWrapper,
   hurtPlayerWrapper,
   movePlayerToRandomRoomWrapper,
