@@ -5,7 +5,7 @@ const say = require('say');
 const chalkAnimation = require('chalk-animation');
 
 const { basicBoxOptions, basicCFontOptions, getTextColorBasedOnCurrentTime, consoleOutPut } = require('./console.utility');
-const { defaultRoomId, getRoomById, roomsLookup, rooms, showCurrentRoomWrapper, showRoomsWrapper, getCurrentRoomClueWrapper, showCurrentRoomContentsWrapper, getCurrentRoomWrapper } = require('./room.utility');
+const { defaultRoomId, getRoomById, roomsLookup, rooms, showCurrentRoomWrapper, showRoomsWrapper, getCurrentRoomClueWrapper, showCurrentRoomContentsWrapper, getCurrentRoomWrapper, randomlyDistributeItemsToRoomsWrapper, randomlyDistributeEnemiesToRoomsWrapper, randomlyDistributeHealersToRoomsWrapper } = require('./room.utility');
 const { getRandomArrayItem } = require('./general.utility');
 const { getItemByIdWrapper, getEnemyByIdWrapper, getHealerByIdWrapper } = require('./item.utility');
 
@@ -439,6 +439,9 @@ const game = {
     });
   }
 };
+game.randomlyDistributeHealersToRooms = randomlyDistributeHealersToRoomsWrapper(game); //TODO: Does this need to be in action?
+game.randomlyDistributeEnemiesToRooms = randomlyDistributeEnemiesToRoomsWrapper(game); //TODO: Does this need to be in action?
+game.randomlyDistributeItemsToRooms = randomlyDistributeItemsToRoomsWrapper(game); //TODO: Does this need to be in action?
 game.getHealerById = getHealerByIdWrapper(game);
 game.getEnemyById = getEnemyByIdWrapper(game);
 game.getItemById = getItemByIdWrapper(game);
@@ -473,55 +476,6 @@ const actions = {
     movePlayerToRandomRoom() {
       const randomRoom = getRandomArrayItem(game.state.rooms);
       this.movePlayerToRoom(randomRoom.id, false, false);
-    },
-    randomlyDistributeItemsToRooms() { // TODO: Need to randomly sort rooms
-      let availableItems = [...game.state.items];
-      const dealRandomItemToRoom = (room) => {
-        if (!availableItems.length) { return; }
-        const itemToDealOut = getRandomArrayItem(availableItems);
-        room.inventory.push(itemToDealOut.id);
-        availableItems = availableItems.filter((item) => item.id !== itemToDealOut.id);
-      };
-      while (availableItems.length) {
-        rooms.forEach(dealRandomItemToRoom);
-      }
-      const areThereDuplicates = () => {
-        const countOfDedupedItemIdsToWin = new Set(game.state.itemIdsToWin).size;
-        const result = (game.state.itemIdsToWin.length !== countOfDedupedItemIdsToWin);
-        return result;
-      };
-      while (areThereDuplicates()) {
-        game.state.itemIdsToWin = [
-          items[Math.floor(Math.random() * items.length)].id,
-          items[Math.floor(Math.random() * items.length)].id
-        ]
-      }
-      const recipeItems = recipes.map((recipe) => recipe.result);
-      recipeItems.forEach((item) => game.state.items.push(item));
-    },
-    randomlyDistributeEnemiesToRooms() { // TODO: Need to randomly sort rooms
-      let availableEnemies = [...game.state.enemies];
-      const dealRandomEnemyToRoom = (room) => {
-        if (!availableEnemies.length) { return; }
-        const enemyToDealOut = getRandomArrayItem(availableEnemies);
-        room.enemies.push(enemyToDealOut.id);
-        availableEnemies = availableEnemies.filter((enemy) => enemy.id !== enemyToDealOut.id);
-      };
-      while (availableEnemies.length) {
-        rooms.forEach(dealRandomEnemyToRoom);
-      }
-    },
-    randomlyDistributeHealersToRooms() {
-      let availableHealers = [...game.state.healers];
-      const dealRandomHealerToRoom = (room) => {
-        if (!availableHealers.length) { return; }
-        const healerToDealOut = getRandomArrayItem(availableHealers);
-        room.healers.push(healerToDealOut.id);
-        availableHealers = availableHealers.filter((healer) => healer.id !== healerToDealOut.id);
-      };
-      while (availableHealers.length) {
-        rooms.forEach(dealRandomHealerToRoom);
-      }
     },
     moveItem(itemIdToMove, source, destination) {
       const newSourceItems = source.inventory.filter((itemId) => itemId !== itemIdToMove);

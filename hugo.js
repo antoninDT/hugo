@@ -146,7 +146,7 @@ const promptForUserCommand = () => {
                       Oops please enter another command hoor. Type in "help" for a list of commands
 
                   `,
-                });                
+                });
         }
         promptForUserCommand();
     };
@@ -155,9 +155,9 @@ const promptForUserCommand = () => {
 
 const startGame = () => {
     game.actions.movePlayerToRandomRoom();
-    game.actions.randomlyDistributeItemsToRooms();
-    game.actions.randomlyDistributeHealersToRooms();
-    game.actions.randomlyDistributeEnemiesToRooms();
+    game.randomlyDistributeItemsToRooms(); //TODO: Do we need to add .actions here?
+    game.randomlyDistributeHealersToRooms();
+    game.randomlyDistributeEnemiesToRooms();
     game.welcomeMessage();
     promptForUserCommand();
 };

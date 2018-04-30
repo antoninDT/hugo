@@ -103,7 +103,62 @@ const showCurrentRoomContentsWrapper = (game) => (shouldSpeak = true) => { //TOD
   }
 };
 
+const randomlyDistributeItemsToRoomsWrapper = (game) => () => { // TODO: Need to randomly sort rooms
+  let availableItems = [...game.state.items];
+  const dealRandomItemToRoom = (room) => {
+    if (!availableItems.length) { return; }
+    const itemToDealOut = getRandomArrayItem(availableItems);
+    room.inventory.push(itemToDealOut.id);
+    availableItems = availableItems.filter((item) => item.id !== itemToDealOut.id);
+  };
+  while (availableItems.length) {
+    rooms.forEach(dealRandomItemToRoom);
+  }
+  const areThereDuplicates = () => {
+    const countOfDedupedItemIdsToWin = new Set(game.state.itemIdsToWin).size;
+    const result = (game.state.itemIdsToWin.length !== countOfDedupedItemIdsToWin);
+    return result;
+  };
+  while (areThereDuplicates()) {
+    game.state.itemIdsToWin = [
+      items[Math.floor(Math.random() * items.length)].id,
+      items[Math.floor(Math.random() * items.length)].id
+    ]
+  }
+  const recipeItems = game.state.recipes.map((recipe) => recipe.result);
+  recipeItems.forEach((item) => game.state.items.push(item));
+};
+
+const randomlyDistributeEnemiesToRoomsWrapper = (game) => () => { // TODO: Need to randomly sort rooms
+  let availableEnemies = [...game.state.enemies];
+  const dealRandomEnemyToRoom = (room) => {
+    if (!availableEnemies.length) { return; }
+    const enemyToDealOut = getRandomArrayItem(availableEnemies);
+    room.enemies.push(enemyToDealOut.id);
+    availableEnemies = availableEnemies.filter((enemy) => enemy.id !== enemyToDealOut.id);
+  };
+  while (availableEnemies.length) {
+    rooms.forEach(dealRandomEnemyToRoom);
+  }
+};
+
+const randomlyDistributeHealersToRoomsWrapper = (game) => () => {
+  let availableHealers = [...game.state.healers];
+  const dealRandomHealerToRoom = (room) => {
+    if (!availableHealers.length) { return; }
+    const healerToDealOut = getRandomArrayItem(availableHealers);
+    room.healers.push(healerToDealOut.id);
+    availableHealers = availableHealers.filter((healer) => healer.id !== healerToDealOut.id);
+  };
+  while (availableHealers.length) {
+    rooms.forEach(dealRandomHealerToRoom);
+  }
+};
+
 const api = {
+  randomlyDistributeHealersToRoomsWrapper,
+  randomlyDistributeEnemiesToRoomsWrapper,
+  randomlyDistributeItemsToRoomsWrapper,
   getCurrentRoomWrapper,
   showCurrentRoomContentsWrapper,
   defaultRoomId,
