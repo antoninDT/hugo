@@ -8,7 +8,7 @@ const { basicBoxOptions, basicCFontOptions, getTextColorBasedOnCurrentTime, cons
 const { defaultRoomId, getRoomById, roomsLookup, rooms, showCurrentRoomWrapper, showRoomsWrapper, showCurrentRoomContentsWrapper, getCurrentRoomWrapper, randomlyDistributeItemsToRoomsWrapper, randomlyDistributeEnemiesToRoomsWrapper, randomlyDistributeHealersToRoomsWrapper, showEnemyAttackMessageWrapper } = require('./room.utility');
 const { getRandomArrayItem } = require('./general.utility');
 const { getItemByIdWrapper, getEnemyByIdWrapper, getHealerByIdWrapper, showEnemyOrHealerWrapper, getCurrentRoomClueWrapper, getCurrentItemClueWrapper, giveItemClueWrapper, getRandomItemIdToWinWrapper } = require('./item.utility');
-const { dealDamageIfNeededWrapper, healPlayerIfNeededWrapper, moveItemFromCurrentRoomToPlayerWrapper, moveItemWrapper } = require('./player.utility');
+const { dealDamageIfNeededWrapper, healPlayerIfNeededWrapper, moveItemFromCurrentRoomToPlayerWrapper, moveItemWrapper, movePlayerToRoomWrapper } = require('./player.utility');
 
 //TODO: Find out to change the font/increase the size of the font
 const recipesLookup = require('./data/recipes.json');
@@ -364,6 +364,7 @@ const game = {
     });
   }
 };
+game.movePlayerToRoom = movePlayerToRoomWrapper(game); //TODO: Does this need to be in action?
 game.moveItem = moveItemWrapper(game); //TODO: Does this need to be in action?
 game.moveItemFromCurrentRoomToPlayer = moveItemFromCurrentRoomToPlayerWrapper(game); //TODO: Does this need to be in action?
 game.healPlayerIfNeeded = healPlayerIfNeededWrapper(game);
@@ -410,27 +411,7 @@ const actions = {
     },
     movePlayerToRandomRoom() {
       const randomRoom = getRandomArrayItem(game.state.rooms);
-      this.movePlayerToRoom(randomRoom.id, false, false);
-    },
-    movePlayerToRoom(roomId, shouldSpeakCurrentRoom = true, shouldCheckConnectedRooms = true) {
-      const room = getRoomById(roomId);
-      const currentRoom = game.getCurrentRoom();
-      const roomName = room.name;
-      if (!currentRoom.connectedRooms.includes(room.id) && shouldCheckConnectedRooms) {
-        game.consoleOutPut({
-          text: `
-            ${roomName} is not connected to the current room
-          `,
-        });
-        say.speak(`${roomName} is not connected to the current room`, 'princess');
-        return;
-      } //TODO: Say which rooms are connected to the current room
-      game.state.player.currentRoomId = roomId;
-      if (shouldSpeakCurrentRoom) {
-        game.showCurrentRoom();
-        return;
-      }
-      game.showCurrentRoom(false);
+      game.movePlayerToRoom(randomRoom.id, false, false);
     },
     craftItem(itemName1, itemName2) { //TODO: Make a different game mode where you have to craft the item
       const item1 = items.find((item) => item.name.toLowerCase() === itemName1.toLowerCase());

@@ -61,7 +61,7 @@ const promptForUserCommand = () => {
                     break;
                 }
                 const roomId = foundRoom.id;
-                game.actions.movePlayerToRoom(roomId);
+                game.movePlayerToRoom(roomId);
                 break;
             case (commandLookup.help.commands.includes(sanitizedInput)):
                 game.showHelp();

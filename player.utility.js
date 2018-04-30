@@ -1,6 +1,8 @@
 const say = require('say');
 const chalk = require('chalk');
 
+const { getRoomById } = require('./room.utility');
+
 const dealDamageIfNeededWrapper = (game) => (showEnemyOrHealer, shouldSpeak = true) => {
   if (showEnemyOrHealer.isEnemy) {
     game.actions.hurtPlayer(showEnemyOrHealer.damage, false);
@@ -96,7 +98,29 @@ const moveItemWrapper = (game) => (itemIdToMove, source, destination) => {
   destination.inventory.push(itemIdToMove);
 };
 
+const movePlayerToRoomWrapper = (game) => (roomId, shouldSpeakCurrentRoom = true, shouldCheckConnectedRooms = true) => {
+  const room = getRoomById(roomId);
+  const currentRoom = game.getCurrentRoom();
+  const roomName = room.name;
+  if (!currentRoom.connectedRooms.includes(room.id) && shouldCheckConnectedRooms) {
+    game.consoleOutPut({
+      text: `
+        ${roomName} is not connected to the current room
+      `,
+    });
+    say.speak(`${roomName} is not connected to the current room`, 'princess');
+    return;
+  } //TODO: Say which rooms are connected to the current room
+  game.state.player.currentRoomId = roomId;
+  if (shouldSpeakCurrentRoom) {
+    game.showCurrentRoom();
+    return;
+  }
+  game.showCurrentRoom(false);
+};
+
 const api = {
+  movePlayerToRoomWrapper,
   moveItemWrapper,
   moveItemFromCurrentRoomToPlayerWrapper,
   healPlayerIfNeededWrapper,
