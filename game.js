@@ -8,7 +8,7 @@ const { basicBoxOptions, basicCFontOptions, getTextColorBasedOnCurrentTime, cons
 const { defaultRoomId, getRoomById, roomsLookup, rooms, showCurrentRoomWrapper, showRoomsWrapper, showCurrentRoomContentsWrapper, getCurrentRoomWrapper, randomlyDistributeItemsToRoomsWrapper, randomlyDistributeEnemiesToRoomsWrapper, randomlyDistributeHealersToRoomsWrapper, showEnemyAttackMessageWrapper } = require('./room.utility');
 const { getRandomArrayItem } = require('./general.utility');
 const { getItemByIdWrapper, getEnemyByIdWrapper, getHealerByIdWrapper, showEnemyOrHealerWrapper, getCurrentRoomClueWrapper, getCurrentItemClueWrapper, giveItemClueWrapper, getRandomItemIdToWinWrapper } = require('./item.utility');
-const { dealDamageIfNeededWrapper } = require('./player.utility');
+const { dealDamageIfNeededWrapper, healPlayerIfNeededWrapper } = require('./player.utility');
 
 //TODO: Find out to change the font/increase the size of the font
 const recipesLookup = require('./data/recipes.json');
@@ -91,13 +91,6 @@ const game = {
         `,
       });
     this.goodbye(false);
-  },
-  healPlayerIfNeeded(showEnemyOrHealer) {
-    if (!showEnemyOrHealer.healingAmount) { return; }
-    if (showEnemyOrHealer.isItem && showEnemyOrHealer === this.state.itemIdsToWin) { return; }
-    game.actions.healPlayer(showEnemyOrHealer.healingAmount);
-    //TODO: Make this work
-    // TODO: Add a voice when gained healh
   },
   flashScreenRed(text) { // TODO: Finish implementing this
     // TODO: Fix the fact that it's replacing the prompt
@@ -371,6 +364,7 @@ const game = {
     });
   }
 };
+game.healPlayerIfNeeded = healPlayerIfNeededWrapper(game);
 game.dealDamageIfNeeded = dealDamageIfNeededWrapper(game);
 game.getRandomItemIdToWin = getRandomItemIdToWinWrapper(game);
 game.giveItemClue = giveItemClueWrapper(game);

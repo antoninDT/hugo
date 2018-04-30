@@ -10,7 +10,14 @@ const dealDamageIfNeededWrapper = (game) => (showEnemyOrHealer, shouldSpeak = tr
   game.actions.hurtPlayer(showEnemyOrHealer.damage, false);
 };
 
+const healPlayerIfNeededWrapper = (game) => (showEnemyOrHealer) => { //TODO: Make this work
+  if (!showEnemyOrHealer.healingAmount) { return; }
+  if (showEnemyOrHealer.isItem && showEnemyOrHealer === game.state.itemIdsToWin) { return; }
+  game.actions.healPlayer(showEnemyOrHealer.healingAmount);  // TODO: Add a voice when gained healh
+};
+
 const api = {
+  healPlayerIfNeededWrapper,
   dealDamageIfNeededWrapper,
 };
 module.exports = api;
