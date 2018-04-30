@@ -5,8 +5,9 @@ const say = require('say');
 const chalkAnimation = require('chalk-animation');
 
 const { basicBoxOptions, basicCFontOptions, getTextColorBasedOnCurrentTime, consoleOutPut } = require('./console.utility');
-const { defaultRoomId, getRoomById, roomsLookup, rooms, showCurrentRoomWrapper, showRoomsWrapper, getCurrentRoomClueWrapper } = require('./room.utility');
+const { defaultRoomId, getRoomById, roomsLookup, rooms, showCurrentRoomWrapper, showRoomsWrapper, getCurrentRoomClueWrapper, showCurrentRoomContentsWrapper, getCurrentRoomWrapper } = require('./room.utility');
 const { getRandomArrayItem } = require('./general.utility');
+const { getItemByIdWrapper, getEnemyByIdWrapper, getHealerByIdWrapper } = require('./item.utility');
 
 //TODO: Find out to change the font/increase the size of the font
 const recipesLookup = require('./data/recipes.json');
@@ -30,10 +31,6 @@ const player = {
 const trashCan = { //TODO: Remove this, and replace it with something else
   inventory: []
 };
-
-const getItemById = (itemId) => game.state.items.find((item) => item.id === itemId);
-const getEnemyById = (enemyId) => enemies.find((enemy) => enemy.id === enemyId);
-const getHealerById = (healersId) => healers.find((healers) => healers.id === healersId);
 
 const game = {
   state: {
@@ -93,10 +90,6 @@ const game = {
         `,
       });
     this.goodbye(false);
-  },
-  getCurrentRoom() {
-    const result = this.state.rooms.find((room) => room.id === this.state.player.currentRoomId);
-    return result;
   },
   showEnemyOrHealer(showEnemyOrHealer) {
     if (showEnemyOrHealer.isItem) {
@@ -178,62 +171,6 @@ const game = {
              You have ${this.state.player.health} health out of ${this.state.player.maxHealth}
       `,
     });
-  },
-  showCurrentRoomContents(shouldSpeak = true) { //TODO: Refactor this into room.utility
-    const currentRoom = this.getCurrentRoom();
-    const currentRoomContentsVoice = 'princess';
-    const roomContents = [
-      ...currentRoom.inventory.map(getItemById),
-      ...currentRoom.enemies.map(getEnemyById),
-      ...currentRoom.healers.map(getHealerById)
-    ];
-    const roomEnemies = [...currentRoom.enemies.map(getEnemyById)];
-    const roomHealers = [...currentRoom.healers.map(getHealerById)];
-    if (!(roomContents.length)) {
-      if (shouldSpeak) {
-        say.speak('You look around and notice that the room is empty', 'princess');
-      }
-      game.consoleOutPut(`
-
-            You look around and notice that the room is empty...
-            💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩💩
-
-        `, 'white');
-      return;
-    }
-    if (currentRoom.enemies.length) { // TODO: Make the voice say that you have been harmed by an enemy, then say the list of items...
-      roomEnemies.forEach(this.showEnemyAttackMessage);
-      roomEnemies.forEach(this.dealDamageIfNeeded);
-      this.showPlayerStatus(false, false);
-      // return;  TODO: Make the health flash and then show the items in the room
-    }
-    game.consoleOutPut({
-        color: 'yellowBright',
-        text: `
-
-            You look around and notice the following things:
-
-         `,
-      });
-    roomContents.forEach(this.showEnemyOrHealer);
-    if (shouldSpeak) {
-      const continueSpeakingItems = () => {
-        const speakItem = (index = 0) => {
-          const item = roomContents[index];
-          if (!item) {
-            return;
-          }
-          const isLastItemInInventory = (index >= (roomContents.length - 1));
-          const conditionalAnd = (index)
-            ? `, and , `
-            : '';
-          const itemSentence = `${conditionalAnd} ${item.name}`;
-          say.speak(itemSentence, currentRoomContentsVoice, null, () => speakItem(index + 1));
-        };
-        speakItem();
-      };
-      say.speak('You look around and notice the following things: ', currentRoomContentsVoice, null, continueSpeakingItems);
-    }
   },
   showInventory() {
     const inventoryVoice = 'princess';
@@ -502,6 +439,11 @@ const game = {
     });
   }
 };
+game.getHealerById = getHealerByIdWrapper(game);
+game.getEnemyById = getEnemyByIdWrapper(game);
+game.getItemById = getItemByIdWrapper(game);
+game.getCurrentRoom = getCurrentRoomWrapper(game);
+game.showCurrentRoomContents = showCurrentRoomContentsWrapper(game);
 game.getCurrentRoomClue = getCurrentRoomClueWrapper(game);
 game.showRooms = showRoomsWrapper(game);
 game.showCurrentRoom = showCurrentRoomWrapper(game);
