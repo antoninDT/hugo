@@ -153,9 +153,9 @@ const promptForUserCommand = () => {
     processInput('Please enter a command:', handleCommand); //TODO: Add color to the prompt
 };
 
-const startGame = () => {
-    game.actions.movePlayerToRandomRoom();
-    game.randomlyDistributeItemsToRooms(); //TODO: Do we need to add .actions here?
+const startGame = () => { //TODO: Do we need to add .actions here?
+    game.movePlayerToRandomRoom();
+    game.randomlyDistributeItemsToRooms();
     game.randomlyDistributeHealersToRooms();
     game.randomlyDistributeEnemiesToRooms();
     game.welcomeMessage();

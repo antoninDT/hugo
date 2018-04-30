@@ -2,6 +2,7 @@ const say = require('say');
 const chalk = require('chalk');
 
 const { getRoomById } = require('./room.utility');
+const { getRandomArrayItem } = require('./general.utility');
 
 const dealDamageIfNeededWrapper = (game) => (showEnemyOrHealer, shouldSpeak = true) => {
   if (showEnemyOrHealer.isEnemy) {
@@ -119,7 +120,13 @@ const movePlayerToRoomWrapper = (game) => (roomId, shouldSpeakCurrentRoom = true
   game.showCurrentRoom(false);
 };
 
+const movePlayerToRandomRoomWrapper = (game) => () => {
+  const randomRoom = getRandomArrayItem(game.state.rooms);
+  game.movePlayerToRoom(randomRoom.id, false, false);
+};
+
 const api = {
+  movePlayerToRandomRoomWrapper,
   movePlayerToRoomWrapper,
   moveItemWrapper,
   moveItemFromCurrentRoomToPlayerWrapper,

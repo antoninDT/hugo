@@ -8,7 +8,7 @@ const { basicBoxOptions, basicCFontOptions, getTextColorBasedOnCurrentTime, cons
 const { defaultRoomId, getRoomById, roomsLookup, rooms, showCurrentRoomWrapper, showRoomsWrapper, showCurrentRoomContentsWrapper, getCurrentRoomWrapper, randomlyDistributeItemsToRoomsWrapper, randomlyDistributeEnemiesToRoomsWrapper, randomlyDistributeHealersToRoomsWrapper, showEnemyAttackMessageWrapper } = require('./room.utility');
 const { getRandomArrayItem } = require('./general.utility');
 const { getItemByIdWrapper, getEnemyByIdWrapper, getHealerByIdWrapper, showEnemyOrHealerWrapper, getCurrentRoomClueWrapper, getCurrentItemClueWrapper, giveItemClueWrapper, getRandomItemIdToWinWrapper } = require('./item.utility');
-const { dealDamageIfNeededWrapper, healPlayerIfNeededWrapper, moveItemFromCurrentRoomToPlayerWrapper, moveItemWrapper, movePlayerToRoomWrapper } = require('./player.utility');
+const { dealDamageIfNeededWrapper, healPlayerIfNeededWrapper, moveItemFromCurrentRoomToPlayerWrapper, moveItemWrapper, movePlayerToRoomWrapper, movePlayerToRandomRoomWrapper } = require('./player.utility');
 
 //TODO: Find out to change the font/increase the size of the font
 const recipesLookup = require('./data/recipes.json');
@@ -364,6 +364,7 @@ const game = {
     });
   }
 };
+game.movePlayerToRandomRoom = movePlayerToRandomRoomWrapper(game); //TODO: Does this need to be in action?
 game.movePlayerToRoom = movePlayerToRoomWrapper(game); //TODO: Does this need to be in action?
 game.moveItem = moveItemWrapper(game); //TODO: Does this need to be in action?
 game.moveItemFromCurrentRoomToPlayer = moveItemFromCurrentRoomToPlayerWrapper(game); //TODO: Does this need to be in action?
@@ -408,10 +409,6 @@ const actions = {
         game.state.player.health = game.state.player.maxHealth;
       }
       game.showPlayerStatus(false, false);
-    },
-    movePlayerToRandomRoom() {
-      const randomRoom = getRandomArrayItem(game.state.rooms);
-      game.movePlayerToRoom(randomRoom.id, false, false);
     },
     craftItem(itemName1, itemName2) { //TODO: Make a different game mode where you have to craft the item
       const item1 = items.find((item) => item.name.toLowerCase() === itemName1.toLowerCase());
