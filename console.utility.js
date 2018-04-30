@@ -19,6 +19,32 @@ const basicBoxOptions = {
   }
 };
 
+const flashScreenRed = (text) => { // TODO: Finish implementing this
+  // TODO: Fix the fact that it's replacing the prompt
+  // const pulseDelayInMilliseconds = 200;
+  const animationDurationInMilliseconds = 800; // TODO: Figure out how to make the prompt come back right after this is done, instead of waiting
+  const pulse = chalkAnimation.pulse(text);
+  const stopAnimation = () => console.log('');
+  setTimeout(stopAnimation, animationDurationInMilliseconds);
+  // const stopPulsing = () => { pulse.stop(); };
+  // const startPulsing = () => { pulse.start(); };
+  //
+  // const performFlashing = (countOfFlashes) => {
+  //     const flash = (isStarted, currentFlashCount = 1) => setTimeout(() => {
+  //         if (currentFlashCount > countOfFlashes) { return; }
+  //         if (!isStarted) {
+  //             pulse.start();
+  //             flash(true, currentFlashCount);
+  //             return;
+  //         }
+  //         pulse.stop();
+  //         flash(false, currentFlashCount + 1);
+  //     }, pulseDelayInMilliseconds);
+  //     flash(false);
+  // };
+  // performFlashing(1);
+};
+
 const getTextColorBasedOnCurrentTime = () => {
   const now = new Date();
   const currentHour = now.getHours();
@@ -64,6 +90,7 @@ const clearScreenWrapper = (game) => () => {
 };
 
 const api = {
+  flashScreenRed,
   clearScreenWrapper,
   basicBoxOptions,
   basicCFontOptions,

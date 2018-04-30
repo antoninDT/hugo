@@ -2,6 +2,7 @@ const say = require('say');
 const chalk = require('chalk');
 
 const { getRoomById } = require('./room.utility');
+const { flashScreenRed } = require('./console.utility');
 const { getRandomArrayItem } = require('./general.utility');
 
 const dealDamageIfNeededWrapper = (game) => (showEnemyOrHealer, shouldSpeak = true) => {
