@@ -59,7 +59,12 @@ const consoleOutPut = ({text, color, chalkSetting = 'reset', boxenSettings, bgCo
   console.log(chalk[chalkSetting][colorToUse][bgColorToUse](text));
 };
 
+const clearScreenWrapper = (game) => () => {
+  game.consoleOutPut({ text: '\x1Bc' });
+};
+
 const api = {
+  clearScreenWrapper,
   basicBoxOptions,
   basicCFontOptions,
   consoleOutPut,

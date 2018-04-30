@@ -4,7 +4,7 @@ const CFonts = require('cfonts');
 const say = require('say');
 const chalkAnimation = require('chalk-animation');
 
-const { basicBoxOptions, basicCFontOptions, getTextColorBasedOnCurrentTime, consoleOutPut } = require('./console.utility');
+const { basicBoxOptions, basicCFontOptions, getTextColorBasedOnCurrentTime, consoleOutPut, clearScreenWrapper } = require('./console.utility');
 const { defaultRoomId, getRoomById, roomsLookup, rooms, showCurrentRoomWrapper, showRoomsWrapper, getCurrentRoomClueWrapper, showCurrentRoomContentsWrapper, getCurrentRoomWrapper, randomlyDistributeItemsToRoomsWrapper, randomlyDistributeEnemiesToRoomsWrapper, randomlyDistributeHealersToRoomsWrapper, showEnemyAttackMessageWrapper } = require('./room.utility');
 const { getRandomArrayItem } = require('./general.utility');
 const { getItemByIdWrapper, getEnemyByIdWrapper, getHealerByIdWrapper, showEnemyOrHealerWrapper } = require('./item.utility');
@@ -197,9 +197,6 @@ const game = {
       speakItem();
     };
     say.speak('You have the following items in your inventory: ', inventoryVoice, null, continueSpeakingItems);
-  },
-  clearScreen() {
-    game.consoleOutPut({ text: '\x1Bc' });
   },
   sampleVoices() {
     const voices = [
@@ -417,6 +414,7 @@ const game = {
     });
   }
 };
+game.clearScreen = clearScreenWrapper(game);
 game.showEnemyAttackMessage = showEnemyAttackMessageWrapper(game);
 game.showEnemyOrHealer = showEnemyOrHealerWrapper(game);
 game.randomlyDistributeHealersToRooms = randomlyDistributeHealersToRoomsWrapper(game); //TODO: Does this need to be in action?
