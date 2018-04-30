@@ -8,6 +8,7 @@ const { basicBoxOptions, basicCFontOptions, getTextColorBasedOnCurrentTime, cons
 const { defaultRoomId, getRoomById, roomsLookup, rooms, showCurrentRoomWrapper, showRoomsWrapper, showCurrentRoomContentsWrapper, getCurrentRoomWrapper, randomlyDistributeItemsToRoomsWrapper, randomlyDistributeEnemiesToRoomsWrapper, randomlyDistributeHealersToRoomsWrapper, showEnemyAttackMessageWrapper } = require('./room.utility');
 const { getRandomArrayItem } = require('./general.utility');
 const { getItemByIdWrapper, getEnemyByIdWrapper, getHealerByIdWrapper, showEnemyOrHealerWrapper, getCurrentRoomClueWrapper, getCurrentItemClueWrapper, giveItemClueWrapper, getRandomItemIdToWinWrapper } = require('./item.utility');
+const { dealDamageIfNeededWrapper } = require('./player.utility');
 
 //TODO: Find out to change the font/increase the size of the font
 const recipesLookup = require('./data/recipes.json');
@@ -90,16 +91,6 @@ const game = {
         `,
       });
     this.goodbye(false);
-  },
-  dealDamageIfNeeded(showEnemyOrHealer, shouldSpeak = true) {
-    if (showEnemyOrHealer.isEnemy) {
-      game.actions.hurtPlayer(showEnemyOrHealer.damage, false);
-      return;
-    } // TODO: Fix the flashing of the text
-    if (!showEnemyOrHealer.damage) { return; }
-    if (showEnemyOrHealer.isItem && (this.state.itemIdsToWin.includes(showEnemyOrHealer.id))) { return; }
-    if (shouldSpeak) { game.actions.hurtPlayer(showEnemyOrHealer.damage); }
-    game.actions.hurtPlayer(showEnemyOrHealer.damage, false);
   },
   healPlayerIfNeeded(showEnemyOrHealer) {
     if (!showEnemyOrHealer.healingAmount) { return; }
@@ -380,6 +371,7 @@ const game = {
     });
   }
 };
+game.dealDamageIfNeeded = dealDamageIfNeededWrapper(game);
 game.getRandomItemIdToWin = getRandomItemIdToWinWrapper(game);
 game.giveItemClue = giveItemClueWrapper(game);
 game.getCurrentItemClue = getCurrentItemClueWrapper(game);
