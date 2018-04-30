@@ -136,7 +136,7 @@ const promptForUserCommand = () => {
                      const seperatedItems = itemParts[1].split(' and ');
                      itemName1 = getSanitizedText(seperatedItems[0]);
                      itemName2 = getSanitizedText(seperatedItems[1]);
-                     game.actions.craftItem(itemName1, itemName2);
+                     game.craftItem(itemName1, itemName2);
                      break;
             default:
                 say.speak(`Oops please enter another command hoor. Type in "help" for a list of commands`, 'princess');

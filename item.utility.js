@@ -70,7 +70,35 @@ const getRandomItemIdToWinWrapper = (game) => () => {
   return itemId;
 };
 
+const craftItemWrapper = (game) => (itemName1, itemName2) => { //TODO: Make a different game mode where you have to craft the item
+  const item1 = game.state.items.find((item) => item.name.toLowerCase() === itemName1.toLowerCase()); //TODO: Replace all the console.log with consoleOutPut
+  const item2 = game.state.items.find((item) => item.name.toLowerCase() === itemName2.toLowerCase());
+  if (!(item1 && item2)) {
+    console.log('Missing or unknown item');
+    return;
+  }
+  const recipe = game.state.recipes.find((recipe) => recipe.ingredients.includes(item1.id) && recipe.ingredients.includes(item2.id));
+  if (!recipe) {
+    console.log(`${item1.name} can not be crafted with ${item2.name}`)
+    return;
+  }
+  if (!(game.state.player.inventory.includes(item1.id) && game.state.player.inventory.includes(item2.id))) {
+    console.log(`You do not have the items that you wish to craft with, make sure these items are in your inventory first...`);
+    return;
+  }
+  game.spawnItem(recipe.result.id, game.state.player);
+  game.moveItem(item1.id, game.state.player, game.state.trashCan);
+  game.moveItem(item2.id, game.state.player, game.state.trashCan);
+  console.log(`${chalk.bold.green(recipe.result.name)} has been added to your inventory`)
+};
+
+const spawnItemWrapper = (game) => (itemIdToSpawn, destination) => {
+   destination.inventory.push(itemIdToSpawn);
+};
+
 const api = {
+  spawnItemWrapper,
+  craftItemWrapper,
   getRandomItemIdToWinWrapper,
   giveItemClueWrapper,
   getCurrentItemClueWrapper,

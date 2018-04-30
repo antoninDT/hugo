@@ -7,7 +7,7 @@ const chalkAnimation = require('chalk-animation');
 const { basicBoxOptions, basicCFontOptions, getTextColorBasedOnCurrentTime, consoleOutPut, clearScreenWrapper } = require('./console.utility');
 const { defaultRoomId, getRoomById, roomsLookup, rooms, showCurrentRoomWrapper, showRoomsWrapper, showCurrentRoomContentsWrapper, getCurrentRoomWrapper, randomlyDistributeItemsToRoomsWrapper, randomlyDistributeEnemiesToRoomsWrapper, randomlyDistributeHealersToRoomsWrapper, showEnemyAttackMessageWrapper } = require('./room.utility');
 const { getRandomArrayItem } = require('./general.utility');
-const { getItemByIdWrapper, getEnemyByIdWrapper, getHealerByIdWrapper, showEnemyOrHealerWrapper, getCurrentRoomClueWrapper, getCurrentItemClueWrapper, giveItemClueWrapper, getRandomItemIdToWinWrapper } = require('./item.utility');
+const { getItemByIdWrapper, getEnemyByIdWrapper, getHealerByIdWrapper, showEnemyOrHealerWrapper, getCurrentRoomClueWrapper, getCurrentItemClueWrapper, giveItemClueWrapper, getRandomItemIdToWinWrapper, craftItemWrapper, spawnItemWrapper } = require('./item.utility');
 const { dealDamageIfNeededWrapper, healPlayerIfNeededWrapper, moveItemFromCurrentRoomToPlayerWrapper, moveItemWrapper, movePlayerToRoomWrapper, movePlayerToRandomRoomWrapper, hurtPlayerWrapper, healPlayerWrapper } = require('./player.utility');
 
 //TODO: Find out to change the font/increase the size of the font
@@ -364,6 +364,8 @@ const game = {
     });
   }
 };
+game.spawnItem = spawnItemWrapper(game); //TODO: Does this need to be in action?
+game.craftItem = craftItemWrapper(game); //TODO: Does this need to be in action?
 game.healPlayer = healPlayerWrapper(game); //TODO: Does this need to be in action?
 game.hurtPlayer = hurtPlayerWrapper(game); //TODO: Does this need to be in action?
 game.movePlayerToRandomRoom = movePlayerToRandomRoomWrapper(game); //TODO: Does this need to be in action?
@@ -391,30 +393,6 @@ game.showRooms = showRoomsWrapper(game);
 game.showCurrentRoom = showCurrentRoomWrapper(game);
 
 const actions = {
-    craftItem(itemName1, itemName2) { //TODO: Make a different game mode where you have to craft the item
-      const item1 = items.find((item) => item.name.toLowerCase() === itemName1.toLowerCase());
-      const item2 = items.find((item) => item.name.toLowerCase() === itemName2.toLowerCase());
-      if (!(item1 && item2)) {
-        console.log('Missing or unknown item');
-        return;
-      }
-      const recipe = game.state.recipes.find((recipe) => recipe.ingredients.includes(item1.id) && recipe.ingredients.includes(item2.id));
-      if (!recipe) {
-        console.log(`${item1.name} can not be crafted with ${item2.name}`)
-        return;
-      }
-      if (!(game.state.player.inventory.includes(item1.id) && game.state.player.inventory.includes(item2.id))) {
-        console.log(`You do not have the items that you wish to craft with, make sure these items are in your inventory first...`);
-        return;
-      }
-      this.spawnItem(recipe.result.id, game.state.player);
-      this.moveItem(item1.id, game.state.player, game.state.trashCan);
-      this.moveItem(item2.id, game.state.player, game.state.trashCan);
-      console.log(`${chalk.bold.green(recipe.result.name)} has been added to your inventory`)
-    },
-    spawnItem(itemIdToSpawn, destination) {
-       destination.inventory.push(itemIdToSpawn);
-    }, //TODO: Refactor this into item.utility
     moveItemFromPlayerToCurrentRoom(itemName) {
       if (!itemName) {
         say.speak(`You forgot to put the name of the item to drop hoor
