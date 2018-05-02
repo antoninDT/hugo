@@ -61,7 +61,7 @@ const promptForUserCommand = () => {
                     break;
                 }
                 const roomId = foundRoom.id;
-                game.actions.movePlayerToRoom(roomId);
+                game.movePlayerToRoom(roomId);
                 break;
             case (commandLookup.help.commands.includes(sanitizedInput)):
                 game.showHelp();
@@ -89,14 +89,14 @@ const promptForUserCommand = () => {
                 itemParts = sanitizedInput
                     .split(specificCommandUsed);
                 itemName = getSanitizedText(itemParts[1]);
-                game.actions.moveItemFromCurrentRoomToPlayer(itemName, sanitizedInput);
+                game.moveItemFromCurrentRoomToPlayer(itemName, sanitizedInput);
                 break;
             case (commandLookup.transferItemToRoomInventory.commands.some(doesSanitizedInputStartWithCommand)):
                 specificCommandUsed = commandLookup.transferItemToRoomInventory.commands.find(doesSanitizedInputStartWithCommand);
                 itemParts = sanitizedInput
                     .split(specificCommandUsed);
                 itemName = getSanitizedText(itemParts[1]);
-                game.actions.moveItemFromPlayerToCurrentRoom(itemName);
+                game.moveItemFromPlayerToCurrentRoom(itemName);
                 break;
             case (commandLookup.showClue.commands.includes(sanitizedInput)):
                 game.giveItemClue();
@@ -127,7 +127,7 @@ const promptForUserCommand = () => {
                  console.dir(game.state);
                  break;
              case (sanitizedInput === 'die'): // TODO: This is "secret" it won't appear in help. Should disable this in the future
-                 game.actions.hurtPlayer(100);
+                 game.hurtPlayer(100);
                  break;
              case (commandLookup.craftItem.commands.some(doesSanitizedInputStartWithCommand)): //TODO: Make this work
                      specificCommandUsed = commandLookup.craftItem.commands.find(doesSanitizedInputStartWithCommand);
@@ -136,7 +136,7 @@ const promptForUserCommand = () => {
                      const seperatedItems = itemParts[1].split(' and ');
                      itemName1 = getSanitizedText(seperatedItems[0]);
                      itemName2 = getSanitizedText(seperatedItems[1]);
-                     game.actions.craftItem(itemName1, itemName2);
+                     game.craftItem(itemName1, itemName2);
                      break;
             default:
                 say.speak(`Oops please enter another command hoor. Type in "help" for a list of commands`, 'princess');
@@ -146,18 +146,18 @@ const promptForUserCommand = () => {
                       Oops please enter another command hoor. Type in "help" for a list of commands
 
                   `,
-                });                
+                });
         }
         promptForUserCommand();
     };
     processInput('Please enter a command:', handleCommand); //TODO: Add color to the prompt
 };
 
-const startGame = () => {
-    game.actions.movePlayerToRandomRoom();
-    game.actions.randomlyDistributeItemsToRooms();
-    game.actions.randomlyDistributeHealersToRooms();
-    game.actions.randomlyDistributeEnemiesToRooms();
+const startGame = () => { //TODO: Do we need to add .actions here?
+    game.movePlayerToRandomRoom();
+    game.randomlyDistributeItemsToRooms();
+    game.randomlyDistributeHealersToRooms();
+    game.randomlyDistributeEnemiesToRooms();
     game.welcomeMessage();
     promptForUserCommand();
 };
