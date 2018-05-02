@@ -203,7 +203,7 @@ const healPlayerWrapper = (game) => (amount) => { // TODO: Use this function lat
 const showPlayerStatusWrapper = (game) => (shouldSpeak = true, shouldFlash = true) => {
   const text = `You have ${game.state.player.health} health out of ${game.state.player.maxHealth}`;
   if (shouldFlash) {
-    game.flashScreenRed(text);
+    flashScreenRed(text);
     return;
   }
   if (shouldSpeak) {

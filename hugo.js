@@ -129,7 +129,7 @@ const promptForUserCommand = () => {
              case (sanitizedInput === 'die'): // TODO: This is "secret" it won't appear in help. Should disable this in the future
                  game.hurtPlayer(100);
                  break;
-             case (commandLookup.craftItem.commands.some(doesSanitizedInputStartWithCommand)): //TODO: Make this work
+             case (commandLookup.craftItem.commands.some(doesSanitizedInputStartWithCommand)): //Make sure that when no items are put after the word "craft" that the game says an error warning instead of crashing
                      specificCommandUsed = commandLookup.craftItem.commands.find(doesSanitizedInputStartWithCommand);
                      itemParts = sanitizedInput
                          .split(specificCommandUsed);
