@@ -94,7 +94,7 @@ const game = {
   },
   getTextColorBasedOnCurrentTime,
   consoleOutPut,
-  sampleVoices() {
+  sampleVoices() { // TODO REFACTOR: Move this into a new voice.utility.js file
     const voices = [
       'Agnes',
       'Albert',
@@ -276,43 +276,47 @@ const game = {
     });
   }
 };
-game.showInventory = showInventoryWrapper(game);
-game.showPlayerStatus = showPlayerStatusWrapper(game);
-game.moveItemFromPlayerToCurrentRoom = moveItemFromPlayerToCurrentRoomWrapper(game); //TODO: Does this need to be in action?
-game.spawnItem = spawnItemWrapper(game); //TODO: Does this need to be in action?
-game.craftItem = craftItemWrapper(game); //TODO: Does this need to be in action?
-game.healPlayer = healPlayerWrapper(game); //TODO: Does this need to be in action?
-game.hurtPlayer = hurtPlayerWrapper(game); //TODO: Does this need to be in action?
-game.movePlayerToRandomRoom = movePlayerToRandomRoomWrapper(game); //TODO: Does this need to be in action?
-game.movePlayerToRoom = movePlayerToRoomWrapper(game); //TODO: Does this need to be in action?
-game.moveItem = moveItemWrapper(game); //TODO: Does this need to be in action?
-game.moveItemFromCurrentRoomToPlayer = moveItemFromCurrentRoomToPlayerWrapper(game); //TODO: Does this need to be in action?
-game.healPlayerIfNeeded = healPlayerIfNeededWrapper(game);
-game.dealDamageIfNeeded = dealDamageIfNeededWrapper(game);
-game.getRandomItemIdToWin = getRandomItemIdToWinWrapper(game);
-game.giveItemClue = giveItemClueWrapper(game);
-game.getCurrentItemClue = getCurrentItemClueWrapper(game);
-game.clearScreen = clearScreenWrapper(game);
-game.showEnemyAttackMessage = showEnemyAttackMessageWrapper(game);
-game.showEnemyOrHealer = showEnemyOrHealerWrapper(game);
-game.randomlyDistributeHealersToRooms = randomlyDistributeHealersToRoomsWrapper(game); //TODO: Does this need to be in action?
-game.randomlyDistributeEnemiesToRooms = randomlyDistributeEnemiesToRoomsWrapper(game); //TODO: Does this need to be in action?
-game.randomlyDistributeItemsToRooms = randomlyDistributeItemsToRoomsWrapper(game); //TODO: Does this need to be in action?
-game.getHealerById = getHealerByIdWrapper(game);
-game.getEnemyById = getEnemyByIdWrapper(game);
-game.getItemById = getItemByIdWrapper(game);
-game.getCurrentRoom = getCurrentRoomWrapper(game);
-game.showCurrentRoomContents = showCurrentRoomContentsWrapper(game);
-game.getCurrentRoomClue = getCurrentRoomClueWrapper(game);
-game.showRooms = showRoomsWrapper(game);
-game.showCurrentRoom = showCurrentRoomWrapper(game);
 
-const actions = {
+const wireUpImportedGameFunctions = () => {
+  game.showInventory = showInventoryWrapper(game);
+  game.showPlayerStatus = showPlayerStatusWrapper(game);
+  game.moveItemFromPlayerToCurrentRoom = moveItemFromPlayerToCurrentRoomWrapper(game); //TODO: Does this need to be in action?
+  game.spawnItem = spawnItemWrapper(game); //TODO: Does this need to be in action?
+  game.craftItem = craftItemWrapper(game); //TODO: Does this need to be in action?
+  game.healPlayer = healPlayerWrapper(game); //TODO: Does this need to be in action?
+  game.hurtPlayer = hurtPlayerWrapper(game); //TODO: Does this need to be in action?
+  game.movePlayerToRandomRoom = movePlayerToRandomRoomWrapper(game); //TODO: Does this need to be in action?
+  game.movePlayerToRoom = movePlayerToRoomWrapper(game); //TODO: Does this need to be in action?
+  game.moveItem = moveItemWrapper(game); //TODO: Does this need to be in action?
+  game.moveItemFromCurrentRoomToPlayer = moveItemFromCurrentRoomToPlayerWrapper(game); //TODO: Does this need to be in action?
+  game.healPlayerIfNeeded = healPlayerIfNeededWrapper(game);
+  game.dealDamageIfNeeded = dealDamageIfNeededWrapper(game);
+  game.getRandomItemIdToWin = getRandomItemIdToWinWrapper(game);
+  game.giveItemClue = giveItemClueWrapper(game);
+  game.getCurrentItemClue = getCurrentItemClueWrapper(game);
+  game.clearScreen = clearScreenWrapper(game);
+  game.showEnemyAttackMessage = showEnemyAttackMessageWrapper(game);
+  game.showEnemyOrHealer = showEnemyOrHealerWrapper(game);
+  game.randomlyDistributeHealersToRooms = randomlyDistributeHealersToRoomsWrapper(game); //TODO: Does this need to be in action?
+  game.randomlyDistributeEnemiesToRooms = randomlyDistributeEnemiesToRoomsWrapper(game); //TODO: Does this need to be in action?
+  game.randomlyDistributeItemsToRooms = randomlyDistributeItemsToRoomsWrapper(game); //TODO: Does this need to be in action?
+  game.getHealerById = getHealerByIdWrapper(game);
+  game.getEnemyById = getEnemyByIdWrapper(game);
+  game.getItemById = getItemByIdWrapper(game);
+  game.getCurrentRoom = getCurrentRoomWrapper(game);
+  game.showCurrentRoomContents = showCurrentRoomContentsWrapper(game);
+  game.getCurrentRoomClue = getCurrentRoomClueWrapper(game);
+  game.showRooms = showRoomsWrapper(game);
+  game.showCurrentRoom = showCurrentRoomWrapper(game);
+};
+wireUpImportedGameFunctions();
+
+const actions = { // TODO REFACTOR: Kill this for now (we can decide later whether to bring it back)
 
 };
 game.actions = actions;
 
-const getNewGame = () => {
+const getNewGame = () => { // TODO REFACTOR: Kill this for now (we can decide later whether to bring it back)
   const result = {
     ...game
   };

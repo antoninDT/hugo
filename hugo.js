@@ -2,28 +2,26 @@ require('babel-register');
 const chalk = require('chalk');
 const say = require('say');
 
-
-
 const readline = require('readline');
 
 const { getNewGame } = require('./game.js');
-const roomsLookup = require('./data/rooms.json');
-const itemsLookup = require('./data/items.json'); // TODO: Kill this line
-const commandLookup = require('./data/commands.json');
+const roomsLookup = require('./data/rooms.json'); // TODO REFACTOR: Move this into game.js
+const itemsLookup = require('./data/items.json'); // TODO REFACTOR: Move this into game.js
+const commandLookup = require('./data/commands.json'); // TODO REFACTOR: Move this to the same file as whomever uses it
 
-const lineReader = readline.createInterface({
+const lineReader = readline.createInterface({ // TODO REFACTOR: Move this into the console.utility.js file (export it from there)
     input: process.stdin,
     output: process.stdout
 });
 
-const rooms = Object.values(roomsLookup);
+const rooms = Object.values(roomsLookup); // TODO REFACTOR: Move this to whichever utility file is using it...
 const game = getNewGame();
 
-const processInput = (prompt, handler) => {
+const processInput = (prompt, handler) => { // TODO REFACOR: Move this into console.utility
     lineReader.question(prompt, handler);
 };
 
-const getSanitizedText = (text) => {
+const getSanitizedText = (text) => { // TODO REFACTOR: this should be moved into some kind of text utility file
     const punctuationRegex = /[.,\/#!$%^&*;:{}=\-_`~()?@]/g;
     const result = text
         .toLowerCase()
@@ -33,35 +31,40 @@ const getSanitizedText = (text) => {
     return result;
 };
 
-const promptForUserCommand = () => {
+const promptForUserCommand = (game) => { // TODO REFACTOR: This should be in the console.utility.js file. WARNING: it may need some special massaging to make it work properly.
     const handleCommand = (result) => {
         const sanitizedInput = getSanitizedText(result);
         let itemParts;
         let itemName;
         let specificCommandUsed;
         const doesSanitizedInputStartWithCommand = (command) => sanitizedInput.startsWith(command);
-         switch (true) {
+
+        const handleGoToCommand = () => {
+          specificCommandUsed = commandLookup.goTo.commands.find(doesSanitizedInputStartWithCommand);
+          const roomParts = sanitizedInput
+              .split(specificCommandUsed);
+          const roomNameAsInput = roomParts[1];
+          const roomName = getSanitizedText(roomNameAsInput);
+          const foundRoom = rooms
+              .find((room) => getSanitizedText(room.name) === roomName);
+          if (!foundRoom) {
+              console.log(chalk.yellow(`
+
+                  Oops this room does not exist: ${chalk.bold.red(roomNameAsInput)}
+
+              `));
+              return;
+          }
+          const roomId = foundRoom.id;
+          game.movePlayerToRoom(roomId);
+        };
+
+        switch (true) { // TODO REFACTOR: Consider refactoring some of the larger (greater than 4 lines) cases into functions
             case (commandLookup.exit.commands.includes(sanitizedInput)):
                 game.goodbye();
                 return;
             case (commandLookup.goTo.commands.some(doesSanitizedInputStartWithCommand)):
-                specificCommandUsed = commandLookup.goTo.commands.find(doesSanitizedInputStartWithCommand);
-                const roomParts = sanitizedInput
-                    .split(specificCommandUsed);
-                const roomNameAsInput = roomParts[1];
-                const roomName = getSanitizedText(roomNameAsInput);
-                const foundRoom = rooms
-                    .find((room) => getSanitizedText(room.name) === roomName);
-                if (!foundRoom) {
-                    console.log(chalk.yellow(`
-
-                        Oops this room does not exist: ${chalk.bold.red(roomNameAsInput)}
-
-                    `));
-                    break;
-                }
-                const roomId = foundRoom.id;
-                game.movePlayerToRoom(roomId);
+                handleGoToCommand();
                 break;
             case (commandLookup.help.commands.includes(sanitizedInput)):
                 game.showHelp();
@@ -148,17 +151,17 @@ const promptForUserCommand = () => {
                   `,
                 });
         }
-        promptForUserCommand();
+        promptForUserCommand(game);
     };
     processInput('Please enter a command:', handleCommand); //TODO: Add color to the prompt
 };
 
-const startGame = () => { //TODO: Do we need to add .actions here?
+const startGame = () => {
     game.movePlayerToRandomRoom();
     game.randomlyDistributeItemsToRooms();
     game.randomlyDistributeHealersToRooms();
     game.randomlyDistributeEnemiesToRooms();
     game.welcomeMessage();
-    promptForUserCommand();
+    promptForUserCommand(game);
 };
 startGame();
