@@ -10,14 +10,12 @@ const game = getNewGame();
 
 promptForUserCommand = promptForUserCommandWrapper(game);
 
-promptForUserCommand();
-
 const startGame = () => {
     game.movePlayerToRandomRoom();
     game.randomlyDistributeItemsToRooms();
     game.randomlyDistributeHealersToRooms();
     game.randomlyDistributeEnemiesToRooms();
     game.welcomeMessage();
-    promptForUserCommand(game);
+    promptForUserCommand();
 };
 startGame();
