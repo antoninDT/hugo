@@ -44,7 +44,7 @@ const showCurrentRoomWrapper = (game) => (shouldSpeakCurrentRoom = true) => {
   if (shouldSpeakCurrentRoom) { say.speak(`You are in the ${currentRoomName}`, 'princess'); }
 };
 
-const showCurrentRoomContentsWrapper = (game) => (shouldSpeak = true) => { //TODO: Refactor this into room.utility
+const showCurrentRoomContentsWrapper = (game) => (shouldSpeak = true) => {
   const currentRoom = game.getCurrentRoom(); //Fix this
   const currentRoomContentsVoice = 'princess';
   const roomContents = [
@@ -118,9 +118,9 @@ const randomlyDistributeItemsToRoomsWrapper = (game) => () => { // TODO: Need to
     return result;
   };
   while (areThereDuplicates()) {
-    game.state.itemIdsToWin = [
-      items[Math.floor(Math.random() * items.length)].id,
-      items[Math.floor(Math.random() * items.length)].id
+    game.state.itemIdsToWin = [ //TODO: Fix this
+      game.state.items[Math.floor(Math.random() * game.state.items.length)].id,
+      game.state.items[Math.floor(Math.random() * game.state.items.length)].id
     ]
   }
   const recipeItems = game.state.recipes.map((recipe) => recipe.result);

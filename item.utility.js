@@ -71,7 +71,7 @@ const getRandomItemIdToWinWrapper = (game) => () => {
 };
 
 const craftItemWrapper = (game) => (itemName1, itemName2) => { //TODO: Make a different game mode where you have to craft the item
-  const item1 = game.state.items.find((item) => item.name.toLowerCase() === itemName1.toLowerCase()); //TODO: Replace all the console.log with consoleOutPut
+  const item1 = game.state.items.find((item) => item.name.toLowerCase() === itemName1.toLowerCase()); 
   const item2 = game.state.items.find((item) => item.name.toLowerCase() === itemName2.toLowerCase());
   if (!(itemName1 && itemName2)) {
     game.consoleOutPut({ text: 'Oops, you forgot to put the name of the items to craft' });
