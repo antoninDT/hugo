@@ -136,6 +136,14 @@ const promptForUserCommandWrapper = (game) => () => { // TODO REFACTOR: This sho
           game.movePlayerToRoom(roomId);
         };
 
+        const getItemNameFromInput = (commandName) => {
+          specificCommandUsed = commandLookup[commandName].commands.find(doesSanitizedInputStartWithCommand);
+          itemParts = sanitizedInput
+              .split(specificCommandUsed);
+          itemName = getSanitizedText(itemParts[1]);
+          return itemName;
+        };
+
         switch (true) { // TODO REFACTOR: Consider refactoring some of the larger (greater than 4 lines) cases into functions
             case (commandLookup.exit.commands.includes(sanitizedInput)):
                 game.goodbye();
@@ -165,17 +173,11 @@ const promptForUserCommandWrapper = (game) => () => { // TODO REFACTOR: This sho
                 game.showInventory();
                 break;
             case (commandLookup.transferItemToPlayerInventory.commands.some(doesSanitizedInputStartWithCommand)):
-                specificCommandUsed = commandLookup.transferItemToPlayerInventory.commands.find(doesSanitizedInputStartWithCommand);
-                itemParts = sanitizedInput
-                    .split(specificCommandUsed);
-                itemName = getSanitizedText(itemParts[1]);
+                itemName = getItemNameFromInput('transferItemToPlayerInventory');
                 game.moveItemFromCurrentRoomToPlayer(itemName, sanitizedInput);
                 break;
             case (commandLookup.transferItemToRoomInventory.commands.some(doesSanitizedInputStartWithCommand)):
-                specificCommandUsed = commandLookup.transferItemToRoomInventory.commands.find(doesSanitizedInputStartWithCommand);
-                itemParts = sanitizedInput
-                    .split(specificCommandUsed);
-                itemName = getSanitizedText(itemParts[1]);
+                itemName = getItemNameFromInput('transferItemToRoomInventory');
                 game.moveItemFromPlayerToCurrentRoom(itemName);
                 break;
             case (commandLookup.showClue.commands.includes(sanitizedInput)):
@@ -209,7 +211,7 @@ const promptForUserCommandWrapper = (game) => () => { // TODO REFACTOR: This sho
              case (sanitizedInput === 'die'): // TODO: This is "secret" it won't appear in help. Should disable this in the future
                  game.hurtPlayer(100);
                  break;
-             case (commandLookup.craftItem.commands.some(doesSanitizedInputStartWithCommand)): //Make sure that when no items are put after the word "craft" that the game says an error warning instead of crashing
+             case (commandLookup.craftItem.commands.some(doesSanitizedInputStartWithCommand)): // TODO: Make sure that when no items are put after the word "craft" that the game says an error warning instead of crashing
                      specificCommandUsed = commandLookup.craftItem.commands.find(doesSanitizedInputStartWithCommand);
                      itemParts = sanitizedInput
                          .split(specificCommandUsed);
