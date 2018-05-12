@@ -1,12 +1,12 @@
 const chalk = require('chalk');
 const boxen = require('boxen');
 const CFonts = require('cfonts');
-const say = require('say');
 const chalkAnimation = require('chalk-animation');
 
 const { basicBoxOptions, basicCFontOptions, getTextColorBasedOnCurrentTime, consoleOutPut, clearScreenWrapper, } = require('./console.utility');
 const { defaultRoomId, getRoomById, roomsLookup, rooms, showCurrentRoomWrapper, showRoomsWrapper, showCurrentRoomContentsWrapper, getCurrentRoomWrapper, randomlyDistributeItemsToRoomsWrapper, randomlyDistributeEnemiesToRoomsWrapper, randomlyDistributeHealersToRoomsWrapper, showEnemyAttackMessageWrapper } = require('./room.utility');
 const { getRandomArrayItem } = require('./general.utility');
+const { addSentenceToSpeechQueue, sampleVoicesWrapper } = require('./voices.utility');
 const { getItemByIdWrapper, getEnemyByIdWrapper, getHealerByIdWrapper, showEnemyOrHealerWrapper, getCurrentRoomClueWrapper, getCurrentItemClueWrapper, giveItemClueWrapper, getRandomItemIdToWinWrapper, craftItemWrapper, spawnItemWrapper } = require('./item.utility');
 const { dealDamageIfNeededWrapper, healPlayerIfNeededWrapper, moveItemFromCurrentRoomToPlayerWrapper, moveItemWrapper, movePlayerToRoomWrapper, movePlayerToRandomRoomWrapper, hurtPlayerWrapper, healPlayerWrapper, moveItemFromPlayerToCurrentRoomWrapper, showPlayerStatusWrapper, showInventoryWrapper } = require('./player.utility');
 
@@ -58,19 +58,18 @@ const game = {
       letterSpacing: 8,
       colors: ['blue', 'white']
     };
-    if (shouldSpeakClue) {
-      say.speak('DOE DOEI', 'ellen', 0.5);
+    if (shouldSpeakClue) { //TODO: Remove all usages of shouldSpeak?
+      addSentenceToSpeechQueue({ sentence: 'DOE DOEI', voice: 'ellen', voiceSpeed: 0.5});
     }
     CFonts.say('DOE', goodbyeMessageOptions);
     CFonts.say('DOEI', goodbyeMessageOptions);
     CFonts.say('!!', goodbyeMessageOptions);
-    process.exit();
+    const endGame = () => process.exit();
+    setTimeout(endGame, 1000);
   },
   // TODO: Make a high score screen
   showWinScreen() {
-    say.speak(`Congratulations!
-
-            You have found the hidden item!`, 'daniel',);
+    addSentenceToSpeechQueue({ sentence: `Congratulations!      You have found the hidden item!`, voice: 'daniel' });
     game.consoleOutPut({
         color: 'magentaBright',
         text: `
@@ -80,8 +79,7 @@ const game = {
     this.goodbye(false);
   },
   showLoseScreen() {
-    say.speak(`Uh Oh it looks like you have die ie ied!
-        `, 'Bad News',);
+    addSentenceToSpeechQueue({ sentence: `Uh Oh it looks like you have die ie ied!`, voice: 'Bad News' });
     this.showPlayerStatus(false, false);
     // const text = 'Uh Oh... It appears you died, try again next time!'; TODO: Make this a "flashScreenRed"function
     game.consoleOutPut({
@@ -94,112 +92,6 @@ const game = {
   },
   getTextColorBasedOnCurrentTime,
   consoleOutPut,
-  sampleVoices() { // TODO REFACTOR: Move this into a new voice.utility.js file
-    const voices = [
-      'Agnes',
-      'Albert',
-      'Alex',
-      'Alice',
-      'Alva',
-      'Amelie',
-      'Anna',
-      'Bad News',
-      'Bahh',
-      'Bells',
-      'Boing',
-      'Bruce',
-      'Bubbles',
-      'Carmit',
-      'Cellos',
-      'Damayanti',
-      'Daniel',
-      'Deranged',
-      'Diego',
-      'Ellen',
-      'Fiona',
-      'Fred',
-      'Good news',
-      'Hysterical',
-      'Ioana',
-      'Joana',
-      'Jorge',
-      'Juan',
-      'Kanya',
-      'Karen',
-      'Kate',
-      'Kathy',
-      'Kyoko',
-      'Laura',
-      'Lee',
-      'Lekha',
-      'Luca',
-      'Luciana',
-      'Maged',
-      'Mariska',
-      'Mei-Jia',
-      'Melina',
-      'Milena',
-      'Moira',
-      'Monica',
-      'Nora',
-      'Oliver',
-      'Paulina',
-      'Pipe Organ',
-      'Princess',
-      'Ralph',
-      'Samantha',
-      'Sara',
-      'Satu',
-      'Serena',
-      'Sin-ji',
-      'Tessa',
-      'Thomas',
-      'Ting-Ting',
-      'Trinoids',
-      'Veena',
-      'Vicki',
-      'Victoria',
-      'Whisper',
-      'Xander',
-      'Yelda',
-      'Yuna',
-      'Yuri',
-      'Zarvox',
-      'Zosia',
-      'Zuzana'
-    ];
-
-    const sampleVoice = (index = 0) => {
-      const voice = voices[index];
-      if (!voice) {
-        return;
-      }
-      game.consoleOutPut({ text: `DEBUG: sampleVoice() voice: ${voice}` }); //TODO: Kill this line
-      const speakSampleSentence2 = (voice) => {
-        const sampleSentence2 = 'Airam and her boyfriends, including Isreal and Connor';
-        say.speak(sampleSentence2, voice, 1, () => sampleVoice(index + 1));
-      };
-      const speakSampleSentence1 = (voice) => {
-        const sampleSentence = `This is a sample sentence for the game. La la la la! Ma ma ma ma! Ra ra Ba ba pa pa, fa fa fa fa fa
-
-                These three skis through the trees to my knees but without all those tricky tricky stinky slinky bees. Who? Why? What! OK! whatever
-
-                `;
-        say.speak(sampleSentence, voice, 1, () => sampleVoice(index + 1));
-      };
-      const speakSampleSentenceForVoice = () => {
-        speakSampleSentence2(voice);
-      };
-      const speakAnnouncement = () => {
-        say.speak(`Sample voice for: ${voice}`, 'Samantha', 1, speakSampleSentenceForVoice);
-      };
-      speakAnnouncement();
-    };
-    const speakGreeting = () => {
-      say.speak(`OK, now I'm going to list all of the possible voices for you: `, 'Samantha', 1, () => sampleVoice());
-    };
-    speakGreeting();
-  },
   welcomeMessage() { // TODO: Add promises so that voice can work
     const welcomeMessageOptions = {
       ...basicCFontOptions,
@@ -208,7 +100,7 @@ const game = {
     };
     this.clearScreen();
     CFonts.say('Welkom|bij|Hugo|Hulp', welcomeMessageOptions);
-    say.speak('Welkom bij Hugo Hulp', 'ellen', 0.5);
+    addSentenceToSpeechQueue({ sentence: 'Welkom bij Hugo Hulp', voice: 'ellen', voiceSpeed: 0.5});
     console.log();
     game.consoleOutPut({
       chalkSetting: 'bold',
@@ -225,7 +117,7 @@ const game = {
     this.showCurrentRoom(false);
     this.giveItemClue(false);
   },
-  showHelp() {
+  showHelp() { //TODO: Add speech to this function
     const commandBoxOptions = {
       ...basicBoxOptions,
       borderColor: this.getTextColorBasedOnCurrentTime().color,
@@ -278,6 +170,7 @@ const game = {
 };
 
 const wireUpImportedGameFunctions = () => {
+  game.sampleVoices = sampleVoicesWrapper(game);
   game.showInventory = showInventoryWrapper(game);
   game.showPlayerStatus = showPlayerStatusWrapper(game);
   game.moveItemFromPlayerToCurrentRoom = moveItemFromPlayerToCurrentRoomWrapper(game); //TODO: Does this need to be in action?
@@ -326,7 +219,5 @@ const getNewGame = () => { // TODO REFACTOR: Kill this for now (we can decide la
 const api = {
   getNewGame
 };
-
-// TODO: Create a new speechQueue which allows you to add requests to say something. The queue will have a timer to check every half-second for items in the queue to speak, and then it will say each of those items in order (waiting for one to finish before the next one, until there are none left, and then start the timer). Once finished: replace all usages of "say" with calls to the queue.
 
 module.exports = api;

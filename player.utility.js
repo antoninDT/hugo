@@ -1,9 +1,10 @@
-const say = require('say');
+
 const chalk = require('chalk');
 
 const { getRoomById } = require('./room.utility');
 const { flashScreenRed } = require('./console.utility');
 const { getRandomArrayItem } = require('./general.utility');
+const { addSentenceToSpeechQueue } = require('./voices.utility');
 
 const dealDamageIfNeededWrapper = (game) => (showEnemyOrHealer, shouldSpeak = true) => {
   if (showEnemyOrHealer.isEnemy) {
@@ -23,9 +24,7 @@ const healPlayerIfNeededWrapper = (game) => (showEnemyOrHealer) => { //TODO: Mak
 
 const moveItemFromPlayerToCurrentRoomWrapper = (game) => (itemName) => {
   if (!itemName) {
-    say.speak(`You forgot to put the name of the item to drop hoor
-
-             try again!`, 'princess');
+    addSentenceToSpeechQueue({ sentence: `You forgot to put the name of the item to drop hoor             try again!`, voice: 'princess' });
     game.consoleOutPut({
       text: `
 
@@ -38,7 +37,7 @@ const moveItemFromPlayerToCurrentRoomWrapper = (game) => (itemName) => {
     return;
   }
   if (!game.state.player.inventory || !game.state.player.inventory.length) {
-    say.speak(`There is nothing in your Inventory`, 'princess');
+    addSentenceToSpeechQueue({ sentence: `There is nothing in your Inventory`, voice: 'princess' });
     game.consoleOutPut({
       text: `
 
@@ -52,7 +51,7 @@ const moveItemFromPlayerToCurrentRoomWrapper = (game) => (itemName) => {
   }
   const item = game.state.items.find((item) => item.name.toLowerCase() === itemName.toLowerCase());
   if (!item || !game.state.player.inventory.includes(item.id)) {
-    say.speak(`"${itemName}" is not in your inventory`, 'princess');
+    addSentenceToSpeechQueue({ sentence: `"${itemName}" is not in your inventory`, voice: 'princess' });
     game.consoleOutPut({
       text: `
 
@@ -63,7 +62,7 @@ const moveItemFromPlayerToCurrentRoomWrapper = (game) => (itemName) => {
     return;
   }
   game.moveItem(item.id, game.state.player, game.getCurrentRoom());
-  say.speak(`You have dropped "${item.name}"`, 'princess');
+  addSentenceToSpeechQueue({ sentence: `You have dropped "${item.name}"`, voice: 'princess' });
   game.consoleOutPut({
     text: `
 
@@ -75,10 +74,7 @@ const moveItemFromPlayerToCurrentRoomWrapper = (game) => (itemName) => {
 
 const moveItemFromCurrentRoomToPlayerWrapper = (game) => (itemName) => {
   if (!itemName) {
-    say.speak(`You forgot to put the name of the item to pick up hoor
-
-
-               try again!`, 'princess');
+    addSentenceToSpeechQueue({ sentence: `You forgot to put the name of the item to pick up hoor        try again!`, voice: 'princess' });
     game.consoleOutPut({
       text: `
 
@@ -92,7 +88,7 @@ const moveItemFromCurrentRoomToPlayerWrapper = (game) => (itemName) => {
   }
   const room = game.state.rooms.find((room) => room.id === game.state.player.currentRoomId);
   if (!room.inventory || !room.inventory.length) {
-    say.speak(`The room is empty`, 'princess');
+    addSentenceToSpeechQueue({ sentence: `The room is empty`, voice: 'princess' });
     game.consoleOutPut({
       text: `
 
@@ -120,7 +116,7 @@ const moveItemFromCurrentRoomToPlayerWrapper = (game) => (itemName) => {
     return;
   }
   if (!item || !room.inventory.includes(item.id)) {
-    say.speak(`The current room does not have "${itemName}"`, 'princess');
+    addSentenceToSpeechQueue({ sentence: `The current room does not have "${itemName}"`, voice: 'princess' });
     game.consoleOutPut({
       text: `
 
@@ -131,7 +127,7 @@ const moveItemFromCurrentRoomToPlayerWrapper = (game) => (itemName) => {
     return;
   }
   game.moveItem(item.id, room, game.state.player);
-  say.speak(`You have put "${item.name}" in your inventory`, 'princess');
+  addSentenceToSpeechQueue({ sentence: `You have put "${item.name}" in your inventory`, voice: 'princess' });
   game.consoleOutPut({
     text: `
 
@@ -161,7 +157,7 @@ const movePlayerToRoomWrapper = (game) => (roomId, shouldSpeakCurrentRoom = true
         ${roomName} is not connected to the current room
       `,
     });
-    say.speak(`${roomName} is not connected to the current room`, 'princess');
+    addSentenceToSpeechQueue({ sentence: `${roomName} is not connected to the current room`, voice: 'princess' });
     return;
   } //TODO: Say which rooms are connected to the current room
   game.state.player.currentRoomId = roomId;
@@ -207,7 +203,7 @@ const showPlayerStatusWrapper = (game) => (shouldSpeak = true, shouldFlash = tru
     return;
   }
   if (shouldSpeak) {
-    say.speak(`You have ${game.state.player.health} health out of ${game.state.player.maxHealth}`, 'princess');
+    addSentenceToSpeechQueue({ sentence: `You have ${game.state.player.health} health out of ${game.state.player.maxHealth}`, voice: 'princess' });
   }
   game.consoleOutPut({
     text: `
@@ -219,7 +215,7 @@ const showPlayerStatusWrapper = (game) => (shouldSpeak = true, shouldFlash = tru
 const showInventoryWrapper = (game) => () => {
   const inventoryVoice = 'princess';
   if (!game.state.player.inventory.length) {
-    say.speak('There is nothing in your Inventory', inventoryVoice);
+    addSentenceToSpeechQueue({ sentence: 'There is nothing in your Inventory', voice: inventoryVoice });
     game.consoleOutPut({
         text: `
 
@@ -241,28 +237,27 @@ const showInventoryWrapper = (game) => () => {
   game.state.player.inventory
       .map(game.getItemById)
       .forEach(game.showEnemyOrHealer);
-  const continueSpeakingItems = () => {
-    const speakItem = (index = 0) => {
-      const itemId = game.state.player.inventory[index];
-      if (!itemId) { return; }
-      const item = game.getItemById(itemId);
-      if (!item) { return; }
-      const isLastItemInInventory = (index >= (game.state.player.inventory.length - 1));
-      const conditionalAnd = (index)
-        ? `, and , `
-        : '';
-      const conditionalThatsAll = (isLastItemInInventory)
-        ? `.
-                That's all! Nothing else? no more!
+  addSentenceToSpeechQueue({ sentence: 'You have the following items in your inventory: ', voice: inventoryVoice });
+  const speakItem = (index = 0) => {
+    const itemId = game.state.player.inventory[index];
+    if (!itemId) { return; }
+    const item = game.getItemById(itemId);
+    if (!item) { return; }
+    const isLastItemInInventory = (index >= (game.state.player.inventory.length - 1));
+    const conditionalAnd = (index)
+      ? `, and , `
+      : '';
+    const conditionalThatsAll = (isLastItemInInventory)
+      ? `.
+              That's all! Nothing else? no more!
 
-              `
-        : '';
-      const itemSentence = `${conditionalAnd} ${item.name}${conditionalThatsAll}`; // TODO: Add an item description here and in the items.js file
-      say.speak(itemSentence, inventoryVoice, null, () => speakItem(index + 1));
-    };
-    speakItem();
+            `
+      : '';
+    const itemSentence = `${conditionalAnd} ${item.name}${conditionalThatsAll}`; // TODO: Add an item description here and in the items.js file
+    addSentenceToSpeechQueue({ sentence: itemSentence, voice: inventoryVoice });
+    speakItem(index + 1);
   };
-  say.speak('You have the following items in your inventory: ', inventoryVoice, null, continueSpeakingItems);
+  speakItem();
 };
 
 const api = {

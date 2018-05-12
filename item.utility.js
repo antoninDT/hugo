@@ -1,7 +1,7 @@
 const chalk = require('chalk');
-const say = require('say');
 
 const { getRandomArrayItem } = require('./general.utility');
+const { addSentenceToSpeechQueue } = require('./voices.utility');
 
 const getItemByIdWrapper = (game) => (itemId) => game.state.items.find((item) => item.id === itemId);
 const getEnemyByIdWrapper = (game) => (enemyId) => game.state.enemies.find((enemy) => enemy.id === enemyId);
@@ -44,13 +44,7 @@ const giveItemClueWrapper = (game) => (shouldSpeakClue = true) => {
   const roomClue = game.getCurrentRoomClue(randomItemIdToWin);
   const itemClue = game.getCurrentItemClue(randomItemIdToWin);
   if (shouldSpeakClue) {
-    say.speak(`
-
-      Here is you clue: ${itemClue}
-
-      and. ${roomClue}
-
-      `, 'Princess',);
+    addSentenceToSpeechQueue({ sentence: `Here is you clue: ${itemClue}       and. ${roomClue}`, voice: 'Princess' });
   }
   game.consoleOutPut({ text: 'Here is your clue:', color: 'yellowBright' });
   game.consoleOutPut({
@@ -71,7 +65,7 @@ const getRandomItemIdToWinWrapper = (game) => () => {
 };
 
 const craftItemWrapper = (game) => (itemName1, itemName2) => { //TODO: Make a different game mode where you have to craft the item
-  const item1 = game.state.items.find((item) => item.name.toLowerCase() === itemName1.toLowerCase()); 
+  const item1 = game.state.items.find((item) => item.name.toLowerCase() === itemName1.toLowerCase());
   const item2 = game.state.items.find((item) => item.name.toLowerCase() === itemName2.toLowerCase());
   if (!(itemName1 && itemName2)) {
     game.consoleOutPut({ text: 'Oops, you forgot to put the name of the items to craft' });

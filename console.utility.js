@@ -1,10 +1,10 @@
 const chalk = require('chalk');
 const boxen = require('boxen');
-const say = require('say');
 const CFonts = require('cfonts');
 const chalkAnimation = require('chalk-animation');
 
 const { getSanitizedText } = require('./text.utility');
+const { addSentenceToSpeechQueue } = require('./voices.utility');
 
 const readline = require('readline');
 
@@ -221,7 +221,7 @@ const promptForUserCommandWrapper = (game) => () => { // TODO REFACTOR: This sho
                      game.craftItem(itemName1, itemName2);
                      break;
             default:
-                say.speak(`Oops please enter another command hoor. Type in "help" for a list of commands`, 'princess');
+                addSentenceToSpeechQueue({ sentence: `Oops please enter another command hoor. Type in "help" for a list of commands`, voice: 'princess' });
                 game.consoleOutPut({
                   text: `
 
