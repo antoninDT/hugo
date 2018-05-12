@@ -2,6 +2,7 @@ const chalk = require('chalk');
 const say = require('say');
 
 const { getRandomArrayItem } = require('./general.utility');
+const { addSentenceToSpeechQueue } = require('./voices.utility');
 
 const roomsLookup = require('./data/rooms.json');
 
@@ -41,7 +42,7 @@ const showCurrentRoomWrapper = (game) => (shouldSpeakCurrentRoom = true) => {
 
        `,
     });
-  if (shouldSpeakCurrentRoom) { say.speak(`You are in the ${currentRoomName}`, 'princess'); }
+  if (shouldSpeakCurrentRoom) { addSentenceToSpeechQueue({ sentence: `You are in the ${currentRoomName}`, voice: 'princess' }); }
 };
 
 const showCurrentRoomContentsWrapper = (game) => (shouldSpeak = true) => {
@@ -56,7 +57,7 @@ const showCurrentRoomContentsWrapper = (game) => (shouldSpeak = true) => {
   const roomHealers = [...currentRoom.healers.map(game.getHealerById)];
   if (!(roomContents.length)) {
     if (shouldSpeak) {
-      say.speak('You look around and notice that the room is empty', 'princess');
+      addSentenceToSpeechQueue({ sentence: 'You look around and notice that the room is empty', voice: 'princess' });
     }
     game.consoleOutPut(`
 
@@ -83,6 +84,7 @@ const showCurrentRoomContentsWrapper = (game) => (shouldSpeak = true) => {
   roomContents.forEach(game.showEnemyOrHealer);
   if (shouldSpeak) {
     const continueSpeakingItems = () => {
+     addSentenceToSpeechQueue({ sentence: 'You look around and notice the following things: ', voice: currentRoomContentsVoice});
       const speakItem = (index = 0) => {
         const item = roomContents[index];
         if (!item) {
@@ -93,11 +95,12 @@ const showCurrentRoomContentsWrapper = (game) => (shouldSpeak = true) => {
           ? `, and , `
           : '';
         const itemSentence = `${conditionalAnd} ${item.name}`;
-        say.speak(itemSentence, currentRoomContentsVoice, null, () => speakItem(index + 1));
+        addSentenceToSpeechQueue({ sentence: itemSentence, voice: currentRoomContentsVoice });
+        speakItem(index + 1)
       };
       speakItem();
     };
-    say.speak('You look around and notice the following things: ', currentRoomContentsVoice, null, continueSpeakingItems);
+    continueSpeakingItems();
   }
 };
 

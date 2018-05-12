@@ -1,4 +1,4 @@
-const say = require('say'); //TODO: Replace all usages of say.speak with addSentenceToSpeechQueue
+
 const chalk = require('chalk');
 
 const { getRoomById } = require('./room.utility');
