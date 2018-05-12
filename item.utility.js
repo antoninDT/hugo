@@ -1,5 +1,5 @@
 const chalk = require('chalk');
-const say = require('say');
+const say = require('say'); //TODO: Replace all usages of say.speak with addSentenceToSpeechQueue
 
 const { getRandomArrayItem } = require('./general.utility');
 
@@ -71,7 +71,7 @@ const getRandomItemIdToWinWrapper = (game) => () => {
 };
 
 const craftItemWrapper = (game) => (itemName1, itemName2) => { //TODO: Make a different game mode where you have to craft the item
-  const item1 = game.state.items.find((item) => item.name.toLowerCase() === itemName1.toLowerCase()); 
+  const item1 = game.state.items.find((item) => item.name.toLowerCase() === itemName1.toLowerCase());
   const item2 = game.state.items.find((item) => item.name.toLowerCase() === itemName2.toLowerCase());
   if (!(itemName1 && itemName2)) {
     game.consoleOutPut({ text: 'Oops, you forgot to put the name of the items to craft' });
