@@ -16,7 +16,6 @@ const startGame = () => {
     game.randomlyDistributeHealersToRooms();
     game.randomlyDistributeEnemiesToRooms();
     game.welcomeMessage();
-    // addSentenceToSpeechQueue({ sentence: 'Welkom bij Hugo Hulp' });
     promptForUserCommand();
 };
 startGame();
