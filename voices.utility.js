@@ -129,7 +129,32 @@ const sampleVoicesWrapper = (game) => () => { // TODO REFACTOR: Move this into a
   speakGreeting();
 };
 
+const defaultDoneSentence = `.
+
+    That's all! Nothing else? no more!
+
+`;
+
+const sayListWithAnd = ({ list, doneSentence = defaultDoneSentence, voice = defaultVoice }) => {
+  const speakItem = (index = 0) => {
+    const item = list[index];
+    if (!item) { return; }
+    const isLastItemInInventory = (index >= (list.length - 1));
+    const conditionalAnd = (index)
+      ? `, and , `
+      : '';
+    const conditionalThatsAll = (isLastItemInInventory)
+      ? doneSentence
+      : '';
+    const itemSentence = `${conditionalAnd} ${item}${conditionalThatsAll}`;
+    addSentenceToSpeechQueue({ sentence: itemSentence, voice });
+    speakItem(index + 1);
+  };
+  speakItem();
+};
+
 const api = {
+  sayListWithAnd,
   sampleVoicesWrapper,
   addSentenceToSpeechQueue,
 };

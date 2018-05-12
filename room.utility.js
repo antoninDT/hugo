@@ -1,8 +1,7 @@
 const chalk = require('chalk');
-const say = require('say');
 
 const { getRandomArrayItem } = require('./general.utility');
-const { addSentenceToSpeechQueue } = require('./voices.utility');
+const { addSentenceToSpeechQueue, sayListWithAnd } = require('./voices.utility');
 
 const roomsLookup = require('./data/rooms.json');
 
@@ -20,17 +19,29 @@ const showEnemyAttackMessageWrapper = (game) => (enemy) => {
   game.consoleOutPut({ text: `${enemy.attackMessage} and lost ${chalk.red(enemy.damage)} health "${chalk.bold.red(enemy.name)}" ` });
 };
 
-const showRoomsWrapper = (game) => () => { // TODO: Add voices to this
+const showRoomsWrapper = (game) => (shouldSpeak = true) => { // TODO: Add voices to this
     const getRoomName = (room) => room.name;
     const getConnectedRooms = (room) => room.connectedRooms;
     const currentRoom = game.getCurrentRoom();
     const roomContents = [...currentRoom.connectedRooms.map(getRoomById)];
     const nameOfRoomContents = [...roomContents.map(getRoomName)];
     const showRoomName = (roomName) => game.consoleOutPut({ text: `    * ${chalk.bold.greenBright(roomName)}` });
+    const addRoomSentenceToSpeechQueue = (roomName) => {
+        addSentenceToSpeechQueue({
+          sentence: roomName,
+          voice: 'princess',
+        });
+    };
     game.consoleOutPut({ text: 'Here are the all rooms:', color: 'yellowBright', chalkSetting: 'italic' });
-    game.state.rooms.map(getRoomName).forEach(showRoomName);
+    const allRoomNames = game.state.rooms.map(getRoomName);
+    allRoomNames
+      .forEach(showRoomName);
+    if (shouldSpeak) {
+      addSentenceToSpeechQueue({ sentence: 'Here are the all rooms:', voice: 'princess' });
+      sayListWithAnd({ list: allRoomNames, voice: 'princess' });
+     }
     game.consoleOutPut({ text: `Here are the rooms that are connected to your room: `, color: 'yellowBright', chalkSetting: 'italic' });
-    nameOfRoomContents.forEach(showRoomName);
+    nameOfRoomContents.forEach(showRoomName); //TODO: Add a voice for this 
 };
 
 const showCurrentRoomWrapper = (game) => (shouldSpeakCurrentRoom = true) => {

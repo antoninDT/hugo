@@ -4,7 +4,7 @@ const chalk = require('chalk');
 const { getRoomById } = require('./room.utility');
 const { flashScreenRed } = require('./console.utility');
 const { getRandomArrayItem } = require('./general.utility');
-const { addSentenceToSpeechQueue } = require('./voices.utility');
+const { addSentenceToSpeechQueue, sayListWithAnd } = require('./voices.utility');
 
 const dealDamageIfNeededWrapper = (game) => (showEnemyOrHealer, shouldSpeak = true) => {
   if (showEnemyOrHealer.isEnemy) {
@@ -234,30 +234,14 @@ const showInventoryWrapper = (game) => () => {
         `,
   });
 
-  game.state.player.inventory
-      .map(game.getItemById)
+  const allItems = game.state.player.inventory
+      .map(game.getItemById);
+  allItems
       .forEach(game.showEnemyOrHealer);
   addSentenceToSpeechQueue({ sentence: 'You have the following items in your inventory: ', voice: inventoryVoice });
-  const speakItem = (index = 0) => {
-    const itemId = game.state.player.inventory[index];
-    if (!itemId) { return; }
-    const item = game.getItemById(itemId);
-    if (!item) { return; }
-    const isLastItemInInventory = (index >= (game.state.player.inventory.length - 1));
-    const conditionalAnd = (index)
-      ? `, and , `
-      : '';
-    const conditionalThatsAll = (isLastItemInInventory)
-      ? `.
-              That's all! Nothing else? no more!
-
-            `
-      : '';
-    const itemSentence = `${conditionalAnd} ${item.name}${conditionalThatsAll}`; // TODO: Add an item description here and in the items.js file
-    addSentenceToSpeechQueue({ sentence: itemSentence, voice: inventoryVoice });
-    speakItem(index + 1);
-  };
-  speakItem();
+  const getItemName = (item) => item.name;
+  const allItemNames = allItems.map(getItemName);
+  sayListWithAnd({ list: allItemNames, voice: 'princess' }); //TODO: Fix the speed of which the items in the inventory are said
 };
 
 const api = {
