@@ -1,7 +1,6 @@
 const chalk = require('chalk');
 const boxen = require('boxen');
 const CFonts = require('cfonts');
-const say = require('say'); //TODO: Replace all usages of say.speak with addSentenceToSpeechQueue
 const chalkAnimation = require('chalk-animation');
 
 const { basicBoxOptions, basicCFontOptions, getTextColorBasedOnCurrentTime, consoleOutPut, clearScreenWrapper, } = require('./console.utility');
@@ -59,19 +58,18 @@ const game = {
       letterSpacing: 8,
       colors: ['blue', 'white']
     };
-    if (shouldSpeakClue) {
-      say.speak('DOE DOEI', 'ellen', 0.5);
+    if (shouldSpeakClue) { //TODO: Remove all usages of shouldSpeak?
+      addSentenceToSpeechQueue({ sentence: 'DOE DOEI', voice: 'ellen', voiceSpeed: 0.5});
     }
     CFonts.say('DOE', goodbyeMessageOptions);
     CFonts.say('DOEI', goodbyeMessageOptions);
     CFonts.say('!!', goodbyeMessageOptions);
-    process.exit();
+    const endGame = () => process.exit();
+    setTimeout(endGame, 1000);
   },
   // TODO: Make a high score screen
   showWinScreen() {
-    say.speak(`Congratulations!
-
-            You have found the hidden item!`, 'daniel',);
+    addSentenceToSpeechQueue({ sentence: `Congratulations!      You have found the hidden item!`, voice: 'daniel' });
     game.consoleOutPut({
         color: 'magentaBright',
         text: `
@@ -81,8 +79,7 @@ const game = {
     this.goodbye(false);
   },
   showLoseScreen() {
-    say.speak(`Uh Oh it looks like you have die ie ied!
-        `, 'Bad News',);
+    addSentenceToSpeechQueue({ sentence: `Uh Oh it looks like you have die ie ied!`, voice: 'Bad News' });
     this.showPlayerStatus(false, false);
     // const text = 'Uh Oh... It appears you died, try again next time!'; TODO: Make this a "flashScreenRed"function
     game.consoleOutPut({
@@ -226,7 +223,7 @@ const game = {
     this.showCurrentRoom(false);
     this.giveItemClue(false);
   },
-  showHelp() {
+  showHelp() { //TODO: Add speech to this function
     const commandBoxOptions = {
       ...basicBoxOptions,
       borderColor: this.getTextColorBasedOnCurrentTime().color,

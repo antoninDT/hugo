@@ -1,7 +1,7 @@
 const chalk = require('chalk');
-const say = require('say'); //TODO: Replace all usages of say.speak with addSentenceToSpeechQueue
 
 const { getRandomArrayItem } = require('./general.utility');
+const { addSentenceToSpeechQueue } = require('./voices.utility');
 
 const getItemByIdWrapper = (game) => (itemId) => game.state.items.find((item) => item.id === itemId);
 const getEnemyByIdWrapper = (game) => (enemyId) => game.state.enemies.find((enemy) => enemy.id === enemyId);
@@ -44,13 +44,7 @@ const giveItemClueWrapper = (game) => (shouldSpeakClue = true) => {
   const roomClue = game.getCurrentRoomClue(randomItemIdToWin);
   const itemClue = game.getCurrentItemClue(randomItemIdToWin);
   if (shouldSpeakClue) {
-    say.speak(`
-
-      Here is you clue: ${itemClue}
-
-      and. ${roomClue}
-
-      `, 'Princess',);
+    addSentenceToSpeechQueue({ sentence: `Here is you clue: ${itemClue}       and. ${roomClue}`, voice: 'Princess' });
   }
   game.consoleOutPut({ text: 'Here is your clue:', color: 'yellowBright' });
   game.consoleOutPut({

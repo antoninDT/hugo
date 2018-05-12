@@ -1,6 +1,6 @@
 const say = require('say');
 
-const delayBetweenProcessingInMilliseconds = 500;
+const delayBetweenProcessingInMilliseconds = 100;
 const defaultVoice = 'Ellen'; // TODO: Change this later
 const defaultSpeed = 1;
 const queue = []; // Each item looks like this: { sentence, voice, voiceSpeed }
