@@ -6,6 +6,7 @@ const chalkAnimation = require('chalk-animation');
 const { basicBoxOptions, basicCFontOptions, getTextColorBasedOnCurrentTime, consoleOutPut, clearScreenWrapper, } = require('./console.utility');
 const { defaultRoomId, getRoomById, roomsLookup, rooms, showCurrentRoomWrapper, showRoomsWrapper, showCurrentRoomContentsWrapper, getCurrentRoomWrapper, randomlyDistributeItemsToRoomsWrapper, randomlyDistributeEnemiesToRoomsWrapper, randomlyDistributeHealersToRoomsWrapper, showEnemyAttackMessageWrapper } = require('./room.utility');
 const { getRandomArrayItem } = require('./general.utility');
+const { didPlayerWinWrapper } = require('./winConditions.utility');
 const { addSentenceToSpeechQueue, sampleVoicesWrapper } = require('./voices.utility');
 const { getItemByIdWrapper, getEnemyByIdWrapper, getHealerByIdWrapper, showEnemyOrHealerWrapper, getCurrentRoomClueWrapper, getCurrentItemClueWrapper, giveItemClueWrapper, getRandomItemIdToWinWrapper, craftItemWrapper, spawnItemWrapper } = require('./item.utility');
 const { dealDamageIfNeededWrapper, healPlayerIfNeededWrapper, moveItemFromCurrentRoomToPlayerWrapper, moveItemWrapper, movePlayerToRoomWrapper, movePlayerToRandomRoomWrapper, hurtPlayerWrapper, healPlayerWrapper, moveItemFromPlayerToCurrentRoomWrapper, showPlayerStatusWrapper, showInventoryWrapper } = require('./player.utility');
@@ -46,9 +47,6 @@ const game = {
       items[Math.floor(Math.random() * items.length)].id,
       items[Math.floor(Math.random() * items.length)].id
     ]
-  },
-  didPlayerWin() {
-    return this.state.itemIdsToWin.every((itemIdToWin) => this.state.player.inventory.includes(itemIdToWin))
   },
   goodbye(shouldSpeakClue = true) {
     const goodbyeMessageOptions = {
@@ -170,6 +168,7 @@ const game = {
 };
 
 const wireUpImportedGameFunctions = () => {
+  game.didPlayerWin = didPlayerWinWrapper(game);
   game.sampleVoices = sampleVoicesWrapper(game);
   game.showInventory = showInventoryWrapper(game);
   game.showPlayerStatus = showPlayerStatusWrapper(game);
@@ -204,10 +203,10 @@ const wireUpImportedGameFunctions = () => {
 };
 wireUpImportedGameFunctions();
 
-const actions = { // TODO REFACTOR: Kill this for now (we can decide later whether to bring it back)
-
-};
-game.actions = actions;
+// const actions = { // TODO REFACTOR: Kill this for now (we can decide later whether to bring it back)
+//
+// };
+// game.actions = actions;
 
 const getNewGame = () => { // TODO REFACTOR: Kill this for now (we can decide later whether to bring it back)
   const result = {
