@@ -41,7 +41,7 @@ const showRoomsWrapper = (game) => (shouldSpeak = true) => { // TODO: Add voices
       sayListWithAnd({ list: allRoomNames, voice: 'princess', doneSentence: '   ' });
      }
     game.consoleOutPut({ text: `Here are the rooms that are connected to your room: `, color: 'yellowBright', chalkSetting: 'italic' });
-    nameOfRoomContents.forEach(showRoomName); 
+    nameOfRoomContents.forEach(showRoomName);
     if (shouldSpeak) {
       addSentenceToSpeechQueue({ sentence: 'Here are the rooms connected to your room:', voice: 'princess' });
       sayListWithAnd({ list: nameOfRoomContents, voice: 'princess', doneSentence: '    ' });
@@ -86,7 +86,7 @@ const showCurrentRoomContentsWrapper = (game) => (shouldSpeak = true) => {
     roomEnemies.forEach(game.showEnemyAttackMessage);
     roomEnemies.forEach(game.dealDamageIfNeeded);
     game.showPlayerStatus(false, false);
-    // return;  TODO: Make the health flash and then show the items in the room
+  //  TODO: Make the health flash and then show the items in the room
   }
   game.consoleOutPut({
       color: 'yellowBright',

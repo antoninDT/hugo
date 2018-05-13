@@ -1,12 +1,12 @@
 {
   "healthPotion": {
-    "id": 0,
+    "id": 800,
     "isHealer": true,
     "name": "Health Potion",
     "healingAmount": 20
   },
   "coffee": {
-    "id": 1,
+    "id": 801,
     "isHealer": true,
     "name": "Coffee",
     "healingAmount": 20
