@@ -112,7 +112,7 @@ const game = {
       text: `${new Date} ${chalk[this.getTextColorBasedOnCurrentTime().color].bold(this.getTextColorBasedOnCurrentTime().greeting)}`
     }); //TODO: Add a voice to say the greeting
     console.log();
-    this.showRooms();
+    this.showRooms(false);
     this.showPlayerStatus(false, false);
     this.showCurrentRoom(false);
     this.giveItemClue(false);

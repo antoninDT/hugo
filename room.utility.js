@@ -32,16 +32,20 @@ const showRoomsWrapper = (game) => (shouldSpeak = true) => { // TODO: Add voices
           voice: 'princess',
         });
     };
-    game.consoleOutPut({ text: 'Here are the all rooms:', color: 'yellowBright', chalkSetting: 'italic' });
+    game.consoleOutPut({ text: 'Here are all the rooms:', color: 'yellowBright', chalkSetting: 'italic' });
     const allRoomNames = game.state.rooms.map(getRoomName);
     allRoomNames
       .forEach(showRoomName);
     if (shouldSpeak) {
-      addSentenceToSpeechQueue({ sentence: 'Here are the all rooms:', voice: 'princess' });
-      sayListWithAnd({ list: allRoomNames, voice: 'princess' });
+      addSentenceToSpeechQueue({ sentence: 'Here are all the rooms:', voice: 'princess' });
+      sayListWithAnd({ list: allRoomNames, voice: 'princess', doneSentence: '   ' });
      }
     game.consoleOutPut({ text: `Here are the rooms that are connected to your room: `, color: 'yellowBright', chalkSetting: 'italic' });
-    nameOfRoomContents.forEach(showRoomName); //TODO: Add a voice for this 
+    nameOfRoomContents.forEach(showRoomName); 
+    if (shouldSpeak) {
+      addSentenceToSpeechQueue({ sentence: 'Here are the rooms connected to your room:', voice: 'princess' });
+      sayListWithAnd({ list: nameOfRoomContents, voice: 'princess', doneSentence: '    ' });
+     }
 };
 
 const showCurrentRoomWrapper = (game) => (shouldSpeakCurrentRoom = true) => {

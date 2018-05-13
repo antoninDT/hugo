@@ -23,7 +23,8 @@ By Antonin Dujardin-Terry
 AKA: Tonysacs(TM)
 
 # TODO:
+  * Finnish refactoring
   * Make win conditions more difficult (bringing item to room).
   * Make different game modes (Crafting game mode).
   * Add weapons to the game?
-  
+  * Make the backgroundColor change based on time of day 
