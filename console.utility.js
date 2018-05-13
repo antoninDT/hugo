@@ -8,6 +8,7 @@ const { addSentenceToSpeechQueue } = require('./voices.utility');
 
 const readline = require('readline');
 
+const itemsLookup = require('./data/items.json');
 const commandLookup = require('./data/commands.json');
 const roomsLookup = require('./data/rooms.json');
 
