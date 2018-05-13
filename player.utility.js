@@ -6,10 +6,7 @@ const { flashScreenRed } = require('./console.utility');
 const { getRandomArrayItem } = require('./general.utility');
 const { addSentenceToSpeechQueue, sayListWithAnd } = require('./voices.utility');
 
-const dealDamageIfNeededWrapper = (game) => (showEnemyOrHealer, shouldSpeak = true) => {
-  if (showEnemyOrHealer.isEnemy) {
-    return;
-  } // TODO: Fix the flashing of the text
+const dealDamageIfNeededWrapper = (game) => (showEnemyOrHealer, shouldSpeak = true) => {  // TODO: Fix the flashing of the text
   if (!showEnemyOrHealer.damage) { return; }
   if (showEnemyOrHealer.isItem && (game.state.itemIdsToWin.includes(showEnemyOrHealer.id))) { return; }
   if (shouldSpeak) { game.actions.hurtPlayer(showEnemyOrHealer.damage); }
@@ -61,7 +58,11 @@ const moveItemFromPlayerToCurrentRoomWrapper = (game) => (itemName) => {
         });
     return;
   }
-  game.moveItem(item.id, game.state.player, game.getCurrentRoom());
+  game.moveItem({
+    itemIdToMove: item.id,
+    source: game.state.player,
+    destination: game.getCurrentRoom(),
+  });
   addSentenceToSpeechQueue({ sentence: `You have dropped "${item.name}"`, voice: 'princess' });
   game.consoleOutPut({
     text: `
@@ -102,9 +103,8 @@ const moveItemFromCurrentRoomToPlayerWrapper = (game) => (itemName) => {
   }
   const item = game.state.items.find((item) => item.name.toLowerCase() === itemName.toLowerCase());
   const healer = game.state.healers.find((healer) => healer.name.toLowerCase() === itemName.toLowerCase()); // TODO: Remove the healer once it has been picked up once by the player
-  if (healer) {
-    game.moveItem(healer.id, room, game.state.player);
-    game.moveItem(healer.id, game.state.player, game.state.trashCan);
+  if (healer) { //TODO: Modify this later
+    game.consumeHealer({ healer: healer, source: room });
     game.consoleOutPut({
       text: `
 
@@ -112,7 +112,6 @@ const moveItemFromCurrentRoomToPlayerWrapper = (game) => (itemName) => {
 
         `,
       });
-    game.healPlayerIfNeeded(healer);
     return;
   }
   if (!item || !room.inventory.includes(item.id)) {
@@ -126,7 +125,11 @@ const moveItemFromCurrentRoomToPlayerWrapper = (game) => (itemName) => {
       });
     return;
   }
-  game.moveItem(item.id, room, game.state.player);
+  game.moveItem({
+    itemIdToMove: item.id,
+    source: room,
+    destination: game.state.player,
+  });
   addSentenceToSpeechQueue({ sentence: `You have put "${item.name}" in your inventory`, voice: 'princess' });
   game.consoleOutPut({
     text: `
@@ -141,7 +144,7 @@ const moveItemFromCurrentRoomToPlayerWrapper = (game) => (itemName) => {
   }
 };
 
-const moveItemWrapper = (game) => (itemIdToMove, source, destination) => {
+const moveItemWrapper = (game) => ({ itemIdToMove, source, destination }) => {
   const newSourceItems = source.inventory.filter((itemId) => itemId !== itemIdToMove);
   source.inventory = newSourceItems;
   destination.inventory.push(itemIdToMove);
@@ -159,7 +162,7 @@ const movePlayerToRoomWrapper = (game) => (roomId, shouldSpeakCurrentRoom = true
     });
     addSentenceToSpeechQueue({ sentence: `${roomName} is not connected to the current room`, voice: 'princess' });
     return;
-  } //TODO: Say which rooms are connected to the current room
+  }
   game.state.player.currentRoomId = roomId;
   if (shouldSpeakCurrentRoom) {
     game.showCurrentRoom();
@@ -194,6 +197,13 @@ const healPlayerWrapper = (game) => (amount) => { // TODO: Use this function lat
     game.state.player.health = game.state.player.maxHealth;
   }
   game.showPlayerStatus(false, false);
+};
+
+const consumeHealerWrapper = (game) => ({ healer, source}) => {
+   const healerId = healer.id;
+   const newSourceInventory = source.healers.filter((id) => id !== healerId);
+   source.healers = newSourceInventory;
+   game.healPlayerIfNeeded(healer);
 };
 
 const showPlayerStatusWrapper = (game) => (shouldSpeak = true, shouldFlash = true) => {
@@ -233,7 +243,6 @@ const showInventoryWrapper = (game) => () => {
           You have the following items:
         `,
   });
-
   const allItems = game.state.player.inventory
       .map(game.getItemById);
   allItems
@@ -245,6 +254,7 @@ const showInventoryWrapper = (game) => () => {
 };
 
 const api = {
+  consumeHealerWrapper,
   showInventoryWrapper,
   showPlayerStatusWrapper,
   moveItemFromPlayerToCurrentRoomWrapper,
