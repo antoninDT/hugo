@@ -19,7 +19,7 @@ const showEnemyAttackMessageWrapper = (game) => (enemy) => {
   game.consoleOutPut({ text: `${enemy.attackMessage} and lost ${chalk.red(enemy.damage)} health "${chalk.bold.red(enemy.name)}" ` });
 };
 
-const showRoomsWrapper = (game) => (shouldSpeak = true) => { // TODO: Add voices to this
+const showRoomsWrapper = (game) => (shouldSpeak = true) => { 
     const getRoomName = (room) => room.name;
     const getConnectedRooms = (room) => room.connectedRooms;
     const currentRoom = game.getCurrentRoom();
