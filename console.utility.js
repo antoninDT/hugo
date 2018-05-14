@@ -109,7 +109,7 @@ const clearScreenWrapper = (game) => () => {
   game.consoleOutPut({ text: '\x1Bc' });
 };
 
-const promptForUserCommandWrapper = (game) => () => { 
+const promptForUserCommandWrapper = (game) => () => {
     const handleCommand = (result) => {
         const sanitizedInput = getSanitizedText(result);
         let itemParts;

@@ -93,7 +93,7 @@ const game = {
   },
   getTextColorBasedOnCurrentTime,
   consoleOutPut,
-  welcomeMessage() {
+  welcomeMessage() { // TODO: Replace 'Can you find the hidden item??' with different message based on the gamemode
     const welcomeMessageOptions = {
       ...basicCFontOptions,
       font: 'block',

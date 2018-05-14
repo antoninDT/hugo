@@ -19,3 +19,5 @@ const startGame = () => {
     promptForUserCommand();
 };
 startGame();
+
+// TODO: Make another promptForUserCommand but maybe for a "Choose gamemode" screen

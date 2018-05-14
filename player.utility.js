@@ -19,7 +19,7 @@ const healPlayerIfNeededWrapper = (game) => (showEnemyOrHealer) => {
   game.healPlayer(showEnemyOrHealer.healingAmount);  // TODO: Add a voice when gained healh
 };
 
-const moveItemFromPlayerToCurrentRoomWrapper = (game) => (itemName) => {
+const moveItemFromPlayerToCurrentRoomWrapper = (game) => (itemName) => { // TODO: Implement arguments (Look further down for more info)
   if (!itemName) {
     addSentenceToSpeechQueue({ sentence: `You forgot to put the name of the item to drop hoor             try again!`, voice: 'princess' });
     game.consoleOutPut({
