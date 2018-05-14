@@ -6,7 +6,7 @@ const chalkAnimation = require('chalk-animation');
 const { basicBoxOptions, basicCFontOptions, getTextColorBasedOnCurrentTime, consoleOutPut, clearScreenWrapper, } = require('./console.utility');
 const { defaultRoomId, getRoomById, roomsLookup, rooms, showCurrentRoomWrapper, showRoomsWrapper, showCurrentRoomContentsWrapper, getCurrentRoomWrapper, randomlyDistributeItemsToRoomsWrapper, randomlyDistributeEnemiesToRoomsWrapper, randomlyDistributeHealersToRoomsWrapper, showEnemyAttackMessageWrapper } = require('./room.utility');
 const { getRandomArrayItem } = require('./general.utility');
-const { didPlayerWinWrapper } = require('./winConditions.utility');
+const { didPlayerWinWrapper2ItemIdsToWin, didPlayerWinWrapperCraftAnItemToWin } = require('./winConditions.utility');
 const { addSentenceToSpeechQueue, sampleVoicesWrapper } = require('./voices.utility');
 const { getItemByIdWrapper, getEnemyByIdWrapper, getHealerByIdWrapper, showEnemyOrHealerWrapper, getCurrentRoomClueWrapper, getCurrentItemClueWrapper, giveItemClueWrapper, getRandomItemIdToWinWrapper, craftItemWrapper, spawnItemWrapper } = require('./item.utility');
 const { dealDamageIfNeededWrapper, healPlayerIfNeededWrapper, moveItemFromCurrentRoomToPlayerWrapper, moveItemWrapper, movePlayerToRoomWrapper, movePlayerToRandomRoomWrapper, hurtPlayerWrapper, healPlayerWrapper, moveItemFromPlayerToCurrentRoomWrapper, showPlayerStatusWrapper, showInventoryWrapper, consumeHealerWrapper } = require('./player.utility');
@@ -46,6 +46,9 @@ const game = {
     itemIdsToWin: [
       items[Math.floor(Math.random() * items.length)].id,
       items[Math.floor(Math.random() * items.length)].id
+    ],
+    craftItemIdToWin: [
+      recipes[Math.floor(Math.random() * recipes.length)].result.id
     ]
   },
   goodbye(shouldSpeakClue = true) {
@@ -115,7 +118,7 @@ const game = {
     this.showCurrentRoom(false);
     this.giveItemClue(false);
   },
-  showHelp() { 
+  showHelp() {
     const commandBoxOptions = {
       ...basicBoxOptions,
       borderColor: this.getTextColorBasedOnCurrentTime().color,
@@ -191,8 +194,9 @@ const game = {
 };
 
 const wireUpImportedGameFunctions = () => {
+  game.didPlayerWinCraftAnItemToWin = didPlayerWinWrapperCraftAnItemToWin(game);
   game.consumeHealer = consumeHealerWrapper(game);
-  game.didPlayerWin = didPlayerWinWrapper(game);
+  game.didPlayerWin2ItemIdsToWin = didPlayerWinWrapper2ItemIdsToWin(game);
   game.sampleVoices = sampleVoicesWrapper(game);
   game.showInventory = showInventoryWrapper(game);
   game.showPlayerStatus = showPlayerStatusWrapper(game);

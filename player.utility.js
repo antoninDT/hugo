@@ -139,7 +139,7 @@ const moveItemFromCurrentRoomToPlayerWrapper = (game) => (itemName) => {
        `,
     });
   game.dealDamageIfNeeded(item, false);
-  if (game.didPlayerWin()) {
+  if (game.didPlayerWin()) { //TODO: Create an argument to state which gamemode is currently being used, therefore changing the way the player would win
     game.showWinScreen();
   }
 };
@@ -250,7 +250,7 @@ const showInventoryWrapper = (game) => () => {
   addSentenceToSpeechQueue({ sentence: 'You have the following items in your inventory: ', voice: inventoryVoice });
   const getItemName = (item) => item.name;
   const allItemNames = allItems.map(getItemName);
-  sayListWithAnd({ list: allItemNames, voice: 'princess' }); 
+  sayListWithAnd({ list: allItemNames, voice: 'princess' });
 };
 
 const api = {
