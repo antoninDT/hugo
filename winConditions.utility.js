@@ -7,3 +7,5 @@ const api = {
   didPlayerWinWrapper,
 };
 module.exports = api;
+
+//TODO: Make a different game mode where you have to craft the item

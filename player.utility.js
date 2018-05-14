@@ -13,7 +13,7 @@ const dealDamageIfNeededWrapper = (game) => (showEnemyOrHealer, shouldSpeak = tr
   game.hurtPlayer(showEnemyOrHealer.damage, false);
 };
 
-const healPlayerIfNeededWrapper = (game) => (showEnemyOrHealer) => { //TODO: Make this work
+const healPlayerIfNeededWrapper = (game) => (showEnemyOrHealer) => {
   if (!showEnemyOrHealer.healingAmount) { return; }
   if (showEnemyOrHealer.isItem && showEnemyOrHealer === game.state.itemIdsToWin) { return; }
   game.healPlayer(showEnemyOrHealer.healingAmount);  // TODO: Add a voice when gained healh
@@ -102,7 +102,7 @@ const moveItemFromCurrentRoomToPlayerWrapper = (game) => (itemName) => {
     return;
   }
   const item = game.state.items.find((item) => item.name.toLowerCase() === itemName.toLowerCase());
-  const healer = game.state.healers.find((healer) => healer.name.toLowerCase() === itemName.toLowerCase()); // TODO: Remove the healer once it has been picked up once by the player
+  const healer = game.state.healers.find((healer) => healer.name.toLowerCase() === itemName.toLowerCase());
   if (healer) { //TODO: Modify this later
     game.consumeHealer({ healer: healer, source: room });
     game.consoleOutPut({
@@ -190,7 +190,7 @@ const hurtPlayerWrapper = (game) => (amount, shouldSpeak = true) => {
   game.showPlayerStatus(false, true);
 };
 
-const healPlayerWrapper = (game) => (amount) => { // TODO: Use this function later
+const healPlayerWrapper = (game) => (amount) => {
   if (!amount) { return; }
   game.state.player.health += amount;
   if (game.state.player.health > game.state.player.maxHealth) {
@@ -250,7 +250,7 @@ const showInventoryWrapper = (game) => () => {
   addSentenceToSpeechQueue({ sentence: 'You have the following items in your inventory: ', voice: inventoryVoice });
   const getItemName = (item) => item.name;
   const allItemNames = allItems.map(getItemName);
-  sayListWithAnd({ list: allItemNames, voice: 'princess' }); //TODO: Fix the speed of which the items in the inventory are said
+  sayListWithAnd({ list: allItemNames, voice: 'princess' }); 
 };
 
 const api = {

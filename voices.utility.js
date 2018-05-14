@@ -22,7 +22,7 @@ const addSentenceToSpeechQueue = (speechOptions) => {
   queue.push(speechOptions);
 };
 
-const sampleVoicesWrapper = (game) => () => { // TODO REFACTOR: Move this into a new voice.utility.js file
+const sampleVoicesWrapper = (game) => () => { 
   const voices = [
     'Agnes',
     'Albert',

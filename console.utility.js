@@ -109,7 +109,7 @@ const clearScreenWrapper = (game) => () => {
   game.consoleOutPut({ text: '\x1Bc' });
 };
 
-const promptForUserCommandWrapper = (game) => () => { // TODO REFACTOR: This should be in the console.utility.js file. WARNING: it may need some special massaging to make it work properly.
+const promptForUserCommandWrapper = (game) => () => { 
     const handleCommand = (result) => {
         const sanitizedInput = getSanitizedText(result);
         let itemParts;
@@ -145,7 +145,7 @@ const promptForUserCommandWrapper = (game) => () => { // TODO REFACTOR: This sho
           return itemName;
         };
 
-        switch (true) { // TODO REFACTOR: Consider refactoring some of the larger (greater than 4 lines) cases into functions
+        switch (true) {
             case (commandLookup.exit.commands.includes(sanitizedInput)):
                 game.goodbye();
                 return;

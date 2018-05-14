@@ -115,7 +115,7 @@ const game = {
     this.showCurrentRoom(false);
     this.giveItemClue(false);
   },
-  showHelp() { //TODO: Add speech to this function
+  showHelp() { 
     const commandBoxOptions = {
       ...basicBoxOptions,
       borderColor: this.getTextColorBasedOnCurrentTime().color,
