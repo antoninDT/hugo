@@ -90,7 +90,7 @@ const game = {
   },
   getTextColorBasedOnCurrentTime,
   consoleOutPut,
-  welcomeMessage() { // TODO: Add promises so that voice can work
+  welcomeMessage() {
     const welcomeMessageOptions = {
       ...basicCFontOptions,
       font: 'block',
@@ -144,11 +144,22 @@ const game = {
     commands.forEach((command) => game.consoleOutPut({
       text: `  * ${chalk.bold.red(command.commands[0])}: ${command.description} `,
     }));
+    commands.forEach((command) => addSentenceToSpeechQueue({
+      sentence: ` ${(command.commands[0])}
+
+            ${command.description} `,
+      voice: 'princess',
+      voiceSpeed: 1.5,
+    }));
     console.log();
     game.consoleOutPut({
       text: `The goal of this game is to find the hidden item. To do this you have to use the clues given to guess what it is.`,
       color: 'magenta',
       chalkSetting: 'italic',
+    });
+    addSentenceToSpeechQueue({
+      sentence: 'The goal of this game is to find the hidden item. To do this you have to use the clues given to guess what it is.',
+      voice: 'princess',
     });
     game.consoleOutPut({
       text: `
@@ -163,6 +174,18 @@ const game = {
             `,
       color: 'red',
       chalkSetting: 'bold',
+    });
+    addSentenceToSpeechQueue({
+      sentence: `
+                Clues: The first clue that is on the left side of the screen is the Item clue, and the clue on the right side is the Room clue.
+
+                Rooms: In order to move to another room you first need to check if it\'s connected to the current room your in.
+
+                Health: You may have noticed that you have health in this game you lose health everytime you pick up an item thats incorrect.
+
+                Color of the text (for the look around command): The objects with the color red are enemies, the color blue are items, and the color green are healers [heals you].
+            `,
+      voice: 'princess',
     });
   }
 };
