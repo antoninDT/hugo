@@ -257,7 +257,7 @@ const initialStartUpPrompt = (result) => { // TODO: Make a new one for the "choo
             game.goodbye();
             return;
         case (commandLookup.craftItemGameMode.commands.some(doesSanitizedInputStartWithCommand)):
-            handleGoToCommand();
+            // TODO: Add a function here 
             break;
         default:
             addSentenceToSpeechQueue({ sentence: `Oops please enter another command hoor. Type in "help" for a list of commands`, voice: 'princess' });
