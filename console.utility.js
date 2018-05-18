@@ -236,6 +236,44 @@ const promptForUserCommandWrapper = (game) => () => {
     processInput('Please enter a command:', handleCommand); //TODO: Add color to the prompt
 };
 
+const initialStartUpPrompt = (result) => { // TODO: Make a new one for the "choose game section"
+    const sanitizedInput = getSanitizedText(result); // TODO: Come back to this later
+    let itemParts;
+    let itemName;
+    let specificCommandUsed;
+    const doesSanitizedInputStartWithCommand = (command) => sanitizedInput.startsWith(command);
+
+    const handleGoToCommand = () => {
+    const getItemNameFromInput = (commandName) => {
+      specificCommandUsed = commandLookup[commandName].commands.find(doesSanitizedInputStartWithCommand);
+      itemParts = sanitizedInput
+          .split(specificCommandUsed);
+      itemName = getSanitizedText(itemParts[1]);
+      return itemName;
+    };
+
+    switch (true) {
+        case (commandLookup.exit.commands.includes(sanitizedInput)):
+            game.goodbye();
+            return;
+        case (commandLookup.craftItemGameMode.commands.some(doesSanitizedInputStartWithCommand)):
+            handleGoToCommand();
+            break;
+        default:
+            addSentenceToSpeechQueue({ sentence: `Oops please enter another command hoor. Type in "help" for a list of commands`, voice: 'princess' });
+            game.consoleOutPut({
+              text: `
+
+                  Oops please enter another command hoor. Type in "help" for a list of commands
+
+              `,
+            });
+    }
+    promptForUserCommand(game);
+};
+processInput('Please enter a command:', handleCommand); //TODO: Add color to the prompt
+};
+
 const api = {
   promptForUserCommandWrapper,
   flashScreenRed,

@@ -1,58 +1,77 @@
 {
   "exit": {
     "commands": ["exit", "bye", "doei", "doe doei"],
-    "description": "Type this in to exit the game"
+    "description": "Type this in to exit the game",
+    "shouldShowCommand": true,
   },
   "goTo": {
     "commands": ["go to", "ga naar"],
-    "description": "Type this in to go to another room"
+    "description": "Type this in to go to another room",
+    "shouldShowCommand": true,
   },
   "help": {
     "commands": ["help", "list of commands"],
-    "description": "Type this in to give a list of all possible commands (duh)"
+    "description": "Type this in to give a list of all possible commands (duh)",
+    "shouldShowCommand": true,
   },
   "showRooms": {
     "commands": ["show rooms"],
-    "description": "Type this in to give a list of all the rooms"
+    "description": "Type this in to give a list of all the rooms",
+    "shouldShowCommand": true,
   },
   "lookAround": {
     "commands": ["look around", "kijk", "ls"],
-    "description": "Describes the contents of a room"
+    "description": "Describes the contents of a room",
+    "shouldShowCommand": true,
   },
   "whereAmI": {
     "commands": ["where am i", "pwd"],
-    "description": "Tells you which room you are in"
+    "description": "Tells you which room you are in",
+    "shouldShowCommand": true,
   },
   "clear": {
     "commands": ["clear"],
-    "description": "Clears the screen (duh)"
+    "description": "Clears the screen (duh)",
+    "shouldShowCommand": true,
   },
   "showInventory": {
     "commands": ["show inventory", "inventory", "what do i have"],
-    "description": "Shows the items in your inventory"
+    "description": "Shows the items in your inventory",
+    "shouldShowCommand": true,
   },
   "transferItemToPlayerInventory": {
     "commands": ["pick up", "grab", "get"],
-    "description": "Picks up an item"
+    "description": "Picks up an item",
+    "shouldShowCommand": true,
   },
   "transferItemToRoomInventory": {
     "commands": ["drop", "ditch"],
-    "description": "Drops an item (Obviously)"
+    "description": "Drops an item (Obviously)",
+    "shouldShowCommand": true,
   },
   "showClue": {
     "commands": ["give me a clue", "show me a clue", "clue"],
-    "description": "gives a clue about the item you are looking for"
+    "description": "gives a clue about the item you are looking for",
+    "shouldShowCommand": true,
   },
   "testVoices": {
     "commands": ["test voices", "say something"],
-    "description": "Plays all the different voices"
+    "description": "Plays all the different voices",
+    "shouldShowCommand": true,
   },
   "showPlayerStatus": {
     "commands": ["show player status", "show health", "show player health", "how much health do i have"],
-    "description": "Shows your player status (Health)"
+    "description": "Shows your player status (Health)",
+    "shouldShowCommand": true,
   },
   "craftItem": {
     "commands": ["craft", "combine"],
-    "description": "Crafts an item (Crafted through 2 items) [Example: 'craft pen and cat']"
-  }
+    "description": "Crafts an item (Crafted through 2 items) [Example: 'craft pen and cat']",
+    "shouldShowCommand": true,
+  },
+ "craftItemGameMode": {
+   "commands": ["craft game mode"],
+   "gameModeMessage": "Use the clues given to find out which item you need to craft to win!",
+   "shouldShowCommand": false,
+ }
 }

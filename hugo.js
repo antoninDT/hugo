@@ -10,7 +10,8 @@ const game = getNewGame();
 
 promptForUserCommand = promptForUserCommandWrapper(game);
 
-const startGame = () => {
+const startGame = (shouldShowStartMenu = true) => {
+  // if (shouldShowStartMenu) { startGame(false); } // TODO: Implement this 
     game.movePlayerToRandomRoom();
     game.randomlyDistributeItemsToRooms();
     game.randomlyDistributeHealersToRooms();
