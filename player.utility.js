@@ -6,6 +6,10 @@ const { flashScreenRed } = require('./console.utility');
 const { getRandomArrayItem } = require('./general.utility');
 const { addSentenceToSpeechQueue, sayListWithAnd } = require('./voices.utility');
 
+const goalsLookup = require('./data/goals.json');
+
+const goals = Object.values(goalsLookup);
+
 const dealDamageIfNeededWrapper = (game) => (showEnemyOrHealer, shouldSpeak = true) => {  // TODO: Fix the flashing of the text
   if (!showEnemyOrHealer.damage) { return; }
   if (showEnemyOrHealer.isItem && (game.state.itemIdsToWin.includes(showEnemyOrHealer.id))) { return; }
@@ -253,7 +257,16 @@ const showInventoryWrapper = (game) => () => {
   sayListWithAnd({ list: allItemNames, voice: 'princess' });
 };
 
+const changeCurrentGoalWrapper = (game) => (goal) => {
+  const getGoalByName = (goalName) => goals.find((goal) => goal.name === goalName);
+  const goalDetails = getGoalByName(goal);
+  console.log('The goals name is ');
+  console.dir(goalDetails);
+  game.state.player.currentGoalId = goalDetails.id;
+};
+
 const api = {
+  changeCurrentGoalWrapper,
   consumeHealerWrapper,
   showInventoryWrapper,
   showPlayerStatusWrapper,

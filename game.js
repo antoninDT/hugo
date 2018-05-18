@@ -9,7 +9,7 @@ const { getRandomArrayItem } = require('./general.utility');
 const { didPlayerWinWrapper2ItemIdsToWin, didPlayerWinWrapperCraftAnItemToWin } = require('./winConditions.utility');
 const { addSentenceToSpeechQueue, sampleVoicesWrapper } = require('./voices.utility');
 const { getItemByIdWrapper, getEnemyByIdWrapper, getHealerByIdWrapper, showEnemyOrHealerWrapper, getCurrentRoomClueWrapper, getCurrentItemClueWrapper, giveItemClueWrapper, getRandomItemIdToWinWrapper, craftItemWrapper, spawnItemWrapper } = require('./item.utility');
-const { dealDamageIfNeededWrapper, healPlayerIfNeededWrapper, moveItemFromCurrentRoomToPlayerWrapper, moveItemWrapper, movePlayerToRoomWrapper, movePlayerToRandomRoomWrapper, hurtPlayerWrapper, healPlayerWrapper, moveItemFromPlayerToCurrentRoomWrapper, showPlayerStatusWrapper, showInventoryWrapper, consumeHealerWrapper } = require('./player.utility');
+const { dealDamageIfNeededWrapper, healPlayerIfNeededWrapper, moveItemFromCurrentRoomToPlayerWrapper, moveItemWrapper, movePlayerToRoomWrapper, movePlayerToRandomRoomWrapper, hurtPlayerWrapper, healPlayerWrapper, moveItemFromPlayerToCurrentRoomWrapper, showPlayerStatusWrapper, showInventoryWrapper, consumeHealerWrapper, changeCurrentGoalWrapper } = require('./player.utility');
 
 //TODO: Find out to change the font/increase the size of the font
 const recipesLookup = require('./data/recipes.json');
@@ -25,6 +25,7 @@ const enemies = Object.values(enemiesLookup);
 const healers = Object.values(healersLookup);
 
 const player = {
+  currentGoalId: 0, // TODO: Change this later
   health: 100,
   maxHealth: 100,
   currentRoomId: defaultRoomId,
@@ -194,6 +195,7 @@ const game = {
 };
 
 const wireUpImportedGameFunctions = () => {
+  game.changeCurrentGoal = changeCurrentGoalWrapper(game);
   game.didPlayerWinCraftAnItemToWin = didPlayerWinWrapperCraftAnItemToWin(game);
   game.consumeHealer = consumeHealerWrapper(game);
   game.didPlayerWin2ItemIdsToWin = didPlayerWinWrapper2ItemIdsToWin(game);
