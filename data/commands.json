@@ -57,6 +57,10 @@
   },
  "setGoal": {
    "commands": ["set goal"],
-   "description": "Set's the current goal to another goal" 
-  }
+   "description": "Set's the current goal to another goal"
+ },
+ "showCurrentGoal": {
+   "commands": ["show current goal", "what do i have to do"],
+   "description": "Shows you your current goal"
+ }
 }

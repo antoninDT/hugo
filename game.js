@@ -3,13 +3,13 @@ const boxen = require('boxen');
 const CFonts = require('cfonts');
 const chalkAnimation = require('chalk-animation');
 
-const { basicBoxOptions, basicCFontOptions, getTextColorBasedOnCurrentTime, consoleOutPut, clearScreenWrapper, } = require('./console.utility');
+const { basicBoxOptions, basicCFontOptions, getTextColorBasedOnCurrentTime, consoleOutPut, clearScreenWrapper } = require('./console.utility');
 const { defaultRoomId, getRoomById, roomsLookup, rooms, showCurrentRoomWrapper, showRoomsWrapper, showCurrentRoomContentsWrapper, getCurrentRoomWrapper, randomlyDistributeItemsToRoomsWrapper, randomlyDistributeEnemiesToRoomsWrapper, randomlyDistributeHealersToRoomsWrapper, showEnemyAttackMessageWrapper } = require('./room.utility');
 const { getRandomArrayItem } = require('./general.utility');
 const { didPlayerWinWrapper2ItemIdsToWin, didPlayerWinWrapperCraftAnItemToWin } = require('./winConditions.utility');
 const { addSentenceToSpeechQueue, sampleVoicesWrapper } = require('./voices.utility');
 const { getItemByIdWrapper, getEnemyByIdWrapper, getHealerByIdWrapper, showEnemyOrHealerWrapper, getCurrentRoomClueWrapper, getCurrentItemClueWrapper, giveItemClueWrapper, getRandomItemIdToWinWrapper, craftItemWrapper, spawnItemWrapper } = require('./item.utility');
-const { dealDamageIfNeededWrapper, healPlayerIfNeededWrapper, moveItemFromCurrentRoomToPlayerWrapper, moveItemWrapper, movePlayerToRoomWrapper, movePlayerToRandomRoomWrapper, hurtPlayerWrapper, healPlayerWrapper, moveItemFromPlayerToCurrentRoomWrapper, showPlayerStatusWrapper, showInventoryWrapper, consumeHealerWrapper, changeCurrentGoalWrapper } = require('./player.utility');
+const { dealDamageIfNeededWrapper, healPlayerIfNeededWrapper, moveItemFromCurrentRoomToPlayerWrapper, moveItemWrapper, movePlayerToRoomWrapper, movePlayerToRandomRoomWrapper, hurtPlayerWrapper, healPlayerWrapper, moveItemFromPlayerToCurrentRoomWrapper, showPlayerStatusWrapper, showInventoryWrapper, consumeHealerWrapper, changeCurrentGoalIdWrapper, showCurrentGoalWrapper } = require('./player.utility');
 
 //TODO: Find out to change the font/increase the size of the font
 const recipesLookup = require('./data/recipes.json');
@@ -25,7 +25,7 @@ const enemies = Object.values(enemiesLookup);
 const healers = Object.values(healersLookup);
 
 const player = {
-  currentGoalId: 0, // TODO: Change this later
+  currentGoalId: 0,
   health: 100,
   maxHealth: 100,
   currentRoomId: defaultRoomId,
@@ -94,7 +94,7 @@ const game = {
   },
   getTextColorBasedOnCurrentTime,
   consoleOutPut,
-  welcomeMessage() { // TODO: Replace 'Can you find the hidden item??' with different message based on the gamemode
+  welcomeMessage() { // TODO: Make the layout of the welcome screen a lot more "duidelijk"
     const welcomeMessageOptions = {
       ...basicCFontOptions,
       font: 'block',
@@ -103,12 +103,6 @@ const game = {
     this.clearScreen();
     CFonts.say('Welkom|bij|Hugo|Hulp', welcomeMessageOptions);
     addSentenceToSpeechQueue({ sentence: 'Welkom bij Hugo Hulp', voice: 'ellen', voiceSpeed: 0.5});
-    console.log();
-    game.consoleOutPut({
-      chalkSetting: 'bold',
-      color: 'magenta',
-      text: 'Can you find the hidden item??',
-    });
     console.log();
     game.consoleOutPut({
       text: `${new Date} ${chalk[this.getTextColorBasedOnCurrentTime().color].bold(this.getTextColorBasedOnCurrentTime().greeting)}`
@@ -195,7 +189,8 @@ const game = {
 };
 
 const wireUpImportedGameFunctions = () => {
-  game.changeCurrentGoal = changeCurrentGoalWrapper(game);
+  game.showCurrentGoal = showCurrentGoalWrapper(game);
+  game.changeCurrentGoalId = changeCurrentGoalIdWrapper(game);
   game.didPlayerWinCraftAnItemToWin = didPlayerWinWrapperCraftAnItemToWin(game);
   game.consumeHealer = consumeHealerWrapper(game);
   game.didPlayerWin2ItemIdsToWin = didPlayerWinWrapper2ItemIdsToWin(game);

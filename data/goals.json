@@ -1,6 +1,7 @@
 {
   "craftItemGoal": {
     "id": 1,
-    "name": "craft game mode"
+    "name": "craft game mode",
+    "description": "Use the clues given to craft the correct item"
   }
 }
