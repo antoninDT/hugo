@@ -4,7 +4,7 @@ A NodeJS CLI game project for learning **clean JS**.
 
 # Requirements
 
- * **NodeJs** (v9.7 or later preffered): [https://nodejs.org/en/download/]
+ * **NodeJs** (v9.7 or later preferred): [https://nodejs.org/en/download/]
 
 # Setup
 
@@ -36,7 +36,7 @@ AKA: Tonysacs(TM)
   {
     "craftItemGoal": {
       "id": 1, // Id's must be greater than 0
-      "goalTypeId": "1", // The following goalTypeId's can be used:
+      "goalTypeId": 1, // The following goalTypeId's can be used:
       // 1: Craft an item to win
       // 2: Find an item to win
       // 3: Find multiple items to win

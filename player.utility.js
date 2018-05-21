@@ -292,6 +292,13 @@ const changeCurrentGoalIdWrapper = (game) => (goalId) => { // TODO: Add error me
    }
   game.state.player.currentGoalId = goalDetails.id;
   game.showCurrentGoal();
+  const setupGameForChosenGoal = () => {
+    game.updateWinConditions();
+    game.randomlyDistributeItemsToRooms();
+    game.randomlyDistributeHealersToRooms();
+    game.randomlyDistributeEnemiesToRooms();
+  };
+  setupGameForChosenGoal(); // TODO: Refactor this function into game.js and then just invoke it from here
 };
 
 const showCurrentGoalWrapper = (game) => () => { // TODO: Show the id's of the goals and input the goal id to change it
@@ -314,6 +321,11 @@ const showCurrentGoalWrapper = (game) => () => { // TODO: Show the id's of the g
     `,
     color: 'magentaBright'
   });
+};
+
+const getCurrentWinConditions = (game) => () => { // TODO: Finish this function
+    const currentGoal = goals.find((goal) => goal.id === game.state.player.currentGoalId);
+    const winConditionOfCurrentGoal = currentGoal.winCondition;
 };
 
 const api = {

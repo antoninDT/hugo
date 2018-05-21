@@ -17,6 +17,7 @@ const itemsLookup = require('./data/items.json');
 const commandLookup = require('./data/commands.json');
 const enemiesLookup = require('./data/enemies.json');
 const healersLookup = require('./data/healers.json');
+const goalsLookup = require('./data/goals.json');
 
 const commands = Object.values(commandLookup);
 const recipes = Object.values(recipesLookup);
@@ -44,13 +45,42 @@ const game = {
     items,
     enemies,
     healers,
-    itemIdsToWin: [
-      items[Math.floor(Math.random() * items.length)].id,
-      items[Math.floor(Math.random() * items.length)].id
+    itemIdsToWin: [ // TODO: Replace these with a winCondition factor or something like it
+      // items[Math.floor(Math.random() * items.length)].id,
+      // items[Math.floor(Math.random() * items.length)].id
     ],
     craftItemIdToWin: [
-      recipes[Math.floor(Math.random() * recipes.length)].result.id
+      // recipes[Math.floor(Math.random() * recipes.length)].result.id
     ]
+  },
+  updateWinConditions() {
+    const gameTypeIds = { // TODO: refactor this to some other shared file.
+      craftOneItem: 1,
+      findOneItem: 2,
+      findTwoItems: 3, // TODO: Eventually update the goals.json schema to allow editors to specify how many items to craft/find (wouldn't need typeId 3 anymore)
+    };
+    switch (this.state.player.currentGoalId) {
+      case (gameTypeIds.craftOneItem): {
+        this.state.craftItemIdToWin = [
+          recipes[Math.floor(Math.random() * recipes.length)].result.id
+        ];
+      }
+      case (gameTypeIds.findOneItem): {
+        this.state.itemIdsToWin = [
+          items[Math.floor(Math.random() * items.length)].id
+        ];
+      }
+      case (gameTypeIds.findTwoItems): {
+        this.state.itemIdsToWin = [ // TODO: Eventually refactor this to some helper function to create and return an array of n (n being how many random items) random items
+          items[Math.floor(Math.random() * items.length)].id,
+          items[Math.floor(Math.random() * items.length)].id
+        ];
+      }
+      default:
+        // TODO: Show an error here for unknown win conditions
+        break;
+    }
+    console.log('DEBUG: All done updating win conditions!'); // TODO: Kill this line
   },
   goodbye(shouldSpeakClue = true) {
     const goodbyeMessageOptions = {
@@ -111,9 +141,9 @@ const game = {
     this.showRooms(false);
     this.showPlayerStatus(false, false);
     this.showCurrentRoom(false);
-    this.giveItemClue(false);
+    // this.giveItemClue(false); // TODO: Kill this line
   },
-  showHelp() {
+  showHelp() { // TODO: Change this function (Update the goal to win) (Show all the goals)
     const commandBoxOptions = {
       ...basicBoxOptions,
       borderColor: this.getTextColorBasedOnCurrentTime().color,
