@@ -37,9 +37,9 @@ AKA: Tonysacs(TM)
     inventory: [] // The inventory of the player
   };
   ```
-  **Items**: In Hugo Hulp their are a item's the player must collect to win the game. If the player picks up the wrong item the player will take damage
+  **Items**: In Hugo Hulp their are a item's the player must collect to win the game. If the player picks up the WRONG item the player will take DAMAGE.
 
-  **Rooms**: In Hugo Hulp the player check which room has the item or item's that the player wishes to find. Keep in mind that in order to move from room to room you must make sure it is CONNECTED first.
+  **Rooms**: In Hugo Hulp the player must check which room has the item or item's that the player wishes to find. Keep in mind that in order to move from room to room you must make sure it is CONNECTED first.
 
 # Changing the game (data files)
 
