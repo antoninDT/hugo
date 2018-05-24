@@ -60,7 +60,7 @@ AKA: Tonysacs(TM)
 }
   ```
 
-  * **commands.json***: example:
+  * **commands.json**: example:
 
   ```js
   {
