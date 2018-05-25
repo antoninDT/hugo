@@ -64,23 +64,28 @@ const game = {
         this.state.craftItemIdToWin = [
           recipes[Math.floor(Math.random() * recipes.length)].result.id
         ];
+        break;
       }
       case (gameTypeIds.findOneItem): {
         this.state.itemIdsToWin = [
           items[Math.floor(Math.random() * items.length)].id
         ];
+        break;
       }
       case (gameTypeIds.findTwoItems): {
         this.state.itemIdsToWin = [ // TODO: Eventually refactor this to some helper function to create and return an array of n (n being how many random items) random items
           items[Math.floor(Math.random() * items.length)].id,
           items[Math.floor(Math.random() * items.length)].id
         ];
+        break;
       }
       default:
-        // TODO: Show an error here for unknown win conditions
+         game.consoleOutPut({
+           text: `ERROR: The current goal id does not exist`
+         });
         break;
     }
-    console.log('DEBUG: All done updating win conditions!'); // TODO: Kill this line
+    console.dir(this.state.itemIdsToWin); // Kill this line
   },
   goodbye(shouldSpeakClue = true) {
     const goodbyeMessageOptions = {
