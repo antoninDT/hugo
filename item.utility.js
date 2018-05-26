@@ -36,7 +36,10 @@ const getCurrentRoomClueWrapper = (game) => (randomItemIdToWin) => {
 const getCurrentRecipeClueWrapper = (game) => (randomRecipeIdToWin) => {
    const recipeToWin = game.state.recipes.find((recipe) => recipe.result.id === randomRecipeIdToWin);
    const randomRecipeClue = getRandomArrayItem(recipeToWin.result.clues);
-   return randomRecipeClue;
+   const randomIngredientOfRecipeToWin = getRandomArrayItem(recipeToWin.ingredients)
+   const randomIngredientOfRecipeToWinItem = game.getItemById(randomIngredientOfRecipeToWin);
+   const randomIngredientRoomClue = game.getCurrentRoomClue(randomIngredientOfRecipeToWinItem.id);
+   return { randomRecipeClue, randomIngredientRoomClue };
 };
 
 const getCurrentItemClueWrapper = (game) => (randomItemIdToWin) => {
@@ -45,7 +48,7 @@ const getCurrentItemClueWrapper = (game) => (randomItemIdToWin) => {
   return randomItemClue;
 };
 
-const giveItemClueWrapper = (game) => (shouldSpeakClue = true) => { // TODO: Update this to show recipe clues as well
+const giveItemClueWrapper = (game) => (shouldSpeakClue = true) => {
   const goalType = game.state.player.currentGoalId;
   if ((goalType > 1) && (goalType < 3)) {
     const randomItemIdToWin = game.getRandomItemIdToWin();
@@ -66,15 +69,16 @@ const giveItemClueWrapper = (game) => (shouldSpeakClue = true) => { // TODO: Upd
   }
   if (goalType === 1) {
     const randomRecipeIdToWin = game.getRandomRecipeIdToWin();
-    const recipeClue = game.getCurrentRecipeClue(randomRecipeIdToWin);
-    if (shouldSpeakClue) { // TODO: Come back to this later (Maybe give a clue for the ingredients of the recipe)
-    addSentenceToSpeechQueue({ sentence: `Here is you clue: ${recipeClue}`, voice: 'Princess' });
+    const recipeClue = game.getCurrentRecipeClue(randomRecipeIdToWin).randomRecipeClue;
+    const ingredientRoomClue = game.getCurrentRecipeClue(randomRecipeIdToWin).randomIngredientRoomClue;
+    if (shouldSpeakClue) {
+    addSentenceToSpeechQueue({ sentence: `Here is you clue: ${recipeClue}        and. ${ingredientRoomClue}`, voice: 'Princess' });
   }
   game.consoleOutPut({ text: 'Here is your clue:', color: 'yellowBright' });
   game.consoleOutPut({
       text: `
 
-          ${chalk.bold.red(recipeClue)}
+          ${chalk.bold.red(recipeClue)} and ${chalk.bold.red(ingredientRoomClue)}
 
        `,
   });
