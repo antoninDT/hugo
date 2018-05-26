@@ -33,27 +33,62 @@ const getCurrentRoomClueWrapper = (game) => (randomItemIdToWin) => {
   return randomClueForRoom;
 };
 
+const getCurrentRecipeClueWrapper = (game) => (randomRecipeIdToWin) => {
+   const recipeToWin = game.state.recipes.find((recipe) => recipe.result.id === randomRecipeIdToWin);
+   const randomRecipeClue = getRandomArrayItem(recipeToWin.result.clues);
+   return randomRecipeClue;
+};
+
 const getCurrentItemClueWrapper = (game) => (randomItemIdToWin) => {
   const itemToWin = game.state.items.find((item) => item.id === randomItemIdToWin);
   const randomItemClue = getRandomArrayItem(itemToWin.clues);
   return randomItemClue;
 };
 
-const giveItemClueWrapper = (game) => (shouldSpeakClue = true) => {
-  const randomItemIdToWin = game.getRandomItemIdToWin();
-  const roomClue = game.getCurrentRoomClue(randomItemIdToWin);
-  const itemClue = game.getCurrentItemClue(randomItemIdToWin);
-  if (shouldSpeakClue) {
-    addSentenceToSpeechQueue({ sentence: `Here is you clue: ${itemClue}       and. ${roomClue}`, voice: 'Princess' });
-  }
-  game.consoleOutPut({ text: 'Here is your clue:', color: 'yellowBright' });
-  game.consoleOutPut({
+const giveItemClueWrapper = (game) => (shouldSpeakClue = true) => { // TODO: Update this to show recipe clues as well
+  const goalType = game.state.player.currentGoalId;
+  if ((goalType > 1) && (goalType < 3)) {
+    const randomItemIdToWin = game.getRandomItemIdToWin();
+    const roomClue = game.getCurrentRoomClue(randomItemIdToWin);
+    const itemClue = game.getCurrentItemClue(randomItemIdToWin);
+    if (shouldSpeakClue) {
+      addSentenceToSpeechQueue({ sentence: `Here is you clue: ${itemClue}       and. ${roomClue}`, voice: 'Princess' });
+    }
+    game.consoleOutPut({ text: 'Here is your clue:', color: 'yellowBright' });
+    game.consoleOutPut({
       text: `
 
           ${chalk.bold.red(itemClue)} and ${chalk.bold.red(roomClue)}
 
        `,
     });
+    return;
+  }
+  if (goalType === 1) {
+    const randomRecipeIdToWin = game.getRandomRecipeIdToWin();
+    const recipeClue = game.getCurrentRecipeClue(randomRecipeIdToWin);
+    if (shouldSpeakClue) { // TODO: Come back to this later (Maybe give a clue for the ingredients of the recipe)
+    addSentenceToSpeechQueue({ sentence: `Here is you clue: ${recipeClue}`, voice: 'Princess' });
+  }
+  game.consoleOutPut({ text: 'Here is your clue:', color: 'yellowBright' });
+  game.consoleOutPut({
+      text: `
+
+          ${chalk.bold.red(recipeClue)}
+
+       `,
+  });
+  }
+};
+
+// TODO: Create a getRandomRecipeIdToWinWrapper function
+
+const getRandomRecipeIdToWinWrapper = (game) => () => {
+  let resultId = getRandomArrayItem(game.state.craftItemIdToWin);
+  while (game.state.player.inventory.includes(resultId)) {
+    resultId = getRandomArrayItem(game.state.craftItemIdToWin)
+  }
+  return resultId;
 };
 
 const getRandomItemIdToWinWrapper = (game) => () => {
@@ -64,7 +99,7 @@ const getRandomItemIdToWinWrapper = (game) => () => {
   return itemId;
 };
 
-const craftItemWrapper = (game) => (itemName1, itemName2) => { 
+const craftItemWrapper = (game) => (itemName1, itemName2) => {
   const item1 = game.state.items.find((item) => item.name.toLowerCase() === itemName1.toLowerCase());
   const item2 = game.state.items.find((item) => item.name.toLowerCase() === itemName2.toLowerCase());
   if (!(itemName1 && itemName2)) {
@@ -95,6 +130,8 @@ const spawnItemWrapper = (game) => (itemIdToSpawn, destination) => {
 };
 
 const api = {
+  getRandomRecipeIdToWinWrapper,
+  getCurrentRecipeClueWrapper,
   spawnItemWrapper,
   craftItemWrapper,
   getRandomItemIdToWinWrapper,

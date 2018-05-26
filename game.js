@@ -8,7 +8,7 @@ const { defaultRoomId, getRoomById, roomsLookup, rooms, showCurrentRoomWrapper, 
 const { getRandomArrayItem } = require('./general.utility');
 const { didPlayerWinWrapper2ItemIdsToWin, didPlayerWinWrapperCraftAnItemToWin } = require('./winConditions.utility');
 const { addSentenceToSpeechQueue, sampleVoicesWrapper } = require('./voices.utility');
-const { getItemByIdWrapper, getEnemyByIdWrapper, getHealerByIdWrapper, showEnemyOrHealerWrapper, getCurrentRoomClueWrapper, getCurrentItemClueWrapper, giveItemClueWrapper, getRandomItemIdToWinWrapper, craftItemWrapper, spawnItemWrapper } = require('./item.utility');
+const { getItemByIdWrapper, getEnemyByIdWrapper, getHealerByIdWrapper, showEnemyOrHealerWrapper, getCurrentRoomClueWrapper, getCurrentItemClueWrapper, giveItemClueWrapper, getRandomItemIdToWinWrapper, craftItemWrapper, spawnItemWrapper, getCurrentRecipeClueWrapper, getRandomRecipeIdToWinWrapper } = require('./item.utility');
 const { dealDamageIfNeededWrapper, healPlayerIfNeededWrapper, moveItemFromCurrentRoomToPlayerWrapper, moveItemWrapper, movePlayerToRoomWrapper, movePlayerToRandomRoomWrapper, hurtPlayerWrapper, healPlayerWrapper, moveItemFromPlayerToCurrentRoomWrapper, showPlayerStatusWrapper, showInventoryWrapper, consumeHealerWrapper, changeCurrentGoalIdWrapper, showCurrentGoalWrapper } = require('./player.utility');
 
 //TODO: Find out to change the font/increase the size of the font
@@ -84,8 +84,7 @@ const game = {
            text: `ERROR: The current goal id does not exist`
          });
         break;
-    }
-    console.dir(this.state.itemIdsToWin); // Kill this line
+    }    
   },
   goodbye(shouldSpeakClue = true) {
     const goodbyeMessageOptions = {
@@ -224,6 +223,8 @@ const game = {
 };
 
 const wireUpImportedGameFunctions = () => {
+  game.getRandomRecipeIdToWin = getRandomRecipeIdToWinWrapper(game);
+  game.getCurrentRecipeClue = getCurrentRecipeClueWrapper(game);
   game.showCurrentGoal = showCurrentGoalWrapper(game);
   game.changeCurrentGoalId = changeCurrentGoalIdWrapper(game);
   game.didPlayerWinCraftAnItemToWin = didPlayerWinWrapperCraftAnItemToWin(game);
