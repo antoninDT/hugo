@@ -50,42 +50,54 @@ const getCurrentItemClueWrapper = (game) => (randomItemIdToWin) => {
 
 const giveItemClueWrapper = (game) => (shouldSpeakClue = true) => {
   const goalType = game.state.player.currentGoalId;
-  if ((goalType > 1) && (goalType < 3)) {
-    const randomItemIdToWin = game.getRandomItemIdToWin();
-    const roomClue = game.getCurrentRoomClue(randomItemIdToWin);
-    const itemClue = game.getCurrentItemClue(randomItemIdToWin);
-    if (shouldSpeakClue) {
-      addSentenceToSpeechQueue({ sentence: `Here is you clue: ${itemClue}       and. ${roomClue}`, voice: 'Princess' });
+  const gameTypeIds = { // TODO: refactor this to some other shared file.
+    craftOneItem: 1,
+    findOneItem: 2,
+    findTwoItems: 3, // TODO: Eventually update the goals.json schema to allow editors to specify how many items to craft/find (wouldn't need typeId 3 anymore)
+  };
+  switch (game.state.player.currentGoalId) {
+    case (gameTypeIds.craftOneItem): {
+      const randomRecipeIdToWin = game.getRandomRecipeIdToWin();
+        const recipeClue = game.getCurrentRecipeClue(randomRecipeIdToWin).randomRecipeClue;
+        const ingredientRoomClue = game.getCurrentRecipeClue(randomRecipeIdToWin).randomIngredientRoomClue;
+        if (shouldSpeakClue) {
+        addSentenceToSpeechQueue({ sentence: `Here is you clue: ${recipeClue}        and. ${ingredientRoomClue}`, voice: 'Princess' });
+      }
+      game.consoleOutPut({ text: 'Here is your clue:', color: 'yellowBright' });
+      game.consoleOutPut({
+          text: `
+
+              ${chalk.bold.red(recipeClue)} and ${chalk.bold.red(ingredientRoomClue)}
+
+           `,
+      });
+      break;
     }
-    game.consoleOutPut({ text: 'Here is your clue:', color: 'yellowBright' });
-    game.consoleOutPut({
-      text: `
+    case (gameTypeIds.findOneItem):
+    case (gameTypeIds.findTwoItems): {
+      const randomItemIdToWin = game.getRandomItemIdToWin();
+        const roomClue = game.getCurrentRoomClue(randomItemIdToWin);
+        const itemClue = game.getCurrentItemClue(randomItemIdToWin);
+        if (shouldSpeakClue) {
+          addSentenceToSpeechQueue({ sentence: `Here is you clue: ${itemClue}       and. ${roomClue}`, voice: 'Princess' });
+        }
+        game.consoleOutPut({ text: 'Here is your clue:', color: 'yellowBright' });
+        game.consoleOutPut({
+          text: `
 
-          ${chalk.bold.red(itemClue)} and ${chalk.bold.red(roomClue)}
+              ${chalk.bold.red(itemClue)} and ${chalk.bold.red(roomClue)}
 
-       `,
-    });
-    return;
-  }
-  if (goalType === 1) {
-    const randomRecipeIdToWin = game.getRandomRecipeIdToWin();
-    const recipeClue = game.getCurrentRecipeClue(randomRecipeIdToWin).randomRecipeClue;
-    const ingredientRoomClue = game.getCurrentRecipeClue(randomRecipeIdToWin).randomIngredientRoomClue;
-    if (shouldSpeakClue) {
-    addSentenceToSpeechQueue({ sentence: `Here is you clue: ${recipeClue}        and. ${ingredientRoomClue}`, voice: 'Princess' });
-  }
-  game.consoleOutPut({ text: 'Here is your clue:', color: 'yellowBright' });
-  game.consoleOutPut({
-      text: `
-
-          ${chalk.bold.red(recipeClue)} and ${chalk.bold.red(ingredientRoomClue)}
-
-       `,
-  });
+           `,
+        });
+      break;
+    }
+    default:
+       game.consoleOutPut({
+         text: `ERROR: There are no clues for this goal type`
+       });
+      break;
   }
 };
-
-// TODO: Create a getRandomRecipeIdToWinWrapper function
 
 const getRandomRecipeIdToWinWrapper = (game) => () => {
   let resultId = getRandomArrayItem(game.state.craftItemIdToWin);
