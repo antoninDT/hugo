@@ -6,10 +6,11 @@ const chalkAnimation = require('chalk-animation');
 const { basicBoxOptions, basicCFontOptions, getTextColorBasedOnCurrentTime, consoleOutPut, clearScreenWrapper } = require('./console.utility');
 const { defaultRoomId, getRoomById, roomsLookup, rooms, showCurrentRoomWrapper, showRoomsWrapper, showCurrentRoomContentsWrapper, getCurrentRoomWrapper, randomlyDistributeItemsToRoomsWrapper, randomlyDistributeEnemiesToRoomsWrapper, randomlyDistributeHealersToRoomsWrapper, showEnemyAttackMessageWrapper } = require('./room.utility');
 const { getRandomArrayItem } = require('./general.utility');
-const { didPlayerWinWrapper2ItemIdsToWin, didPlayerWinWrapperCraftAnItemToWin, didPlayerWinDeciderWrapper } = require('./winConditions.utility');
+const { didPlayerWinWrapper2ItemIdsToWin, didPlayerWinWrapperCraftAnItemToWin, didPlayerWinDeciderWrapper, updateWinConditionsWrapper } = require('./winConditions.utility');
 const { addSentenceToSpeechQueue, sampleVoicesWrapper } = require('./voices.utility');
 const { getItemByIdWrapper, getEnemyByIdWrapper, getHealerByIdWrapper, showEnemyOrHealerWrapper, getCurrentRoomClueWrapper, getCurrentItemClueWrapper, giveItemClueWrapper, getRandomItemIdToWinWrapper, craftItemWrapper, spawnItemWrapper, getCurrentRecipeClueWrapper, getRandomRecipeIdToWinWrapper, getRandomRecipeIngredientWrapper } = require('./item.utility');
-const { dealDamageIfNeededWrapper, healPlayerIfNeededWrapper, moveItemFromCurrentRoomToPlayerWrapper, moveItemWrapper, movePlayerToRoomWrapper, movePlayerToRandomRoomWrapper, hurtPlayerWrapper, healPlayerWrapper, moveItemFromPlayerToCurrentRoomWrapper, showPlayerStatusWrapper, showInventoryWrapper, consumeHealerWrapper, changeCurrentGoalIdWrapper, showCurrentGoalWrapper } = require('./player.utility');
+const { dealDamageIfNeededWrapper, healPlayerIfNeededWrapper, moveItemFromCurrentRoomToPlayerWrapper, moveItemWrapper, movePlayerToRoomWrapper, movePlayerToRandomRoomWrapper, hurtPlayerWrapper, healPlayerWrapper, moveItemFromPlayerToCurrentRoomWrapper, showPlayerStatusWrapper, showInventoryWrapper, consumeHealerWrapper, } = require('./player.utility');
+const { showCurrentGoalWrapper, changeCurrentGoalIdWrapper, } = require('./goals.utility');
 
 //TODO: Find out to change the font/increase the size of the font
 const recipesLookup = require('./data/recipes.json');
@@ -52,39 +53,6 @@ const game = {
     craftItemIdToWin: [
       // recipes[Math.floor(Math.random() * recipes.length)].result.id
     ]
-  },
-  updateWinConditions() {
-    const gameTypeIds = { // TODO: refactor this to some other shared file.
-      craftOneItem: 1,
-      findOneItem: 2,
-      findTwoItems: 3, // TODO: Eventually update the goals.json schema to allow editors to specify how many items to craft/find (wouldn't need typeId 3 anymore)
-    };
-    switch (this.state.player.currentGoalId) {
-      case (gameTypeIds.craftOneItem): {
-        this.state.craftItemIdToWin = [
-          recipes[Math.floor(Math.random() * recipes.length)].result.id
-        ];
-        break;
-      }
-      case (gameTypeIds.findOneItem): {
-        this.state.itemIdsToWin = [
-          items[Math.floor(Math.random() * items.length)].id
-        ];
-        break;
-      }
-      case (gameTypeIds.findTwoItems): {
-        this.state.itemIdsToWin = [ // TODO: Eventually refactor this to some helper function to create and return an array of n (n being how many random items) random items
-          items[Math.floor(Math.random() * items.length)].id,
-          items[Math.floor(Math.random() * items.length)].id
-        ];
-        break;
-      }
-      default:
-         game.consoleOutPut({
-           text: `ERROR: The current goal id does not exist`
-         });
-        break;
-    }
   },
   goodbye(shouldSpeakClue = true) {
     const goodbyeMessageOptions = {
@@ -223,6 +191,7 @@ const game = {
 };
 
 const wireUpImportedGameFunctions = () => {
+  game.updateWinConditions = updateWinConditionsWrapper(game);
   game.getRandomRecipeIngredient = getRandomRecipeIngredientWrapper(game);
   game.didPlayerWinDecider = didPlayerWinDeciderWrapper(game);
   game.getRandomRecipeIdToWin = getRandomRecipeIdToWinWrapper(game);

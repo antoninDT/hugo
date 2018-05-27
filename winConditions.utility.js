@@ -1,4 +1,16 @@
 
+const recipesLookup = require('./data/recipes.json');
+const itemsLookup = require('./data/items.json');
+
+const recipes = Object.values(recipesLookup);
+const items = Object.values(itemsLookup);
+
+const gameTypeIds = { // TODO: Eventually update the goals.json schema to allow editors to specify how many items to craft/find (wouldn't need typeId 3 anymore)
+  craftOneItem: 1,
+  findOneItem: 2,
+  findTwoItems: 3,
+};
+
 const didPlayerWinWrapper2ItemIdsToWin = (game) => () => {
   return game.state.itemIdsToWin.every((itemIdToWin) => game.state.player.inventory.includes(itemIdToWin))
 };
@@ -9,11 +21,6 @@ const didPlayerWinWrapperCraftAnItemToWin = (game) => () => { // TODO: Complete 
 
 const didPlayerWinDeciderWrapper = (game) => () => {
   let winCondition;
-    const gameTypeIds = { // TODO: refactor this to some other shared file.
-      craftOneItem: 1,
-      findOneItem: 2,
-      findTwoItems: 3, // TODO: Eventually update the goals.json schema to allow editors to specify how many items to craft/find (wouldn't need typeId 3 anymore)
-    };
       switch (game.state.player.currentGoalId) {
         case (gameTypeIds.craftOneItem): {
           winCondition = game.didPlayerWinCraftAnItemToWin();
@@ -33,11 +40,40 @@ const didPlayerWinDeciderWrapper = (game) => () => {
    return winCondition;
 };
 
+const updateWinConditionsWrapper = (game) => () => { // TODO: Finish refactoring this
+  switch (game.state.player.currentGoalId) {
+    case (gameTypeIds.craftOneItem): {
+      game.state.craftItemIdToWin = [
+        recipes[Math.floor(Math.random() * recipes.length)].result.id
+      ];
+      break;
+    }
+    case (gameTypeIds.findOneItem): {
+      game.state.itemIdsToWin = [
+        items[Math.floor(Math.random() * items.length)].id
+      ];
+      break;
+    }
+    case (gameTypeIds.findTwoItems): {
+      game.state.itemIdsToWin = [ // TODO: Eventually refactor this to some helper function to create and return an array of n (n being how many random items) random items
+        items[Math.floor(Math.random() * items.length)].id,
+        items[Math.floor(Math.random() * items.length)].id
+      ];
+      break;
+    }
+    default:
+       game.consoleOutPut({
+         text: `ERROR: The current goal id does not exist`
+       });
+      break;
+  }
+};
+
 const api = {
+  updateWinConditionsWrapper,
+  gameTypeIds,
   didPlayerWinDeciderWrapper,
   didPlayerWinWrapper2ItemIdsToWin,
   didPlayerWinWrapperCraftAnItemToWin,
 };
 module.exports = api;
-
-//TODO: Make a different game mode where you have to craft the item

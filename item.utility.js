@@ -2,6 +2,7 @@ const chalk = require('chalk');
 
 const { getRandomArrayItem } = require('./general.utility');
 const { addSentenceToSpeechQueue } = require('./voices.utility');
+const { gameTypeIds } = require('./winConditions.utility');
 
 const getItemByIdWrapper = (game) => (itemId) => game.state.items.find((item) => item.id === itemId);
 const getEnemyByIdWrapper = (game) => (enemyId) => game.state.enemies.find((enemy) => enemy.id === enemyId);
@@ -58,11 +59,6 @@ const getCurrentItemClueWrapper = (game) => (randomItemIdToWin) => {
 
 const giveItemClueWrapper = (game) => (shouldSpeakClue = true) => {
   const goalType = game.state.player.currentGoalId;
-  const gameTypeIds = { // TODO: refactor this to some other shared file.
-    craftOneItem: 1,
-    findOneItem: 2,
-    findTwoItems: 3, // TODO: Eventually update the goals.json schema to allow editors to specify how many items to craft/find (wouldn't need typeId 3 anymore)
-  };
   switch (game.state.player.currentGoalId) {
     case (gameTypeIds.craftOneItem): {
       const randomRecipeIdToWin = game.getRandomRecipeIdToWin();
