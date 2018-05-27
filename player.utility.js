@@ -12,7 +12,7 @@ const dealDamageIfNeededWrapper = (game) => (showEnemyOrHealer, shouldSpeak = tr
   const recipeToWinDetails = game.state.recipes.find((recipe) => recipe.result.id === recipeToWin);
   const ingredientsOfRecipeToWin = recipeToWinDetails.ingredients;
   if (!showEnemyOrHealer.damage) { return; }
-  if (showEnemyOrHealer.isItem && (game.state.itemIdsToWin.includes(showEnemyOrHealer.id))) { return; }
+  if (showEnemyOrHealer.isItem && (game.state.winningFactors.itemIdsToWin.includes(showEnemyOrHealer.id))) { return; }
   if (showEnemyOrHealer.isItem && (ingredientsOfRecipeToWin.includes(showEnemyOrHealer.id))) { return; }
   if (shouldSpeak) { game.actions.hurtPlayer(showEnemyOrHealer.damage); }
   game.hurtPlayer(showEnemyOrHealer.damage, false);
@@ -20,7 +20,7 @@ const dealDamageIfNeededWrapper = (game) => (showEnemyOrHealer, shouldSpeak = tr
 
 const healPlayerIfNeededWrapper = (game) => (showEnemyOrHealer) => {
   if (!showEnemyOrHealer.healingAmount) { return; }
-  if (showEnemyOrHealer.isItem && showEnemyOrHealer === game.state.itemIdsToWin) { return; }
+  if (showEnemyOrHealer.isItem && showEnemyOrHealer === game.state.winningFactors.itemIdsToWin) { return; }
   game.healPlayer(showEnemyOrHealer.healingAmount);  // TODO: Add a voice when gained healh
 };
 

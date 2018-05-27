@@ -104,17 +104,17 @@ const giveItemClueWrapper = (game) => (shouldSpeakClue = true) => {
 };
 
 const getRandomRecipeIdToWinWrapper = (game) => () => {
-  let resultId = getRandomArrayItem(game.state.craftItemIdToWin);
+  let resultId = getRandomArrayItem(game.state.winningFactors.craftItemIdToWin);
   while (game.state.player.inventory.includes(resultId)) {
-    resultId = getRandomArrayItem(game.state.craftItemIdToWin)
+    resultId = getRandomArrayItem(game.state.winningFactors.craftItemIdToWin)
   }
   return resultId;
 };
 
 const getRandomItemIdToWinWrapper = (game) => () => {
-  let itemId = getRandomArrayItem(game.state.itemIdsToWin);
+  let itemId = getRandomArrayItem(game.state.winningFactors.itemIdsToWin);
   while (game.state.player.inventory.includes(itemId)) {
-    itemId = getRandomArrayItem(game.state.itemIdsToWin)
+    itemId = getRandomArrayItem(game.state.winningFactors.itemIdsToWin)
   }
   return itemId;
 };
