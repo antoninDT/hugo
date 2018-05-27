@@ -11,8 +11,12 @@ const goalsLookup = require('./data/goals.json');
 const goals = Object.values(goalsLookup);
 
 const dealDamageIfNeededWrapper = (game) => (showEnemyOrHealer, shouldSpeak = true) => {  // TODO: Fix the flashing of the text
+  const recipeToWin = game.getRandomRecipeIdToWin();
+  const recipeToWinDetails = game.state.recipes.find((recipe) => recipe.result.id === recipeToWin);
+  const ingredientsOfRecipeToWin = recipeToWinDetails.ingredients;
   if (!showEnemyOrHealer.damage) { return; }
   if (showEnemyOrHealer.isItem && (game.state.itemIdsToWin.includes(showEnemyOrHealer.id))) { return; }
+  if (showEnemyOrHealer.isItem && (ingredientsOfRecipeToWin.includes(showEnemyOrHealer.id))) { return; }
   if (shouldSpeak) { game.actions.hurtPlayer(showEnemyOrHealer.damage); }
   game.hurtPlayer(showEnemyOrHealer.damage, false);
 };

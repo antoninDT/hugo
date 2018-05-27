@@ -155,7 +155,7 @@ const craftItemWrapper = (game) => (itemName1, itemName2) => {
     destination: game.state.trashCan,
   });
   game.consoleOutPut({ text: `${chalk.bold.green(recipe.result.name)} has been added to your inventory` })
-  if (game.didPlayerWinDecider()) {    
+  if (game.didPlayerWinDecider()) {
     game.showWinScreen();
   }
 };
