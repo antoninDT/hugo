@@ -33,10 +33,18 @@ const getCurrentRoomClueWrapper = (game) => (randomItemIdToWin) => {
   return randomClueForRoom;
 };
 
+const getRandomRecipeIngredientWrapper = (game) => (recipe) => {
+  let randomIngredientOfRecipe = getRandomArrayItem(recipe.ingredients);
+  while (game.state.player.inventory.includes(randomIngredientOfRecipe)) {
+    randomIngredientOfRecipe = getRandomArrayItem(recipe.ingredients)
+  }
+  return randomIngredientOfRecipe;
+};
+
 const getCurrentRecipeClueWrapper = (game) => (randomRecipeIdToWin) => {
    const recipeToWin = game.state.recipes.find((recipe) => recipe.result.id === randomRecipeIdToWin);
    const randomRecipeClue = getRandomArrayItem(recipeToWin.result.clues);
-   const randomIngredientOfRecipeToWin = getRandomArrayItem(recipeToWin.ingredients)
+   const randomIngredientOfRecipeToWin = game.getRandomRecipeIngredient(recipeToWin);
    const randomIngredientOfRecipeToWinItem = game.getItemById(randomIngredientOfRecipeToWin);
    const randomIngredientRoomClue = game.getCurrentRoomClue(randomIngredientOfRecipeToWinItem.id);
    return { randomRecipeClue, randomIngredientRoomClue };
@@ -136,9 +144,22 @@ const craftItemWrapper = (game) => (itemName1, itemName2) => {
     return;
   }
   game.spawnItem(recipe.result.id, game.state.player);
-  game.moveItem(item1.id, game.state.player, game.state.trashCan);
-  game.moveItem(item2.id, game.state.player, game.state.trashCan);
+  game.moveItem({
+    itemIdToMove: item1.id,
+    source: game.state.player,
+    destination: game.state.trashCan,
+  });
+  game.moveItem({
+    itemIdToMove: item2.id,
+    source: game.state.player,
+    destination: game.state.trashCan,
+  });
   game.consoleOutPut({ text: `${chalk.bold.green(recipe.result.name)} has been added to your inventory` })
+  if (game.didPlayerWinDecider()) {
+    console.log(`DEBUG: The win condition is `);
+    console.dir(winCondition);
+    game.showWinScreen();
+  }
 };
 
 const spawnItemWrapper = (game) => (itemIdToSpawn, destination) => {
@@ -146,6 +167,7 @@ const spawnItemWrapper = (game) => (itemIdToSpawn, destination) => {
 };
 
 const api = {
+  getRandomRecipeIngredientWrapper,
   getRandomRecipeIdToWinWrapper,
   getCurrentRecipeClueWrapper,
   spawnItemWrapper,

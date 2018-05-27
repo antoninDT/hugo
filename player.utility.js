@@ -77,7 +77,7 @@ const moveItemFromPlayerToCurrentRoomWrapper = (game) => (itemName) => { // TODO
     });
 };
 
-const moveItemFromCurrentRoomToPlayerWrapper = (game) => (itemName) => {
+const moveItemFromCurrentRoomToPlayerWrapper = (game) => (itemName) => { // TODO: Make it so if the item Id is one of the ingredients of a recipe that you don't take damage
   if (!itemName) {
     addSentenceToSpeechQueue({ sentence: `You forgot to put the name of the item to pick up hoor        try again!`, voice: 'princess' });
     game.consoleOutPut({
@@ -143,7 +143,7 @@ const moveItemFromCurrentRoomToPlayerWrapper = (game) => (itemName) => {
        `,
     });
   game.dealDamageIfNeeded(item, false);
-  if (game.didPlayerWin()) { //TODO: Create an argument to state which gamemode is currently being used, therefore changing the way the player would win
+  if (game.didPlayerWinDecider()) { //TODO: Create an argument to state which gamemode is currently being used, therefore changing the way the player would win
     game.showWinScreen();
   }
 };
