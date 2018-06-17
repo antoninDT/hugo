@@ -8,12 +8,20 @@ const { addSentenceToSpeechQueue, sayListWithAnd } = require('./voices.utility')
 const { changeCurrentGoalIdWrapper } = require('./winConditions.utility');
 
 const dealDamageIfNeededWrapper = (game) => (showEnemyOrHealer, shouldSpeak = true) => {  // TODO: Fix the flashing of the text
-  const recipeToWin = game.getRandomRecipeIdToWin();
-  const recipeToWinDetails = game.state.recipes.find((recipe) => recipe.result.id === recipeToWin);
-  const ingredientsOfRecipeToWin = recipeToWinDetails.ingredients;
+  const currentGoal = game.getCurrentGoal();
+  const currentGoalId = currentGoal.id;
   if (!showEnemyOrHealer.damage) { return; }
   if (showEnemyOrHealer.isItem && (game.state.winningFactors.itemIdsToWin.includes(showEnemyOrHealer.id))) { return; }
-  if (showEnemyOrHealer.isItem && (ingredientsOfRecipeToWin.includes(showEnemyOrHealer.id))) { return; }
+  if (currentGoalId == 1) { // TODO: Fix the arugements in this if statement. It should only check the following if the currentGoalId is 1
+    const recipeToWin = game.getRandomRecipeIdToWin();
+    const recipeToWinDetails = game.state.recipes.find((recipe) => recipe.result.id === recipeToWin);
+    const ingredientsOfRecipeToWin = recipeToWinDetails.ingredients;
+    if (showEnemyOrHealer.isItem) {
+      if (ingredientsOfRecipeToWin.includes(showEnemyOrHealer.id)) {
+        return;
+      }
+    }
+  }
   if (shouldSpeak) { game.actions.hurtPlayer(showEnemyOrHealer.damage); }
   game.hurtPlayer(showEnemyOrHealer.damage, false);
 };
@@ -261,16 +269,16 @@ const showInventoryWrapper = (game) => () => {
 const api = {
   changeCurrentGoalIdWrapper,
   consumeHealerWrapper,
-  showInventoryWrapper,
-  showPlayerStatusWrapper,
-  moveItemFromPlayerToCurrentRoomWrapper,
+  dealDamageIfNeededWrapper,
+  healPlayerIfNeededWrapper,
   healPlayerWrapper,
   hurtPlayerWrapper,
+  moveItemFromCurrentRoomToPlayerWrapper,
+  moveItemFromPlayerToCurrentRoomWrapper,
+  moveItemWrapper,
   movePlayerToRandomRoomWrapper,
   movePlayerToRoomWrapper,
-  moveItemWrapper,
-  moveItemFromCurrentRoomToPlayerWrapper,
-  healPlayerIfNeededWrapper,
-  dealDamageIfNeededWrapper,
+  showInventoryWrapper,
+  showPlayerStatusWrapper,
 };
 module.exports = api;

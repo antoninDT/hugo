@@ -2,16 +2,19 @@
   "craftItemGoal": {
     "id": 1,
     "goalTypeId": 1,
+    "numberOfItemsToWin": 1,
     "description": "Use the clues given to craft the correct item"
   },
   "findTheItemGoal": {
     "id": 2,
     "goalTypeId": 2,
+    "numberOfItemsToWin": 1,
     "description": "Use the clues given to find the item to win"
  },
  "findMultipleItemsGoal": {
    "id": 3,
    "goalTypeId": 3,
+   "numberOfItemsToWin": 2,
    "description": "Use the clues given to find the items to win"
  }
 }

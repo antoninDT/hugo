@@ -60,7 +60,7 @@ const getCurrentItemClueWrapper = (game) => (randomItemIdToWin) => {
 const giveItemClueWrapper = (game) => (shouldSpeakClue = true) => {
   const goalType = game.state.player.currentGoalId;
   switch (game.state.player.currentGoalId) {
-    case (gameTypeIds.craftOneItem): {
+    case (gameTypeIds.craftItems): {
       const randomRecipeIdToWin = game.getRandomRecipeIdToWin();
         const recipeClue = game.getCurrentRecipeClue(randomRecipeIdToWin).randomRecipeClue;
         const ingredientRoomClue = game.getCurrentRecipeClue(randomRecipeIdToWin).randomIngredientRoomClue;
@@ -77,8 +77,8 @@ const giveItemClueWrapper = (game) => (shouldSpeakClue = true) => {
       });
       break;
     }
-    case (gameTypeIds.findOneItem):
-    case (gameTypeIds.findTwoItems): {
+    case (gameTypeIds.findMultipleItems):
+    case (gameTypeIds.findItems): {
       const randomItemIdToWin = game.getRandomItemIdToWin();
         const roomClue = game.getCurrentRoomClue(randomItemIdToWin);
         const itemClue = game.getCurrentItemClue(randomItemIdToWin);
@@ -105,6 +105,7 @@ const giveItemClueWrapper = (game) => (shouldSpeakClue = true) => {
 
 const getRandomRecipeIdToWinWrapper = (game) => () => {
   let resultId = getRandomArrayItem(game.state.winningFactors.craftItemIdToWin);
+
   while (game.state.player.inventory.includes(resultId)) {
     resultId = getRandomArrayItem(game.state.winningFactors.craftItemIdToWin)
   }
@@ -161,18 +162,18 @@ const spawnItemWrapper = (game) => (itemIdToSpawn, destination) => {
 };
 
 const api = {
-  getRandomRecipeIngredientWrapper,
-  getRandomRecipeIdToWinWrapper,
-  getCurrentRecipeClueWrapper,
-  spawnItemWrapper,
   craftItemWrapper,
-  getRandomItemIdToWinWrapper,
-  giveItemClueWrapper,
   getCurrentItemClueWrapper,
+  getCurrentRecipeClueWrapper,
   getCurrentRoomClueWrapper,
-  showEnemyOrHealerWrapper,
-  getHealerByIdWrapper,
   getEnemyByIdWrapper,
+  getHealerByIdWrapper,
   getItemByIdWrapper,
+  getRandomItemIdToWinWrapper,
+  getRandomRecipeIdToWinWrapper,
+  getRandomRecipeIngredientWrapper,
+  giveItemClueWrapper,
+  showEnemyOrHealerWrapper,
+  spawnItemWrapper,
 };
 module.exports = api;

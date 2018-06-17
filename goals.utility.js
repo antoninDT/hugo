@@ -5,9 +5,13 @@ const goalsLookup = require('./data/goals.json');
 
 const goals = Object.values(goalsLookup);
 
+const getCurrentGoalWrapper = (game) => () => {
+ const currentGoal = goals.find((goal) => goal.id === game.state.player.currentGoalId);
+ return currentGoal;
+};
 
 const showCurrentGoalWrapper = (game) => () => { // TODO: Show the id's of the goals and input the goal id to change it
-  const currentGoal = goals.find((goal) => goal.id === game.state.player.currentGoalId);
+  const currentGoal = game.getCurrentGoal();
   if (!currentGoal) {
     game.consoleOutPut({
        text: `
@@ -72,7 +76,9 @@ const changeCurrentGoalIdWrapper = (game) => (goalId) => { // TODO: Add error me
   setupGameForChosenGoal(); // TODO: Refactor this function into game.js and then just invoke it from here
 };
 
+
 const api = {
+  getCurrentGoalWrapper,
   showCurrentGoalWrapper,
   changeCurrentGoalIdWrapper,
 };

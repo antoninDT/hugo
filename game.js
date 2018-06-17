@@ -6,11 +6,11 @@ const chalkAnimation = require('chalk-animation');
 const { basicBoxOptions, basicCFontOptions, getTextColorBasedOnCurrentTime, consoleOutPut, clearScreenWrapper } = require('./console.utility');
 const { defaultRoomId, getRoomById, roomsLookup, rooms, showCurrentRoomWrapper, showRoomsWrapper, showCurrentRoomContentsWrapper, getCurrentRoomWrapper, randomlyDistributeItemsToRoomsWrapper, randomlyDistributeEnemiesToRoomsWrapper, randomlyDistributeHealersToRoomsWrapper, showEnemyAttackMessageWrapper } = require('./room.utility');
 const { getRandomArrayItem } = require('./general.utility');
-const { didPlayerWinWrapper2ItemIdsToWin, didPlayerWinWrapperCraftAnItemToWin, didPlayerWinDeciderWrapper, updateWinConditionsWrapper, winningFactors } = require('./winConditions.utility');
+const { didPlayerWinWrapperItemIdsToWin, didPlayerWinWrapperCraftAnItemToWin, didPlayerWinDeciderWrapper, updateWinConditionsWrapper, winningFactors, giveCurrentGoalWrapper } = require('./winConditions.utility');
 const { addSentenceToSpeechQueue, sampleVoicesWrapper } = require('./voices.utility');
 const { getItemByIdWrapper, getEnemyByIdWrapper, getHealerByIdWrapper, showEnemyOrHealerWrapper, getCurrentRoomClueWrapper, getCurrentItemClueWrapper, giveItemClueWrapper, getRandomItemIdToWinWrapper, craftItemWrapper, spawnItemWrapper, getCurrentRecipeClueWrapper, getRandomRecipeIdToWinWrapper, getRandomRecipeIngredientWrapper } = require('./item.utility');
 const { dealDamageIfNeededWrapper, healPlayerIfNeededWrapper, moveItemFromCurrentRoomToPlayerWrapper, moveItemWrapper, movePlayerToRoomWrapper, movePlayerToRandomRoomWrapper, hurtPlayerWrapper, healPlayerWrapper, moveItemFromPlayerToCurrentRoomWrapper, showPlayerStatusWrapper, showInventoryWrapper, consumeHealerWrapper, } = require('./player.utility');
-const { showCurrentGoalWrapper, changeCurrentGoalIdWrapper, } = require('./goals.utility');
+const { showCurrentGoalWrapper, changeCurrentGoalIdWrapper, getCurrentGoalWrapper } = require('./goals.utility');
 
 //TODO: Find out to change the font/increase the size of the font
 const recipesLookup = require('./data/recipes.json');
@@ -20,6 +20,7 @@ const enemiesLookup = require('./data/enemies.json');
 const healersLookup = require('./data/healers.json');
 const goalsLookup = require('./data/goals.json');
 
+const goals = Object.values(goalsLookup);
 const commands = Object.values(commandLookup);
 const recipes = Object.values(recipesLookup);
 const items = Object.values(itemsLookup);
@@ -46,9 +47,8 @@ const game = {
     items,
     enemies,
     healers,
+    goals,
     winningFactors,
-    // itemIdsToWin: [], // TODO: Replace these with a winCondition factor or something like it
-    // craftItemIdToWin: []
   },
   goodbye(shouldSpeakClue = true) {
     const goodbyeMessageOptions = {
@@ -187,6 +187,8 @@ const game = {
 };
 
 const wireUpImportedGameFunctions = () => {
+  game.getCurrentGoal = getCurrentGoalWrapper(game);
+  game.giveCurrentGoal = giveCurrentGoalWrapper(game);
   game.updateWinConditions = updateWinConditionsWrapper(game);
   game.getRandomRecipeIngredient = getRandomRecipeIngredientWrapper(game);
   game.didPlayerWinDecider = didPlayerWinDeciderWrapper(game);
@@ -196,7 +198,7 @@ const wireUpImportedGameFunctions = () => {
   game.changeCurrentGoalId = changeCurrentGoalIdWrapper(game);
   game.didPlayerWinCraftAnItemToWin = didPlayerWinWrapperCraftAnItemToWin(game);
   game.consumeHealer = consumeHealerWrapper(game);
-  game.didPlayerWin2ItemIdsToWin = didPlayerWinWrapper2ItemIdsToWin(game);
+  game.didPlayerWinItemIdsToWin = didPlayerWinWrapperItemIdsToWin(game);
   game.sampleVoices = sampleVoicesWrapper(game);
   game.showInventory = showInventoryWrapper(game);
   game.showPlayerStatus = showPlayerStatusWrapper(game);
