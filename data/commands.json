@@ -54,5 +54,13 @@
   "craftItem": {
     "commands": ["craft", "combine"],
     "description": "Crafts an item (Crafted through 2 items) [Example: 'craft pen and cat']"
-  }
+  },
+ "setGoal": {
+   "commands": ["set goal"],
+   "description": "Set's the current goal to another goal"
+ },
+ "showCurrentGoal": {
+   "commands": ["show current goal", "what do i have to do"],
+   "description": "Shows you your current goal"
+ }
 }

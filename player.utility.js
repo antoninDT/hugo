@@ -5,21 +5,34 @@ const { getRoomById } = require('./room.utility');
 const { flashScreenRed } = require('./console.utility');
 const { getRandomArrayItem } = require('./general.utility');
 const { addSentenceToSpeechQueue, sayListWithAnd } = require('./voices.utility');
+const { changeCurrentGoalIdWrapper } = require('./winConditions.utility');
 
 const dealDamageIfNeededWrapper = (game) => (showEnemyOrHealer, shouldSpeak = true) => {  // TODO: Fix the flashing of the text
+  const currentGoal = game.getCurrentGoal();
+  const currentGoalId = currentGoal.id;
   if (!showEnemyOrHealer.damage) { return; }
-  if (showEnemyOrHealer.isItem && (game.state.itemIdsToWin.includes(showEnemyOrHealer.id))) { return; }
+  if (showEnemyOrHealer.isItem && (game.state.winningFactors.itemIdsToWin.includes(showEnemyOrHealer.id))) { return; }
+  if (currentGoalId == 1) { // TODO: Fix the arugements in this if statement. It should only check the following if the currentGoalId is 1
+    const recipeToWin = game.getRandomRecipeIdToWin();
+    const recipeToWinDetails = game.state.recipes.find((recipe) => recipe.result.id === recipeToWin);
+    const ingredientsOfRecipeToWin = recipeToWinDetails.ingredients;
+    if (showEnemyOrHealer.isItem) {
+      if (ingredientsOfRecipeToWin.includes(showEnemyOrHealer.id)) {
+        return;
+      }
+    }
+  }
   if (shouldSpeak) { game.actions.hurtPlayer(showEnemyOrHealer.damage); }
   game.hurtPlayer(showEnemyOrHealer.damage, false);
 };
 
 const healPlayerIfNeededWrapper = (game) => (showEnemyOrHealer) => {
   if (!showEnemyOrHealer.healingAmount) { return; }
-  if (showEnemyOrHealer.isItem && showEnemyOrHealer === game.state.itemIdsToWin) { return; }
+  if (showEnemyOrHealer.isItem && showEnemyOrHealer === game.state.winningFactors.itemIdsToWin) { return; }
   game.healPlayer(showEnemyOrHealer.healingAmount);  // TODO: Add a voice when gained healh
 };
 
-const moveItemFromPlayerToCurrentRoomWrapper = (game) => (itemName) => {
+const moveItemFromPlayerToCurrentRoomWrapper = (game) => (itemName) => { // TODO: Implement arguments (Look further down for more info)
   if (!itemName) {
     addSentenceToSpeechQueue({ sentence: `You forgot to put the name of the item to drop hoor             try again!`, voice: 'princess' });
     game.consoleOutPut({
@@ -73,7 +86,7 @@ const moveItemFromPlayerToCurrentRoomWrapper = (game) => (itemName) => {
     });
 };
 
-const moveItemFromCurrentRoomToPlayerWrapper = (game) => (itemName) => {
+const moveItemFromCurrentRoomToPlayerWrapper = (game) => (itemName) => { // TODO: Make it so if the item Id is one of the ingredients of a recipe that you don't take damage
   if (!itemName) {
     addSentenceToSpeechQueue({ sentence: `You forgot to put the name of the item to pick up hoor        try again!`, voice: 'princess' });
     game.consoleOutPut({
@@ -139,7 +152,7 @@ const moveItemFromCurrentRoomToPlayerWrapper = (game) => (itemName) => {
        `,
     });
   game.dealDamageIfNeeded(item, false);
-  if (game.didPlayerWin()) {
+  if (game.didPlayerWinDecider()) { //TODO: Create an argument to state which gamemode is currently being used, therefore changing the way the player would win
     game.showWinScreen();
   }
 };
@@ -250,21 +263,22 @@ const showInventoryWrapper = (game) => () => {
   addSentenceToSpeechQueue({ sentence: 'You have the following items in your inventory: ', voice: inventoryVoice });
   const getItemName = (item) => item.name;
   const allItemNames = allItems.map(getItemName);
-  sayListWithAnd({ list: allItemNames, voice: 'princess' }); 
+  sayListWithAnd({ list: allItemNames, voice: 'princess' });
 };
 
 const api = {
+  changeCurrentGoalIdWrapper,
   consumeHealerWrapper,
-  showInventoryWrapper,
-  showPlayerStatusWrapper,
-  moveItemFromPlayerToCurrentRoomWrapper,
+  dealDamageIfNeededWrapper,
+  healPlayerIfNeededWrapper,
   healPlayerWrapper,
   hurtPlayerWrapper,
+  moveItemFromCurrentRoomToPlayerWrapper,
+  moveItemFromPlayerToCurrentRoomWrapper,
+  moveItemWrapper,
   movePlayerToRandomRoomWrapper,
   movePlayerToRoomWrapper,
-  moveItemWrapper,
-  moveItemFromCurrentRoomToPlayerWrapper,
-  healPlayerIfNeededWrapper,
-  dealDamageIfNeededWrapper,
+  showInventoryWrapper,
+  showPlayerStatusWrapper,
 };
 module.exports = api;

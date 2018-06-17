@@ -12,9 +12,6 @@ promptForUserCommand = promptForUserCommandWrapper(game);
 
 const startGame = () => {
     game.movePlayerToRandomRoom();
-    game.randomlyDistributeItemsToRooms();
-    game.randomlyDistributeHealersToRooms();
-    game.randomlyDistributeEnemiesToRooms();
     game.welcomeMessage();
     promptForUserCommand();
 };

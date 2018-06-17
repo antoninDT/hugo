@@ -2,6 +2,7 @@ const chalk = require('chalk');
 
 const { getRandomArrayItem } = require('./general.utility');
 const { addSentenceToSpeechQueue } = require('./voices.utility');
+const { gameTypeIds } = require('./winConditions.utility');
 
 const getItemByIdWrapper = (game) => (itemId) => game.state.items.find((item) => item.id === itemId);
 const getEnemyByIdWrapper = (game) => (enemyId) => game.state.enemies.find((enemy) => enemy.id === enemyId);
@@ -33,6 +34,23 @@ const getCurrentRoomClueWrapper = (game) => (randomItemIdToWin) => {
   return randomClueForRoom;
 };
 
+const getRandomRecipeIngredientWrapper = (game) => (recipe) => {
+  let randomIngredientOfRecipe = getRandomArrayItem(recipe.ingredients);
+  while (game.state.player.inventory.includes(randomIngredientOfRecipe)) {
+    randomIngredientOfRecipe = getRandomArrayItem(recipe.ingredients)
+  }
+  return randomIngredientOfRecipe;
+};
+
+const getCurrentRecipeClueWrapper = (game) => (randomRecipeIdToWin) => {
+   const recipeToWin = game.state.recipes.find((recipe) => recipe.result.id === randomRecipeIdToWin);
+   const randomRecipeClue = getRandomArrayItem(recipeToWin.result.clues);
+   const randomIngredientOfRecipeToWin = game.getRandomRecipeIngredient(recipeToWin);
+   const randomIngredientOfRecipeToWinItem = game.getItemById(randomIngredientOfRecipeToWin);
+   const randomIngredientRoomClue = game.getCurrentRoomClue(randomIngredientOfRecipeToWinItem.id);
+   return { randomRecipeClue, randomIngredientRoomClue };
+};
+
 const getCurrentItemClueWrapper = (game) => (randomItemIdToWin) => {
   const itemToWin = game.state.items.find((item) => item.id === randomItemIdToWin);
   const randomItemClue = getRandomArrayItem(itemToWin.clues);
@@ -40,31 +58,69 @@ const getCurrentItemClueWrapper = (game) => (randomItemIdToWin) => {
 };
 
 const giveItemClueWrapper = (game) => (shouldSpeakClue = true) => {
-  const randomItemIdToWin = game.getRandomItemIdToWin();
-  const roomClue = game.getCurrentRoomClue(randomItemIdToWin);
-  const itemClue = game.getCurrentItemClue(randomItemIdToWin);
-  if (shouldSpeakClue) {
-    addSentenceToSpeechQueue({ sentence: `Here is you clue: ${itemClue}       and. ${roomClue}`, voice: 'Princess' });
+  const goalType = game.state.player.currentGoalId;
+  switch (game.state.player.currentGoalId) {
+    case (gameTypeIds.craftItems): {
+      const randomRecipeIdToWin = game.getRandomRecipeIdToWin();
+        const recipeClue = game.getCurrentRecipeClue(randomRecipeIdToWin).randomRecipeClue;
+        const ingredientRoomClue = game.getCurrentRecipeClue(randomRecipeIdToWin).randomIngredientRoomClue;
+        if (shouldSpeakClue) {
+        addSentenceToSpeechQueue({ sentence: `Here is you clue: ${recipeClue}        and. ${ingredientRoomClue}`, voice: 'Princess' });
+      }
+      game.consoleOutPut({ text: 'Here is your clue:', color: 'yellowBright' });
+      game.consoleOutPut({
+          text: `
+
+              ${chalk.bold.red(recipeClue)} and ${chalk.bold.red(ingredientRoomClue)}
+
+           `,
+      });
+      break;
+    }
+    case (gameTypeIds.findMultipleItems):
+    case (gameTypeIds.findItems): {
+      const randomItemIdToWin = game.getRandomItemIdToWin();
+        const roomClue = game.getCurrentRoomClue(randomItemIdToWin);
+        const itemClue = game.getCurrentItemClue(randomItemIdToWin);
+        if (shouldSpeakClue) {
+          addSentenceToSpeechQueue({ sentence: `Here is you clue: ${itemClue}       and. ${roomClue}`, voice: 'Princess' });
+        }
+        game.consoleOutPut({ text: 'Here is your clue:', color: 'yellowBright' });
+        game.consoleOutPut({
+          text: `
+
+              ${chalk.bold.red(itemClue)} and ${chalk.bold.red(roomClue)}
+
+           `,
+        });
+      break;
+    }
+    default:
+       game.consoleOutPut({
+         text: `ERROR: There are no clues for this goal type`
+       });
+      break;
   }
-  game.consoleOutPut({ text: 'Here is your clue:', color: 'yellowBright' });
-  game.consoleOutPut({
-      text: `
+};
 
-          ${chalk.bold.red(itemClue)} and ${chalk.bold.red(roomClue)}
+const getRandomRecipeIdToWinWrapper = (game) => () => {
+  let resultId = getRandomArrayItem(game.state.winningFactors.craftItemIdToWin);
 
-       `,
-    });
+  while (game.state.player.inventory.includes(resultId)) {
+    resultId = getRandomArrayItem(game.state.winningFactors.craftItemIdToWin)
+  }
+  return resultId;
 };
 
 const getRandomItemIdToWinWrapper = (game) => () => {
-  let itemId = getRandomArrayItem(game.state.itemIdsToWin);
+  let itemId = getRandomArrayItem(game.state.winningFactors.itemIdsToWin);
   while (game.state.player.inventory.includes(itemId)) {
-    itemId = getRandomArrayItem(game.state.itemIdsToWin)
+    itemId = getRandomArrayItem(game.state.winningFactors.itemIdsToWin)
   }
   return itemId;
 };
 
-const craftItemWrapper = (game) => (itemName1, itemName2) => { 
+const craftItemWrapper = (game) => (itemName1, itemName2) => {
   const item1 = game.state.items.find((item) => item.name.toLowerCase() === itemName1.toLowerCase());
   const item2 = game.state.items.find((item) => item.name.toLowerCase() === itemName2.toLowerCase());
   if (!(itemName1 && itemName2)) {
@@ -85,9 +141,20 @@ const craftItemWrapper = (game) => (itemName1, itemName2) => {
     return;
   }
   game.spawnItem(recipe.result.id, game.state.player);
-  game.moveItem(item1.id, game.state.player, game.state.trashCan);
-  game.moveItem(item2.id, game.state.player, game.state.trashCan);
+  game.moveItem({
+    itemIdToMove: item1.id,
+    source: game.state.player,
+    destination: game.state.trashCan,
+  });
+  game.moveItem({
+    itemIdToMove: item2.id,
+    source: game.state.player,
+    destination: game.state.trashCan,
+  });
   game.consoleOutPut({ text: `${chalk.bold.green(recipe.result.name)} has been added to your inventory` })
+  if (game.didPlayerWinDecider()) {
+    game.showWinScreen();
+  }
 };
 
 const spawnItemWrapper = (game) => (itemIdToSpawn, destination) => {
@@ -95,15 +162,18 @@ const spawnItemWrapper = (game) => (itemIdToSpawn, destination) => {
 };
 
 const api = {
-  spawnItemWrapper,
   craftItemWrapper,
-  getRandomItemIdToWinWrapper,
-  giveItemClueWrapper,
   getCurrentItemClueWrapper,
+  getCurrentRecipeClueWrapper,
   getCurrentRoomClueWrapper,
-  showEnemyOrHealerWrapper,
-  getHealerByIdWrapper,
   getEnemyByIdWrapper,
+  getHealerByIdWrapper,
   getItemByIdWrapper,
+  getRandomItemIdToWinWrapper,
+  getRandomRecipeIdToWinWrapper,
+  getRandomRecipeIngredientWrapper,
+  giveItemClueWrapper,
+  showEnemyOrHealerWrapper,
+  spawnItemWrapper,
 };
 module.exports = api;

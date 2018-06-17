@@ -19,7 +19,7 @@ const showEnemyAttackMessageWrapper = (game) => (enemy) => {
   game.consoleOutPut({ text: `${enemy.attackMessage} and lost ${chalk.red(enemy.damage)} health "${chalk.bold.red(enemy.name)}" ` });
 };
 
-const showRoomsWrapper = (game) => (shouldSpeak = true) => { 
+const showRoomsWrapper = (game) => (shouldSpeak = true) => {
     const getRoomName = (room) => room.name;
     const getConnectedRooms = (room) => room.connectedRooms;
     const currentRoom = game.getCurrentRoom();
@@ -131,12 +131,12 @@ const randomlyDistributeItemsToRoomsWrapper = (game) => () => { // TODO: Need to
     rooms.forEach(dealRandomItemToRoom);
   }
   const areThereDuplicates = () => {
-    const countOfDedupedItemIdsToWin = new Set(game.state.itemIdsToWin).size;
-    const result = (game.state.itemIdsToWin.length !== countOfDedupedItemIdsToWin);
+    const countOfDedupedItemIdsToWin = new Set(game.state.winningFactors.itemIdsToWin).size;
+    const result = (game.state.winningFactors.itemIdsToWin.length !== countOfDedupedItemIdsToWin);
     return result;
   };
   while (areThereDuplicates()) {
-    game.state.itemIdsToWin = [ //TODO: Fix this
+    game.state.winningFactors.itemIdsToWin = [ //TODO: Update this to work better with goals
       game.state.items[Math.floor(Math.random() * game.state.items.length)].id,
       game.state.items[Math.floor(Math.random() * game.state.items.length)].id
     ]

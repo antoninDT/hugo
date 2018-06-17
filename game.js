@@ -3,13 +3,14 @@ const boxen = require('boxen');
 const CFonts = require('cfonts');
 const chalkAnimation = require('chalk-animation');
 
-const { basicBoxOptions, basicCFontOptions, getTextColorBasedOnCurrentTime, consoleOutPut, clearScreenWrapper, } = require('./console.utility');
+const { basicBoxOptions, basicCFontOptions, getTextColorBasedOnCurrentTime, consoleOutPut, clearScreenWrapper } = require('./console.utility');
 const { defaultRoomId, getRoomById, roomsLookup, rooms, showCurrentRoomWrapper, showRoomsWrapper, showCurrentRoomContentsWrapper, getCurrentRoomWrapper, randomlyDistributeItemsToRoomsWrapper, randomlyDistributeEnemiesToRoomsWrapper, randomlyDistributeHealersToRoomsWrapper, showEnemyAttackMessageWrapper } = require('./room.utility');
 const { getRandomArrayItem } = require('./general.utility');
-const { didPlayerWinWrapper } = require('./winConditions.utility');
+const { didPlayerWinWrapperItemIdsToWin, didPlayerWinWrapperCraftAnItemToWin, didPlayerWinDeciderWrapper, updateWinConditionsWrapper, winningFactors, giveCurrentGoalWrapper } = require('./winConditions.utility');
 const { addSentenceToSpeechQueue, sampleVoicesWrapper } = require('./voices.utility');
-const { getItemByIdWrapper, getEnemyByIdWrapper, getHealerByIdWrapper, showEnemyOrHealerWrapper, getCurrentRoomClueWrapper, getCurrentItemClueWrapper, giveItemClueWrapper, getRandomItemIdToWinWrapper, craftItemWrapper, spawnItemWrapper } = require('./item.utility');
-const { dealDamageIfNeededWrapper, healPlayerIfNeededWrapper, moveItemFromCurrentRoomToPlayerWrapper, moveItemWrapper, movePlayerToRoomWrapper, movePlayerToRandomRoomWrapper, hurtPlayerWrapper, healPlayerWrapper, moveItemFromPlayerToCurrentRoomWrapper, showPlayerStatusWrapper, showInventoryWrapper, consumeHealerWrapper } = require('./player.utility');
+const { getItemByIdWrapper, getEnemyByIdWrapper, getHealerByIdWrapper, showEnemyOrHealerWrapper, getCurrentRoomClueWrapper, getCurrentItemClueWrapper, giveItemClueWrapper, getRandomItemIdToWinWrapper, craftItemWrapper, spawnItemWrapper, getCurrentRecipeClueWrapper, getRandomRecipeIdToWinWrapper, getRandomRecipeIngredientWrapper } = require('./item.utility');
+const { dealDamageIfNeededWrapper, healPlayerIfNeededWrapper, moveItemFromCurrentRoomToPlayerWrapper, moveItemWrapper, movePlayerToRoomWrapper, movePlayerToRandomRoomWrapper, hurtPlayerWrapper, healPlayerWrapper, moveItemFromPlayerToCurrentRoomWrapper, showPlayerStatusWrapper, showInventoryWrapper, consumeHealerWrapper, } = require('./player.utility');
+const { showCurrentGoalWrapper, changeCurrentGoalIdWrapper, getCurrentGoalWrapper } = require('./goals.utility');
 
 //TODO: Find out to change the font/increase the size of the font
 const recipesLookup = require('./data/recipes.json');
@@ -17,7 +18,9 @@ const itemsLookup = require('./data/items.json');
 const commandLookup = require('./data/commands.json');
 const enemiesLookup = require('./data/enemies.json');
 const healersLookup = require('./data/healers.json');
+const goalsLookup = require('./data/goals.json');
 
+const goals = Object.values(goalsLookup);
 const commands = Object.values(commandLookup);
 const recipes = Object.values(recipesLookup);
 const items = Object.values(itemsLookup);
@@ -25,6 +28,7 @@ const enemies = Object.values(enemiesLookup);
 const healers = Object.values(healersLookup);
 
 const player = {
+  currentGoalId: 0,
   health: 100,
   maxHealth: 100,
   currentRoomId: defaultRoomId,
@@ -43,10 +47,8 @@ const game = {
     items,
     enemies,
     healers,
-    itemIdsToWin: [
-      items[Math.floor(Math.random() * items.length)].id,
-      items[Math.floor(Math.random() * items.length)].id
-    ]
+    goals,
+    winningFactors,
   },
   goodbye(shouldSpeakClue = true) {
     const goodbyeMessageOptions = {
@@ -90,7 +92,7 @@ const game = {
   },
   getTextColorBasedOnCurrentTime,
   consoleOutPut,
-  welcomeMessage() {
+  welcomeMessage() { // TODO: Make the layout of the welcome screen a lot more "duidelijk"
     const welcomeMessageOptions = {
       ...basicCFontOptions,
       font: 'block',
@@ -101,21 +103,15 @@ const game = {
     addSentenceToSpeechQueue({ sentence: 'Welkom bij Hugo Hulp', voice: 'ellen', voiceSpeed: 0.5});
     console.log();
     game.consoleOutPut({
-      chalkSetting: 'bold',
-      color: 'magenta',
-      text: 'Can you find the hidden item??',
-    });
-    console.log();
-    game.consoleOutPut({
       text: `${new Date} ${chalk[this.getTextColorBasedOnCurrentTime().color].bold(this.getTextColorBasedOnCurrentTime().greeting)}`
     }); //TODO: Add a voice to say the greeting
     console.log();
     this.showRooms(false);
     this.showPlayerStatus(false, false);
     this.showCurrentRoom(false);
-    this.giveItemClue(false);
+    // this.giveItemClue(false); // TODO: Kill this line
   },
-  showHelp() { 
+  showHelp() { // TODO: Change this function (Update the goal to win) (Show all the goals)
     const commandBoxOptions = {
       ...basicBoxOptions,
       borderColor: this.getTextColorBasedOnCurrentTime().color,
@@ -191,20 +187,30 @@ const game = {
 };
 
 const wireUpImportedGameFunctions = () => {
+  game.getCurrentGoal = getCurrentGoalWrapper(game);
+  game.giveCurrentGoal = giveCurrentGoalWrapper(game);
+  game.updateWinConditions = updateWinConditionsWrapper(game);
+  game.getRandomRecipeIngredient = getRandomRecipeIngredientWrapper(game);
+  game.didPlayerWinDecider = didPlayerWinDeciderWrapper(game);
+  game.getRandomRecipeIdToWin = getRandomRecipeIdToWinWrapper(game);
+  game.getCurrentRecipeClue = getCurrentRecipeClueWrapper(game);
+  game.showCurrentGoal = showCurrentGoalWrapper(game);
+  game.changeCurrentGoalId = changeCurrentGoalIdWrapper(game);
+  game.didPlayerWinCraftAnItemToWin = didPlayerWinWrapperCraftAnItemToWin(game);
   game.consumeHealer = consumeHealerWrapper(game);
-  game.didPlayerWin = didPlayerWinWrapper(game);
+  game.didPlayerWinItemIdsToWin = didPlayerWinWrapperItemIdsToWin(game);
   game.sampleVoices = sampleVoicesWrapper(game);
   game.showInventory = showInventoryWrapper(game);
   game.showPlayerStatus = showPlayerStatusWrapper(game);
-  game.moveItemFromPlayerToCurrentRoom = moveItemFromPlayerToCurrentRoomWrapper(game); //TODO: Does this need to be in action?
-  game.spawnItem = spawnItemWrapper(game); //TODO: Does this need to be in action?
-  game.craftItem = craftItemWrapper(game); //TODO: Does this need to be in action?
-  game.healPlayer = healPlayerWrapper(game); //TODO: Does this need to be in action?
-  game.hurtPlayer = hurtPlayerWrapper(game); //TODO: Does this need to be in action?
-  game.movePlayerToRandomRoom = movePlayerToRandomRoomWrapper(game); //TODO: Does this need to be in action?
-  game.movePlayerToRoom = movePlayerToRoomWrapper(game); //TODO: Does this need to be in action?
-  game.moveItem = moveItemWrapper(game); //TODO: Does this need to be in action?
-  game.moveItemFromCurrentRoomToPlayer = moveItemFromCurrentRoomToPlayerWrapper(game); //TODO: Does this need to be in action?
+  game.moveItemFromPlayerToCurrentRoom = moveItemFromPlayerToCurrentRoomWrapper(game);
+  game.spawnItem = spawnItemWrapper(game);
+  game.craftItem = craftItemWrapper(game);
+  game.healPlayer = healPlayerWrapper(game);
+  game.hurtPlayer = hurtPlayerWrapper(game);
+  game.movePlayerToRandomRoom = movePlayerToRandomRoomWrapper(game);
+  game.movePlayerToRoom = movePlayerToRoomWrapper(game);
+  game.moveItem = moveItemWrapper(game);
+  game.moveItemFromCurrentRoomToPlayer = moveItemFromCurrentRoomToPlayerWrapper(game);
   game.healPlayerIfNeeded = healPlayerIfNeededWrapper(game);
   game.dealDamageIfNeeded = dealDamageIfNeededWrapper(game);
   game.getRandomItemIdToWin = getRandomItemIdToWinWrapper(game);
@@ -213,9 +219,9 @@ const wireUpImportedGameFunctions = () => {
   game.clearScreen = clearScreenWrapper(game);
   game.showEnemyAttackMessage = showEnemyAttackMessageWrapper(game);
   game.showEnemyOrHealer = showEnemyOrHealerWrapper(game);
-  game.randomlyDistributeHealersToRooms = randomlyDistributeHealersToRoomsWrapper(game); //TODO: Does this need to be in action?
-  game.randomlyDistributeEnemiesToRooms = randomlyDistributeEnemiesToRoomsWrapper(game); //TODO: Does this need to be in action?
-  game.randomlyDistributeItemsToRooms = randomlyDistributeItemsToRoomsWrapper(game); //TODO: Does this need to be in action?
+  game.randomlyDistributeHealersToRooms = randomlyDistributeHealersToRoomsWrapper(game);
+  game.randomlyDistributeEnemiesToRooms = randomlyDistributeEnemiesToRoomsWrapper(game);
+  game.randomlyDistributeItemsToRooms = randomlyDistributeItemsToRoomsWrapper(game);
   game.getHealerById = getHealerByIdWrapper(game);
   game.getEnemyById = getEnemyByIdWrapper(game);
   game.getItemById = getItemByIdWrapper(game);

@@ -109,7 +109,7 @@ const clearScreenWrapper = (game) => () => {
   game.consoleOutPut({ text: '\x1Bc' });
 };
 
-const promptForUserCommandWrapper = (game) => () => { 
+const promptForUserCommandWrapper = (game) => () => {
     const handleCommand = (result) => {
         const sanitizedInput = getSanitizedText(result);
         let itemParts;
@@ -190,6 +190,9 @@ const promptForUserCommandWrapper = (game) => () => {
             case (commandLookup.showPlayerStatus.commands.includes(sanitizedInput)):
                 game.showPlayerStatus(true,false);
                 break;
+            case (commandLookup.showCurrentGoal.commands.includes(sanitizedInput)):
+                game.showCurrentGoal();
+                break;
              case (sanitizedInput === 'barf'): // TODO: This is "secret" it won't appear in help. Should disable this in the future
                  console.log(`
 
@@ -220,6 +223,10 @@ const promptForUserCommandWrapper = (game) => () => {
                      itemName1 = getSanitizedText(seperatedItems[0]);
                      itemName2 = getSanitizedText(seperatedItems[1]);
                      game.craftItem(itemName1, itemName2);
+                     break;
+             case (commandLookup.setGoal.commands.some(doesSanitizedInputStartWithCommand)): // TODO: Make sure this works
+                     itemName = getItemNameFromInput('setGoal');
+                     game.changeCurrentGoalId(itemName);
                      break;
             default:
                 addSentenceToSpeechQueue({ sentence: `Oops please enter another command hoor. Type in "help" for a list of commands`, voice: 'princess' });
