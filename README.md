@@ -55,6 +55,7 @@ AKA: Tonysacs(TM)
       // 1: Craft an item to win
       // 2: Find an item to win
       // 3: Find multiple items to win
+      "numberOfItemsToWin": 1, // With this you can change how many items you need to craft or find before winning
       "description": "Use the clues given to craft the correct item"
   }
 }
@@ -149,6 +150,5 @@ AKA: Tonysacs(TM)
 # TODO:
   * Finnish refactoring
   * Make win conditions more difficult (bringing item to room).
-  * Make different game modes (Crafting game mode).
   * Add weapons to the game?
   * Make the backgroundColor change based on time of day

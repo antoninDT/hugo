@@ -6,11 +6,11 @@ const chalkAnimation = require('chalk-animation');
 const { basicBoxOptions, basicCFontOptions, getTextColorBasedOnCurrentTime, consoleOutPut, clearScreenWrapper } = require('./console.utility');
 const { defaultRoomId, getRoomById, roomsLookup, rooms, showCurrentRoomWrapper, showRoomsWrapper, showCurrentRoomContentsWrapper, getCurrentRoomWrapper, randomlyDistributeItemsToRoomsWrapper, randomlyDistributeEnemiesToRoomsWrapper, randomlyDistributeHealersToRoomsWrapper, showEnemyAttackMessageWrapper } = require('./room.utility');
 const { getRandomArrayItem } = require('./general.utility');
-const { didPlayerWinWrapperItemIdsToWin, didPlayerWinWrapperCraftAnItemToWin, didPlayerWinDeciderWrapper, updateWinConditionsWrapper, winningFactors, giveCurrentGoalWrapper } = require('./winConditions.utility');
+const { didPlayerWinWrapperItemIdsToWin, didPlayerWinWrapperCraftAnItemToWin, didPlayerWinDeciderWrapper, updateWinConditionsWrapper, winningFactors, giveCurrentGoalWrapper, gameTypeIds } = require('./winConditions.utility');
 const { addSentenceToSpeechQueue, sampleVoicesWrapper } = require('./voices.utility');
 const { getItemByIdWrapper, getEnemyByIdWrapper, getHealerByIdWrapper, showEnemyOrHealerWrapper, getCurrentRoomClueWrapper, getCurrentItemClueWrapper, giveItemClueWrapper, getRandomItemIdToWinWrapper, craftItemWrapper, spawnItemWrapper, getCurrentRecipeClueWrapper, getRandomRecipeIdToWinWrapper, getRandomRecipeIngredientWrapper } = require('./item.utility');
 const { dealDamageIfNeededWrapper, healPlayerIfNeededWrapper, moveItemFromCurrentRoomToPlayerWrapper, moveItemWrapper, movePlayerToRoomWrapper, movePlayerToRandomRoomWrapper, hurtPlayerWrapper, healPlayerWrapper, moveItemFromPlayerToCurrentRoomWrapper, showPlayerStatusWrapper, showInventoryWrapper, consumeHealerWrapper, } = require('./player.utility');
-const { showCurrentGoalWrapper, changeCurrentGoalIdWrapper, getCurrentGoalWrapper } = require('./goals.utility');
+const { showCurrentGoalWrapper, changeCurrentGoalIdWrapper, getCurrentGoalDescriptionWrapper } = require('./goals.utility');
 
 //TODO: Find out to change the font/increase the size of the font
 const recipesLookup = require('./data/recipes.json');
@@ -112,6 +112,9 @@ const game = {
     // this.giveItemClue(false); // TODO: Kill this line
   },
   showHelp() { // TODO: Change this function (Update the goal to win) (Show all the goals)
+    const currentGoalDescription = game.getCurrentGoalDescription();
+    console.log(`DEBUG: currentGoalDescription:  `); // TODO: Kill this line
+    console.dir(currentGoalDescription); // TODO: Kill this line
     const commandBoxOptions = {
       ...basicBoxOptions,
       borderColor: this.getTextColorBasedOnCurrentTime().color,
@@ -149,28 +152,34 @@ const game = {
     }));
     console.log();
     game.consoleOutPut({
-      text: `The goal of this game is to find the hidden item. To do this you have to use the clues given to guess what it is.`,
+      text: `${currentGoalDescription}`,
       color: 'magenta',
       chalkSetting: 'italic',
     });
     addSentenceToSpeechQueue({
-      sentence: 'The goal of this game is to find the hidden item. To do this you have to use the clues given to guess what it is.',
+      sentence: `${currentGoalDescription}`,
       voice: 'princess',
     });
-    game.consoleOutPut({
+    game.consoleOutPut({ // TODO: Show avalible numbers to input for the goals
       text: `
                 Clues: ${chalk[this.getTextColorBasedOnCurrentTime().color]('The first clue that is on the left side of the screen is the Item clue, and the clue on the right side is the Room clue.')}
 
                 Rooms: ${chalk[this.getTextColorBasedOnCurrentTime().color]('In order to move to another room you first need to check if it\'s connected to the current room your in.')}
 
+                Color of the text (${chalk[this.getTextColorBasedOnCurrentTime().color]('for the look around command')}): ${colorHelp}
+
                 Health: ${chalk[this.getTextColorBasedOnCurrentTime().color]('You may have noticed that you have health in this game you lose health everytime you pick up an item thats incorrect.')}
 
-                Color of the text (${chalk[this.getTextColorBasedOnCurrentTime().color]('for the look around command')}): ${colorHelp}
+                Goals: ${chalk[this.getTextColorBasedOnCurrentTime().color]('In Hugo Hulp you have to pick your goal at the beginning of the game. In order to do this you must type setGoal and then the number of the goal. Here are all the possiblilties:  ')}
 
             `,
       color: 'red',
       chalkSetting: 'bold',
     });
+    goals.forEach((goal) => game.consoleOutPut({ // TODO: Make this work (Show the avalible goal id's to input)
+      text: `  * ${chalk.bold.red(goal.id)}: ${goal.description} `,
+    }));
+    console.log();
     addSentenceToSpeechQueue({
       sentence: `
                 Clues: The first clue that is on the left side of the screen is the Item clue, and the clue on the right side is the Room clue.
@@ -187,7 +196,7 @@ const game = {
 };
 
 const wireUpImportedGameFunctions = () => {
-  game.getCurrentGoal = getCurrentGoalWrapper(game);
+  game.getCurrentGoalDescription = getCurrentGoalDescriptionWrapper(game);
   game.giveCurrentGoal = giveCurrentGoalWrapper(game);
   game.updateWinConditions = updateWinConditionsWrapper(game);
   game.getRandomRecipeIngredient = getRandomRecipeIngredientWrapper(game);
