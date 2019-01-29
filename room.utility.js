@@ -30,6 +30,7 @@ const showRoomsWrapper = (game) => (shouldSpeak = true) => {
         addSentenceToSpeechQueue({
           sentence: roomName,
           voice: 'princess',
+          groupId: 3,
         });
     };
     game.consoleOutPut({ text: 'Here are all the rooms:', color: 'yellowBright', chalkSetting: 'italic' });
@@ -37,13 +38,13 @@ const showRoomsWrapper = (game) => (shouldSpeak = true) => {
     allRoomNames
       .forEach(showRoomName);
     if (shouldSpeak) {
-      addSentenceToSpeechQueue({ sentence: 'Here are all the rooms:', voice: 'princess' });
+      addSentenceToSpeechQueue({ sentence: 'Here are all the rooms:', voice: 'princess', groupId: 3 });
       sayListWithAnd({ list: allRoomNames, voice: 'princess', doneSentence: '   ' });
      }
     game.consoleOutPut({ text: `Here are the rooms that are connected to your room: `, color: 'yellowBright', chalkSetting: 'italic' });
     nameOfRoomContents.forEach(showRoomName);
     if (shouldSpeak) {
-      addSentenceToSpeechQueue({ sentence: 'Here are the rooms connected to your room:', voice: 'princess' });
+      addSentenceToSpeechQueue({ sentence: 'Here are the rooms connected to your room:', voice: 'princess', groupId: 3 });
       sayListWithAnd({ list: nameOfRoomContents, voice: 'princess', doneSentence: '    ' });
      }
 };

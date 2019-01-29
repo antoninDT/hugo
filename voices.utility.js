@@ -3,7 +3,75 @@ const say = require('say');
 const delayBetweenProcessingInMilliseconds = 100;
 const defaultVoice = 'Ellen'; // TODO: Change this later
 const defaultSpeed = 1;
-const queue = []; // Each item looks like this: { sentence, voice, voiceSpeed }
+const maxItemsInQueue = 10;
+let queue = [];
+
+const trimQueue = () => { // TODO: Add groupId's to all voices (Or make an algarithem to add 1 to the previous groupId)
+  console.warn(`DEBUG: Trimming the queue`); // TODO: Kill this line
+  console.warn(`DEBUG: Initial Queue length: ${queue.length}`); // TODO: Kill this line
+  console.dir(queue); // TODO: Kill this line
+  const firstGroupId = queue[0].groupId;
+  if (!firstGroupId) { return; }
+  let previousGroupItemIndex = 0;
+  const removeItemsFromFirstGroup = (item, index) => {
+    const isCloseToFirstGroup = ((index - previousGroupItemIndex) < 2);
+    const hasSameGroupId = (item.groupId === firstGroupId);
+    const isInSameFirstGroup = (isCloseToFirstGroup && hasSameGroupId);
+    if (isInSameFirstGroup) { previousGroupItemIndex = index; }
+    const result = (!isInSameFirstGroup);
+    return result;
+  };
+  const itemsWithoutFirstGroupItems = queue.filter(removeItemsFromFirstGroup);
+  queue = itemsWithoutFirstGroupItems;
+  console.warn(`DEBUG: New Queue length: ${queue.length}`); // TODO: Kill this line
+  console.warn(`DEBUG: Initial Queue length: ${queue.length}`); // TODO: Kill this line
+  if (queue.length >= maxItemsInQueue) { trimQueue(); }
+
+
+// TODO: Figure out how to prevent killing the last 'foo' groupId from this kind of array
+// [
+//   {
+//     text: 'blah',
+//     groupId: 'foo',
+//   },
+//   {
+//     text: 'blah 2',
+//     groupId: 'foo',
+//   },
+//   {
+//     text: 'blah 3',
+//     groupId: 'foo',
+//   },
+//   {
+//     text: 'blah',
+//     groupId: 'bar',
+//   },
+//   {
+//     text: 'blah 3',
+//     groupId: 'foo',
+//   },
+//   {
+//     text: 'blah 2',
+//     groupId: 'bar',
+//   },
+//   {
+//     text: 'blah 3',
+//     groupId: 'bar',
+//   },
+//   {
+//     text: 'blah',
+//     groupId: 'foo',
+//   },
+//   {
+//     text: 'blah 2',
+//     groupId: 'foo',
+//   },
+//   {
+//     text: 'blah 3',
+//     groupId: 'foo',
+//   },
+// ]
+};
 
 const processVoiceQueue = () => {
   const processNextQueueItem = () => setTimeout(processVoiceQueue, delayBetweenProcessingInMilliseconds);
@@ -19,10 +87,12 @@ const processVoiceQueue = () => {
 setTimeout(processVoiceQueue, delayBetweenProcessingInMilliseconds);
 
 const addSentenceToSpeechQueue = (speechOptions) => {
+  console.warn(`DEBUG: Initial Queue length: ${queue.length}`); // TODO: Kill this line
+  if (queue.length >= maxItemsInQueue) { trimQueue(); }
   queue.push(speechOptions);
 };
 
-const sampleVoicesWrapper = (game) => () => { 
+const sampleVoicesWrapper = (game) => () => {
   const voices = [
     'Agnes',
     'Albert',
