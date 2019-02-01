@@ -38,14 +38,14 @@ const showRoomsWrapper = (game) => (shouldSpeak = true) => {
     allRoomNames
       .forEach(showRoomName);
     if (shouldSpeak) {
-      addSentenceToSpeechQueue({ sentence: 'Here are all the rooms:', voice: 'princess', groupId: 3 });
-      sayListWithAnd({ list: allRoomNames, voice: 'princess', doneSentence: '   ' });
+      addSentenceToSpeechQueue({ sentence: 'Here are all the rooms:', voice: 'princess', groupId: 6 });
+      sayListWithAnd({ list: allRoomNames, voice: 'princess', doneSentence: '   ', groupId: 3 });
      }
     game.consoleOutPut({ text: `Here are the rooms that are connected to your room: `, color: 'yellowBright', chalkSetting: 'italic' });
     nameOfRoomContents.forEach(showRoomName);
     if (shouldSpeak) {
       addSentenceToSpeechQueue({ sentence: 'Here are the rooms connected to your room:', voice: 'princess', groupId: 3 });
-      sayListWithAnd({ list: nameOfRoomContents, voice: 'princess', doneSentence: '    ' });
+      sayListWithAnd({ list: nameOfRoomContents, voice: 'princess', doneSentence: '    ', groupId: 3 });
      }
 };
 
@@ -58,22 +58,23 @@ const showCurrentRoomWrapper = (game) => (shouldSpeakCurrentRoom = true) => {
 
        `,
     });
-  if (shouldSpeakCurrentRoom) { addSentenceToSpeechQueue({ sentence: `You are in the ${currentRoomName}`, voice: 'princess' }); }
+  if (shouldSpeakCurrentRoom) { addSentenceToSpeechQueue({ sentence: `You are in the ${currentRoomName}`, voice: 'princess', groupId: 4 }); }
 };
 
 const showCurrentRoomContentsWrapper = (game) => (shouldSpeak = true) => {
+  const getItemName = (item) => item.name;
   const currentRoom = game.getCurrentRoom(); //Fix this
-  const currentRoomContentsVoice = 'princess';
   const roomContents = [
     ...currentRoom.inventory.map(game.getItemById),
     ...currentRoom.enemies.map(game.getEnemyById),
     ...currentRoom.healers.map(game.getHealerById)
   ];
+  const roomContentsNames = roomContents.map(getItemName);
   const roomEnemies = [...currentRoom.enemies.map(game.getEnemyById)];
   const roomHealers = [...currentRoom.healers.map(game.getHealerById)];
   if (!(roomContents.length)) {
     if (shouldSpeak) {
-      addSentenceToSpeechQueue({ sentence: 'You look around and notice that the room is empty', voice: 'princess' });
+      addSentenceToSpeechQueue({ sentence: 'You look around and notice that the room is empty', voice: 'princess', groupId: 5 });
     }
     game.consoleOutPut(`
 
@@ -99,26 +100,10 @@ const showCurrentRoomContentsWrapper = (game) => (shouldSpeak = true) => {
     });
   roomContents.forEach(game.showEnemyOrHealer);
   if (shouldSpeak) {
-    const continueSpeakingItems = () => {
-     addSentenceToSpeechQueue({ sentence: 'You look around and notice the following things: ', voice: currentRoomContentsVoice});
-      const speakItem = (index = 0) => {
-        const item = roomContents[index];
-        if (!item) {
-          return;
-        }
-        const isLastItemInInventory = (index >= (roomContents.length - 1));
-        const conditionalAnd = (index)
-          ? `, and , `
-          : '';
-        const itemSentence = `${conditionalAnd} ${item.name}`;
-        addSentenceToSpeechQueue({ sentence: itemSentence, voice: currentRoomContentsVoice });
-        speakItem(index + 1)
-      };
-      speakItem();
-    };
-    continueSpeakingItems();
-  }
-};
+     addSentenceToSpeechQueue({ sentence: 'You look around and notice the following things: ', voice: 'princess', groupId: 5});
+     sayListWithAnd({ list: roomContentsNames, voice: 'princess', doneSentence: '    ', groupId: 5 });
+    }
+  };
 
 const randomlyDistributeItemsToRoomsWrapper = (game) => () => { // TODO: Need to randomly sort rooms
   let availableItems = [...game.state.items];

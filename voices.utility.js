@@ -205,7 +205,7 @@ const defaultDoneSentence = `.
 
 `;
 
-const sayListWithAnd = ({ list, doneSentence = defaultDoneSentence, voice = defaultVoice }) => {
+const sayListWithAnd = ({ list, doneSentence = defaultDoneSentence, voice = defaultVoice, groupId }) => {
   const speakItem = (index = 0) => {
     const item = list[index];
     if (!item) { return; }
@@ -217,7 +217,7 @@ const sayListWithAnd = ({ list, doneSentence = defaultDoneSentence, voice = defa
       ? doneSentence
       : '';
     const itemSentence = `${conditionalAnd} ${item}${conditionalThatsAll}`;
-    addSentenceToSpeechQueue({ sentence: itemSentence, voice });
+    addSentenceToSpeechQueue({ sentence: itemSentence, voice, groupId });
     speakItem(index + 1);
   };
   speakItem();
