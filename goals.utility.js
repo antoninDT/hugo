@@ -1,28 +1,35 @@
 
+const chalk = require('chalk');
+
 const { addSentenceToSpeechQueue, sayListWithAnd } = require('./voices.utility');
 
 const goalsLookup = require('./data/goals.json');
 
 const goals = Object.values(goalsLookup);
 
-const getCurrentGoalDescriptionWrapper = (game) => () => { // TODO: Make this work
+const getCurrentGoalDescriptionWrapper = (game) => () => {
   const currentGoal = game.giveCurrentGoal();
   const currentGoalId = currentGoal.id;
   const currentGoalDescription = currentGoal.description;
   return currentGoalDescription;
 };
 
-const showCurrentGoalWrapper = (game) => () => { // TODO: Show the id's of the goals and input the goal id to change it
+const showCurrentGoalWrapper = (game) => (shouldSpeak = true) => {
   const currentGoal = game.giveCurrentGoal();
+  const currentGoalId = currentGoal.id;
   const currentGoalDescription = game.getCurrentGoalDescription();
-  if (!currentGoal) {
+  if (currentGoalId == 0) {
     game.consoleOutPut({
        text: `
 
-       No goal has been chosen. Please choose a goal
+       ${currentGoalDescription}:
 
        `,
+       color: 'magentaBright'
      });
+     goals.forEach((goal) => game.consoleOutPut({
+       text: `  * ${chalk.bold.red(goal.id)}: ${goal.description} `,
+     }));
     return;
   }
   game.consoleOutPut({

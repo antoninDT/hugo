@@ -109,7 +109,7 @@ const game = {
     this.showRooms(false);
     this.showPlayerStatus(false, false);
     this.showCurrentRoom(false);
-    // this.giveItemClue(false); // TODO: Kill this line
+    this.showCurrentGoal(false);
   },
   showHelp() { // TODO: See in the future if there actually should be voices for the help function
     const currentGoalDescription = game.getCurrentGoalDescription();
@@ -154,7 +154,7 @@ const game = {
       voice: 'princess',
       groupId: 1,
     });
-    game.consoleOutPut({ // TODO: Show avalible numbers to input for the goals
+    game.consoleOutPut({
       text: `
                 Clues: ${chalk[this.getTextColorBasedOnCurrentTime().color]('The first clue that is on the left side of the screen is the Item clue, and the clue on the right side is the Room clue.')}
 
