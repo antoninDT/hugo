@@ -3,7 +3,25 @@ const say = require('say');
 const delayBetweenProcessingInMilliseconds = 100;
 const defaultVoice = 'Ellen'; // TODO: Change this later
 const defaultSpeed = 1;
-const queue = []; // Each item looks like this: { sentence, voice, voiceSpeed }
+const maxItemsInQueue = 10;
+let queue = [];
+
+const trimQueue = () => {
+  const firstGroupId = queue[0].groupId;
+  if (!firstGroupId) { return; }
+  let previousGroupItemIndex = 0;
+  const removeItemsFromFirstGroup = (item, index) => {
+    const isCloseToFirstGroup = ((index - previousGroupItemIndex) < 2);
+    const hasSameGroupId = (item.groupId === firstGroupId);
+    const isInSameFirstGroup = (isCloseToFirstGroup && hasSameGroupId);
+    if (isInSameFirstGroup) { previousGroupItemIndex = index; }
+    const result = (!isInSameFirstGroup);
+    return result;
+  };
+  const itemsWithoutFirstGroupItems = queue.filter(removeItemsFromFirstGroup);
+  queue = itemsWithoutFirstGroupItems;
+  if (queue.length >= maxItemsInQueue) { trimQueue(); }
+};
 
 const processVoiceQueue = () => {
   const processNextQueueItem = () => setTimeout(processVoiceQueue, delayBetweenProcessingInMilliseconds);
@@ -19,10 +37,11 @@ const processVoiceQueue = () => {
 setTimeout(processVoiceQueue, delayBetweenProcessingInMilliseconds);
 
 const addSentenceToSpeechQueue = (speechOptions) => {
+  if (queue.length >= maxItemsInQueue) { trimQueue(); }
   queue.push(speechOptions);
 };
 
-const sampleVoicesWrapper = (game) => () => { 
+const sampleVoicesWrapper = (game) => () => {
   const voices = [
     'Agnes',
     'Albert',
@@ -135,7 +154,7 @@ const defaultDoneSentence = `.
 
 `;
 
-const sayListWithAnd = ({ list, doneSentence = defaultDoneSentence, voice = defaultVoice }) => {
+const sayListWithAnd = ({ list, doneSentence = defaultDoneSentence, voice = defaultVoice, groupId }) => {
   const speakItem = (index = 0) => {
     const item = list[index];
     if (!item) { return; }
@@ -147,7 +166,7 @@ const sayListWithAnd = ({ list, doneSentence = defaultDoneSentence, voice = defa
       ? doneSentence
       : '';
     const itemSentence = `${conditionalAnd} ${item}${conditionalThatsAll}`;
-    addSentenceToSpeechQueue({ sentence: itemSentence, voice });
+    addSentenceToSpeechQueue({ sentence: itemSentence, voice, groupId });
     speakItem(index + 1);
   };
   speakItem();

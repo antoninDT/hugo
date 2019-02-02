@@ -85,6 +85,7 @@ const changeCurrentGoalIdWrapper = (game) => (goalId) => { // TODO: Add error me
   setupGameForChosenGoal(); // TODO: Refactor this function into game.js and then just invoke it from here
 };
 
+// TODO: Add voices to this utility file 
 
 const api = {
   getCurrentGoalDescriptionWrapper,

@@ -229,7 +229,7 @@ const promptForUserCommandWrapper = (game) => () => {
                      game.changeCurrentGoalId(itemName);
                      break;
             default:
-                addSentenceToSpeechQueue({ sentence: `Oops please enter another command hoor. Type in "help" for a list of commands`, voice: 'princess' });
+                addSentenceToSpeechQueue({ sentence: `Oops please enter another command hoor. Type in "help" for a list of commands`, voice: 'princess', groupId: 2 });
                 game.consoleOutPut({
                   text: `
 

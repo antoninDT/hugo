@@ -14,7 +14,7 @@ const { showCurrentGoalWrapper, changeCurrentGoalIdWrapper, getCurrentGoalDescri
 
 //TODO: Find out to change the font/increase the size of the font
 const recipesLookup = require('./data/recipes.json');
-const itemsLookup = require('./data/items.json');
+const itemsLookup = require ('./data/items.json');
 const commandLookup = require('./data/commands.json');
 const enemiesLookup = require('./data/enemies.json');
 const healersLookup = require('./data/healers.json');
@@ -34,7 +34,7 @@ const player = {
   currentRoomId: defaultRoomId,
   inventory: []
 };
-const trashCan = { //TODO: Remove this, and replace it with something else
+const trashCan = { //TODO : Remove this, and replace it with something else
   inventory: []
 };
 
@@ -59,7 +59,7 @@ const game = {
       colors: ['blue', 'white']
     };
     if (shouldSpeakClue) { //TODO: Remove all usages of shouldSpeak?
-      addSentenceToSpeechQueue({ sentence: 'DOE DOEI', voice: 'ellen', voiceSpeed: 0.5});
+      addSentenceToSpeechQueue({ sentence: 'DOE DOEI', voice: 'ellen', voiceSpeed: 0.5, groupId: 12 });
     }
     CFonts.say('DOE', goodbyeMessageOptions);
     CFonts.say('DOEI', goodbyeMessageOptions);
@@ -69,7 +69,7 @@ const game = {
   },
   // TODO: Make a high score screen
   showWinScreen() {
-    addSentenceToSpeechQueue({ sentence: `Congratulations!      You have found the hidden item!`, voice: 'daniel' });
+    addSentenceToSpeechQueue({ sentence: `Congratulations!      You have found the hidden item!`, voice: 'daniel', groupId: 12 });
     game.consoleOutPut({
         color: 'magentaBright',
         text: `
@@ -79,7 +79,7 @@ const game = {
     this.goodbye(false);
   },
   showLoseScreen() {
-    addSentenceToSpeechQueue({ sentence: `Uh Oh it looks like you have die ie ied!`, voice: 'Bad News' });
+    addSentenceToSpeechQueue({ sentence: `Uh Oh it looks like you have die ie ied!`, voice: 'Bad News', groupId: 12 });
     this.showPlayerStatus(false, false);
     // const text = 'Uh Oh... It appears you died, try again next time!'; TODO: Make this a "flashScreenRed"function
     game.consoleOutPut({
@@ -100,7 +100,7 @@ const game = {
     };
     this.clearScreen();
     CFonts.say('Welkom|bij|Hugo|Hulp', welcomeMessageOptions);
-    addSentenceToSpeechQueue({ sentence: 'Welkom bij Hugo Hulp', voice: 'ellen', voiceSpeed: 0.5});
+    addSentenceToSpeechQueue({ sentence: 'Welkom bij Hugo Hulp', voice: 'ellen', voiceSpeed: 0.5, groupId: 12 });
     console.log();
     game.consoleOutPut({
       text: `${new Date} ${chalk[this.getTextColorBasedOnCurrentTime().color].bold(this.getTextColorBasedOnCurrentTime().greeting)}`
@@ -111,7 +111,7 @@ const game = {
     this.showCurrentRoom(false);
     // this.giveItemClue(false); // TODO: Kill this line
   },
-  showHelp() { // TODO: Change this function (Update the goal to win) (Show all the goals)
+  showHelp() { // TODO: See in the future if there actually should be voices for the help function
     const currentGoalDescription = game.getCurrentGoalDescription();
     console.log(`DEBUG: currentGoalDescription:  `); // TODO: Kill this line
     console.dir(currentGoalDescription); // TODO: Kill this line
@@ -143,13 +143,6 @@ const game = {
     commands.forEach((command) => game.consoleOutPut({
       text: `  * ${chalk.bold.red(command.commands[0])}: ${command.description} `,
     }));
-    commands.forEach((command) => addSentenceToSpeechQueue({
-      sentence: ` ${(command.commands[0])}
-
-            ${command.description} `,
-      voice: 'princess',
-      voiceSpeed: 1.5,
-    }));
     console.log();
     game.consoleOutPut({
       text: `${currentGoalDescription}`,
@@ -159,6 +152,7 @@ const game = {
     addSentenceToSpeechQueue({
       sentence: `${currentGoalDescription}`,
       voice: 'princess',
+      groupId: 1,
     });
     game.consoleOutPut({ // TODO: Show avalible numbers to input for the goals
       text: `
@@ -176,7 +170,7 @@ const game = {
       color: 'red',
       chalkSetting: 'bold',
     });
-    goals.forEach((goal) => game.consoleOutPut({ // TODO: Make this work (Show the avalible goal id's to input)
+    goals.forEach((goal) => game.consoleOutPut({
       text: `  * ${chalk.bold.red(goal.id)}: ${goal.description} `,
     }));
     console.log();
@@ -189,9 +183,20 @@ const game = {
                 Health: You may have noticed that you have health in this game you lose health everytime you pick up an item thats incorrect.
 
                 Color of the text (for the look around command): The objects with the color red are enemies, the color blue are items, and the color green are healers [heals you].
+
+
+                In Hugo Hulp you have to pick your goal at the beginning of the game. In order to do this you must type setGoal and then the number of the goal. Here are all the possiblilties:
             `,
       voice: 'princess',
+      voiceSpeed: 1.5,
+      groupId: 1,
     });
+    goals.forEach((goal) => addSentenceToSpeechQueue({
+      sentence: ` ${goal.id} : ${goal.description} `,
+      voice: 'princess',
+      voiceSpeed: 1.5,
+      groupId: 1,
+    }));
   }
 };
 
