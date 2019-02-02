@@ -27,9 +27,14 @@ const showCurrentGoalWrapper = (game) => (shouldSpeak = true) => {
        `,
        color: 'magentaBright'
      });
-     goals.forEach((goal) => game.consoleOutPut({
-       text: `  * ${chalk.bold.red(goal.id)}: ${goal.description} `,
-     }));
+     goals.forEach((goal) => { // TODO: Refactor this into its own function
+      const goalIdWithBullet = `  * ${chalk.bold.red(goal.id)} :`;
+      const header = '##';
+      const formattedGoalId = `${(goal.id && goalIdWithBullet) || header}`;
+       game.consoleOutPut({
+         text: `${formattedGoalId} ${goal.description} `,
+       });
+   });
     return;
   }
   game.consoleOutPut({
