@@ -18,8 +18,13 @@ const gameTypeIds = { // TODO: Eventually update the goals.json schema to allow 
 
 const giveCurrentGoalWrapper = (game) => () => {
   const currentGoal = game.state.goals.find((goal) => goal.id === game.state.player.currentGoalId);
+  return { currentGoal }; // TODO: Simplify this function and its return value
+};
+
+const getNumberOfItemsToWinForCurrentGoalWrapper = (currentGoal) => () => {
+  const currentGoal = game.giveCurrentGoal();
   const numberOfItemsToWinForCurrentGoal = currentGoal.numberOfItemsToWin;
-  return { currentGoal, numberOfItemsToWinForCurrentGoal }; // TODO: Simplify this function and its return value
+  return { numberOfItemsToWinForCurrentGoal };
 };
 
 const didPlayerWinWrapperItemIdsToWin = (game) => () => {
@@ -52,7 +57,7 @@ const didPlayerWinDeciderWrapper = (game) => () => {
 };
 
 const updateWinConditionsWrapper = (game) => () => { // TODO: Finish refactoring this
-  const numberOfItemsToWinForCurrentGoal = game.giveCurrentGoal().numberOfItemsToWinForCurrentGoal;
+  const numberOfItemsToWinForCurrentGoal = game.getNumberOfItemsToWinForCurrentGoal();
   const getNewRandomItemIdToWin = () => items[Math.floor(Math.random() * items.length)].id;
   const getNewRandomRecipeIdToWin = () => recipes[Math.floor(Math.random() * recipes.length)].result.id;
   switch (game.state.player.currentGoalId) {
@@ -86,6 +91,7 @@ const updateWinConditionsWrapper = (game) => () => { // TODO: Finish refactoring
 };
 
 const api = {
+  getNumberOfItemsToWinForCurrentGoalWrapper,
   giveCurrentGoalWrapper,
   winningFactors,
   updateWinConditionsWrapper,
