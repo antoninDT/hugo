@@ -18,10 +18,10 @@ const gameTypeIds = { // TODO: Eventually update the goals.json schema to allow 
 
 const giveCurrentGoalWrapper = (game) => () => {
   const currentGoal = game.state.goals.find((goal) => goal.id === game.state.player.currentGoalId);
-  return { currentGoal }; // TODO: Simplify this function and its return value
+  return { currentGoal };
 };
 
-const getNumberOfItemsToWinForCurrentGoalWrapper = (currentGoal) => () => {
+const getNumberOfItemsToWinForCurrentGoalWrapper = (game) => () => {
   const currentGoal = game.giveCurrentGoal();
   const numberOfItemsToWinForCurrentGoal = currentGoal.numberOfItemsToWin;
   return { numberOfItemsToWinForCurrentGoal };
@@ -57,7 +57,7 @@ const didPlayerWinDeciderWrapper = (game) => () => {
 };
 
 const updateWinConditionsWrapper = (game) => () => { // TODO: Finish refactoring this
-  const numberOfItemsToWinForCurrentGoal = game.getNumberOfItemsToWinForCurrentGoal();
+  const numberOfItemsToWinForCurrentGoal = game.getNumberOfItemsToWinForCurrentGoal(); // Fix this (game seems to be an unkown object)
   const getNewRandomItemIdToWin = () => items[Math.floor(Math.random() * items.length)].id;
   const getNewRandomRecipeIdToWin = () => recipes[Math.floor(Math.random() * recipes.length)].result.id;
   switch (game.state.player.currentGoalId) {
