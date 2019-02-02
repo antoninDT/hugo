@@ -59,7 +59,7 @@ const game = {
       colors: ['blue', 'white']
     };
     if (shouldSpeakClue) { //TODO: Remove all usages of shouldSpeak?
-      addSentenceToSpeechQueue({ sentence: 'DOE DOEI', voice: 'ellen', voiceSpeed: 0.5});
+      addSentenceToSpeechQueue({ sentence: 'DOE DOEI', voice: 'ellen', voiceSpeed: 0.5, groupId: 12 });
     }
     CFonts.say('DOE', goodbyeMessageOptions);
     CFonts.say('DOEI', goodbyeMessageOptions);
@@ -69,7 +69,7 @@ const game = {
   },
   // TODO: Make a high score screen
   showWinScreen() {
-    addSentenceToSpeechQueue({ sentence: `Congratulations!      You have found the hidden item!`, voice: 'daniel' });
+    addSentenceToSpeechQueue({ sentence: `Congratulations!      You have found the hidden item!`, voice: 'daniel', groupId: 12 });
     game.consoleOutPut({
         color: 'magentaBright',
         text: `
@@ -79,7 +79,7 @@ const game = {
     this.goodbye(false);
   },
   showLoseScreen() {
-    addSentenceToSpeechQueue({ sentence: `Uh Oh it looks like you have die ie ied!`, voice: 'Bad News' });
+    addSentenceToSpeechQueue({ sentence: `Uh Oh it looks like you have die ie ied!`, voice: 'Bad News', groupId: 12 });
     this.showPlayerStatus(false, false);
     // const text = 'Uh Oh... It appears you died, try again next time!'; TODO: Make this a "flashScreenRed"function
     game.consoleOutPut({
@@ -100,7 +100,7 @@ const game = {
     };
     this.clearScreen();
     CFonts.say('Welkom|bij|Hugo|Hulp', welcomeMessageOptions);
-    addSentenceToSpeechQueue({ sentence: 'Welkom bij Hugo Hulp', voice: 'ellen', voiceSpeed: 0.5});
+    addSentenceToSpeechQueue({ sentence: 'Welkom bij Hugo Hulp', voice: 'ellen', voiceSpeed: 0.5, groupId: 12 });
     console.log();
     game.consoleOutPut({
       text: `${new Date} ${chalk[this.getTextColorBasedOnCurrentTime().color].bold(this.getTextColorBasedOnCurrentTime().greeting)}`

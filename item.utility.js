@@ -65,7 +65,7 @@ const giveItemClueWrapper = (game) => (shouldSpeakClue = true) => {
         const recipeClue = game.getCurrentRecipeClue(randomRecipeIdToWin).randomRecipeClue;
         const ingredientRoomClue = game.getCurrentRecipeClue(randomRecipeIdToWin).randomIngredientRoomClue;
         if (shouldSpeakClue) {
-        addSentenceToSpeechQueue({ sentence: `Here is you clue: ${recipeClue}        and. ${ingredientRoomClue}`, voice: 'Princess' });
+        addSentenceToSpeechQueue({ sentence: `Here is you clue: ${recipeClue}        and. ${ingredientRoomClue}`, voice: 'Princess', groupId: 7 });
       }
       game.consoleOutPut({ text: 'Here is your clue:', color: 'yellowBright' });
       game.consoleOutPut({
@@ -83,7 +83,7 @@ const giveItemClueWrapper = (game) => (shouldSpeakClue = true) => {
         const roomClue = game.getCurrentRoomClue(randomItemIdToWin);
         const itemClue = game.getCurrentItemClue(randomItemIdToWin);
         if (shouldSpeakClue) {
-          addSentenceToSpeechQueue({ sentence: `Here is you clue: ${itemClue}       and. ${roomClue}`, voice: 'Princess' });
+          addSentenceToSpeechQueue({ sentence: `Here is you clue: ${itemClue}       and. ${roomClue}`, voice: 'Princess', groupId: 7 });
         }
         game.consoleOutPut({ text: 'Here is your clue:', color: 'yellowBright' });
         game.consoleOutPut({
