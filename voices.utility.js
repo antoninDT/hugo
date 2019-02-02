@@ -6,10 +6,7 @@ const defaultSpeed = 1;
 const maxItemsInQueue = 10;
 let queue = [];
 
-const trimQueue = () => { // TODO: Add groupId's to all voices (Or make an algarithem to add 1 to the previous groupId)
-  console.warn(`DEBUG: Trimming the queue`); // TODO: Kill this line
-  console.warn(`DEBUG: Initial Queue length: ${queue.length}`); // TODO: Kill this line
-  console.dir(queue); // TODO: Kill this line
+const trimQueue = () => {
   const firstGroupId = queue[0].groupId;
   if (!firstGroupId) { return; }
   let previousGroupItemIndex = 0;
@@ -23,54 +20,7 @@ const trimQueue = () => { // TODO: Add groupId's to all voices (Or make an algar
   };
   const itemsWithoutFirstGroupItems = queue.filter(removeItemsFromFirstGroup);
   queue = itemsWithoutFirstGroupItems;
-  console.warn(`DEBUG: New Queue length: ${queue.length}`); // TODO: Kill this line
-  console.warn(`DEBUG: Initial Queue length: ${queue.length}`); // TODO: Kill this line
   if (queue.length >= maxItemsInQueue) { trimQueue(); }
-
-
-// TODO: Figure out how to prevent killing the last 'foo' groupId from this kind of array
-// [
-//   {
-//     text: 'blah',
-//     groupId: 'foo',
-//   },
-//   {
-//     text: 'blah 2',
-//     groupId: 'foo',
-//   },
-//   {
-//     text: 'blah 3',
-//     groupId: 'foo',
-//   },
-//   {
-//     text: 'blah',
-//     groupId: 'bar',
-//   },
-//   {
-//     text: 'blah 3',
-//     groupId: 'foo',
-//   },
-//   {
-//     text: 'blah 2',
-//     groupId: 'bar',
-//   },
-//   {
-//     text: 'blah 3',
-//     groupId: 'bar',
-//   },
-//   {
-//     text: 'blah',
-//     groupId: 'foo',
-//   },
-//   {
-//     text: 'blah 2',
-//     groupId: 'foo',
-//   },
-//   {
-//     text: 'blah 3',
-//     groupId: 'foo',
-//   },
-// ]
 };
 
 const processVoiceQueue = () => {
@@ -87,7 +37,6 @@ const processVoiceQueue = () => {
 setTimeout(processVoiceQueue, delayBetweenProcessingInMilliseconds);
 
 const addSentenceToSpeechQueue = (speechOptions) => {
-  console.warn(`DEBUG: Initial Queue length: ${queue.length}`); // TODO: Kill this line
   if (queue.length >= maxItemsInQueue) { trimQueue(); }
   queue.push(speechOptions);
 };
