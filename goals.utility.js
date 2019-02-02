@@ -6,21 +6,15 @@ const goalsLookup = require('./data/goals.json');
 const goals = Object.values(goalsLookup);
 
 const getCurrentGoalDescriptionWrapper = (game) => () => { // TODO: Make this work
-  const currentGoalId = game.state.player.currentGoalId;
-  let currentGoalDescription;
-  if (currentGoalId == 0) {
-     currentGoalDescription = 'There is currently no goal, please choose a goal from the available options';
-     return currentGoalDescription;
-   }
-  const currentGoal = game.giveCurrentGoal().currentGoal;
-  currentGoalDescription = currentGoal.description;
-  console.log(`DEBUG: currentGoalDescription:  `); //TODO: Kill this line
-  console.dir(currentGoalDescription); //TODO: Kill this line
+  const currentGoal = game.giveCurrentGoal();
+  const currentGoalId = currentGoal.id;
+  const currentGoalDescription = currentGoal.description;
   return currentGoalDescription;
 };
 
 const showCurrentGoalWrapper = (game) => () => { // TODO: Show the id's of the goals and input the goal id to change it
-  const currentGoal = game.giveCurrentGoal().currentGoal;
+  const currentGoal = game.giveCurrentGoal();
+  const currentGoalDescription = game.getCurrentGoalDescription();
   if (!currentGoal) {
     game.consoleOutPut({
        text: `
@@ -34,7 +28,7 @@ const showCurrentGoalWrapper = (game) => () => { // TODO: Show the id's of the g
   game.consoleOutPut({
     text: `
 
-    ${currentGoal.description}
+    ${currentGoalDescription}
 
     `,
     color: 'magentaBright'
@@ -85,7 +79,7 @@ const changeCurrentGoalIdWrapper = (game) => (goalId) => { // TODO: Add error me
   setupGameForChosenGoal(); // TODO: Refactor this function into game.js and then just invoke it from here
 };
 
-// TODO: Add voices to this utility file 
+// TODO: Add voices to this utility file
 
 const api = {
   getCurrentGoalDescriptionWrapper,

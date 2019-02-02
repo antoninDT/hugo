@@ -1,4 +1,8 @@
 {
+  "noGoalHasBeenChosen": {
+  "id": 0,
+  "description": "There is currently no goal, please choose a goal from the available options"
+},
   "craftItemGoal": {
     "id": 1,
     "goalTypeId": 1,

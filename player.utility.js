@@ -8,7 +8,7 @@ const { addSentenceToSpeechQueue, sayListWithAnd } = require('./voices.utility')
 const { changeCurrentGoalIdWrapper } = require('./winConditions.utility');
 
 const dealDamageIfNeededWrapper = (game) => (showEnemyOrHealer, shouldSpeak = true) => {  // TODO: Fix the flashing of the text
-  const currentGoal = game.giveCurrentGoal().currentGoal;
+  const currentGoal = game.giveCurrentGoal();
   const currentGoalId = currentGoal.id;
   if (!showEnemyOrHealer.damage) { return; }
   if (showEnemyOrHealer.isItem && (game.state.winningFactors.itemIdsToWin.includes(showEnemyOrHealer.id))) { return; }

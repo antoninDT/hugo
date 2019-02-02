@@ -18,13 +18,13 @@ const gameTypeIds = { // TODO: Eventually update the goals.json schema to allow 
 
 const giveCurrentGoalWrapper = (game) => () => {
   const currentGoal = game.state.goals.find((goal) => goal.id === game.state.player.currentGoalId);
-  return { currentGoal };
+  return currentGoal;
 };
 
 const getNumberOfItemsToWinForCurrentGoalWrapper = (game) => () => {
   const currentGoal = game.giveCurrentGoal();
   const numberOfItemsToWinForCurrentGoal = currentGoal.numberOfItemsToWin;
-  return { numberOfItemsToWinForCurrentGoal };
+  return numberOfItemsToWinForCurrentGoal;
 };
 
 const didPlayerWinWrapperItemIdsToWin = (game) => () => {
